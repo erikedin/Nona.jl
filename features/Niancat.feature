@@ -19,52 +19,19 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
-module Nona
+Feature: Niancat
+    As a resident of the Konsulatet Slack
+    I want to play the Konsulatet variant of nian
+    So that I can enjoy myself
 
-export NiancatGame
-export NickUser
-export Guess, Response, Incorrect, Correct
-export NiancatPublisher
-export gameaction!, publish!
+    Scenario: Guess a word
+        Given a Niancat puzzle DATORSPLE
+         When Alice guesses DATORPLES
+         Then the response is that DATORPLES is incorrect
 
-abstract type Response end
-
-abstract type NiancatPublisher end
-
-publish!(::NiancatPublisher, ::Response) =  @error("Implement me")
-
-struct NickUser
-    nick::String
-end
-
-struct NiancatGame
-    puzzle::String
-    publisher::NiancatPublisher
-end
-
-struct Guess
-    word::String
-end
-
-struct Incorrect <: Response
-    user::NickUser
-    guess::Guess
-end
-
-struct Correct <: Response
-    user::NickUser
-    guess::Guess
-end
-
-function gameaction!(game::NiancatGame, user::NickUser, guess::Guess)
-    response = if guess == Guess("DATORSPEL")
-        Correct(user, guess)
-    else
-        Incorrect(user, guess)
-    end
-
-    publish!(game.publisher, response)
-end
-
-end # module Nona
+    Scenario: Solve the puzzle
+        Given a Niancat puzzle DATORSPLE
+         When Alice guesses DATORSPEL
+         Then the response is that DATORSPEL is correct
