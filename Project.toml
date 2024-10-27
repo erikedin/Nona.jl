@@ -1,0 +1,4 @@
+name = "Nona"
+uuid = "7254a289-397f-4d9a-98af-a20f5b3a573c"
+authors = ["Erik Edin <erikedin@users.noreply.github.com>"]
+version = "0.1.0"
