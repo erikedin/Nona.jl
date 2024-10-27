@@ -20,6 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-module Nona
+using Test
+using Behavior
+using Nona
 
-end # module Nona
+parseoptions = Behavior.Gherkin.ParseOptions(use_experimental=true)
+@test runspec(pkgdir(Nona), tags="not @wip", parseoptions=parseoptions)
