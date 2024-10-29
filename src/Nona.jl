@@ -27,12 +27,23 @@ export NickUser
 export Guess, Response, Incorrect, Correct
 export NiancatPublisher
 export gameaction!, publish!
+export Dictionary
 
 abstract type Response end
 
 abstract type NiancatPublisher end
 
 publish!(::NiancatPublisher, ::Response) =  @error("Implement me")
+
+struct Dictionary
+    words::Set{String}
+
+    Dictionary(words::AbstractVector{String}) = new(Set{String}(words))
+end
+
+sortword(word::String) = String(sort([c for c in word]))
+
+isanagram(a::String, b::String) = sortword(a) == sortword(b)
 
 struct NickUser
     nick::String
@@ -41,6 +52,16 @@ end
 struct NiancatGame
     puzzle::String
     publisher::NiancatPublisher
+    solutions::Vector{String}
+end
+
+function NiancatGame(puzzle::String, publisher::NiancatPublisher, dictionary::Dictionary)
+    solutions = String[
+        word
+        for word in dictionary.words
+        if isanagram(puzzle, word)
+    ]
+    NiancatGame(puzzle, publisher, solutions)
 end
 
 struct Guess
@@ -58,7 +79,7 @@ struct Correct <: Response
 end
 
 function gameaction!(game::NiancatGame, user::NickUser, guess::Guess)
-    response = if guess == Guess("DATORSPEL")
+    response = if guess.word in game.solutions
         Correct(user, guess)
     else
         Incorrect(user, guess)

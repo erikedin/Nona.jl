@@ -26,6 +26,13 @@ Feature: Niancat
     I want to play the Konsulatet variant of nian
     So that I can enjoy myself
 
+    Background: A dictionary
+        Given a dictionary
+            | DATORSPEL |
+            | LEDARPOST |
+            | PUSSGURKA |
+            | ORDPUSSEL |
+
     Scenario: Guess a word
         Given a Niancat puzzle DATORSPLE
          When Alice guesses DATORPLES
@@ -35,3 +42,13 @@ Feature: Niancat
         Given a Niancat puzzle DATORSPLE
          When Alice guesses DATORSPEL
          Then the response is that DATORSPEL is correct
+
+    Scenario: Solve the puzzle
+        Given a Niancat puzzle DATORSPLE
+         When Alice guesses LEDARPOST
+         Then the response is that LEDARPOST is correct
+
+    Scenario: Solve the puzzle
+        Given a Niancat puzzle PUSSGUKRA
+         When Alice guesses PUSSGURKA
+         Then the response is that PUSSGURKA is correct

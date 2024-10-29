@@ -36,10 +36,21 @@ function hasresponse(publisher::MockNiancatPublisher, response::Response) :: Boo
     response in publisher.responses
 end
 
+@given("a dictionary") do context
+    # Each row in context.datatables is an array of words,
+    # but there is only one word in each array.
+    dictionary = [
+        words[1]
+        for words in context.datatable
+    ]
+    context[:dictionary] = Dictionary(dictionary)
+end
+
 @given("a Niancat puzzle {String}") do context, puzzle
     publisher = MockNiancatPublisher()
+    dictionary = context[:dictionary]
     context[:publisher] = publisher
-    context[:game] = NiancatGame(puzzle, publisher)
+    context[:game] = NiancatGame(puzzle, publisher, dictionary)
 end
 
 @when("Alice guesses {String}") do context, guess
