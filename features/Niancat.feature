@@ -38,17 +38,29 @@ Feature: Niancat
          When Alice guesses DATORPLES
          Then the response is that DATORPLES is incorrect
 
-    Scenario: Solve the puzzle
+    Scenario: Solve the puzzle with one of two possible solution
         Given a Niancat puzzle DATORSPLE
          When Alice guesses DATORSPEL
          Then the response is that DATORSPEL is correct
 
-    Scenario: Solve the puzzle
+    Scenario: Solve the puzzle with the other of two possible solution
         Given a Niancat puzzle DATORSPLE
          When Alice guesses LEDARPOST
          Then the response is that LEDARPOST is correct
 
-    Scenario: Solve the puzzle
+    Scenario: Solve the puzzle with the only possible solution
         Given a Niancat puzzle PUSSGUKRA
          When Alice guesses PUSSGURKA
          Then the response is that PUSSGURKA is correct
+
+    @wip
+    Scenario: The first alphabetical solution has index 1
+        Given a Niancat puzzle DATORSPLE
+         When Alice guesses DATORSPEL
+         Then the response is that DATORSPEL is the solution with index 1
+
+    @wip
+    Scenario: The second alphabetical solution has index 2
+        Given a Niancat puzzle DATORSPLE
+         When Alice guesses LEDARPOST
+         Then the response is that LEDARPOST is the solution with index 2
