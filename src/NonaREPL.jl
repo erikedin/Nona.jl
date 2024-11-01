@@ -65,6 +65,8 @@ struct NiancatREPL
     end
 end
 
+Base.show(io::IO, replgame::NiancatREPL) = println(io, "NiancatRepl($(replgame.game.puzzle))")
+
 function guess(replgame::NiancatREPL, word::String)
     guess = Guess(word)
     user = ThisUser()
