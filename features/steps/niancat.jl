@@ -36,6 +36,19 @@ function hasresponse(publisher::MockNiancatPublisher, response::Response) :: Boo
     response in publisher.responses
 end
 
+struct AnySolutionIndex <: SolutionIndex end
+
+# When comparing equality, AnySolutionIndex should be compared as equal to any other
+# SolutionIndex type.
+Base.:(==)(::SolutionIndex, ::AnySolutionIndex) = true
+Base.:(==)(::AnySolutionIndex, ::SolutionIndex) = true
+Base.:(==)(index1::MultipleSolutionIndex, index2::MultipleSolutionIndex) = index1.index == index2.index
+Base.:(==)(::SingleSolutionIndex, ::SingleSolutionIndex) = true
+Base.:(==)(::MultipleSolutionIndex, ::SingleSolutionIndex) = false
+Base.:(==)(::SingleSolutionIndex, ::MultipleSolutionIndex) = false
+
+Base.:(==)(r1::Correct, r2::Correct) = r1.user == r2.user && r1.guess == r2.guess && r1.solutionindex == r2.solutionindex
+
 @given("a dictionary") do context
     # Each row in context.datatables is an array of words,
     # but there is only one word in each array.
@@ -73,5 +86,19 @@ end
     publisher = context[:publisher]
     alice = NickUser("Alice")
 
-    @expect hasresponse(publisher, Correct(alice, Guess(guess)))
+    @expect hasresponse(publisher, Correct(alice, Guess(guess), AnySolutionIndex()))
+end
+
+@then("the response is that {String} is the solution with index {Int}") do context, guess, index
+    publisher = context[:publisher]
+    alice = NickUser("Alice")
+
+    @expect hasresponse(publisher, Correct(alice, Guess(guess), MultipleSolutionIndex(index)))
+end
+
+@then("the response indicates that Alice has found the only possible solution {String}") do context, guess
+    publisher = context[:publisher]
+    alice = NickUser("Alice")
+
+    @expect hasresponse(publisher, Correct(alice, Guess(guess), SingleSolutionIndex()))
 end

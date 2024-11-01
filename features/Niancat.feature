@@ -53,13 +53,11 @@ Feature: Niancat
          When Alice guesses PUSSGURKA
          Then the response is that PUSSGURKA is correct
 
-    @wip
     Scenario: The first alphabetical solution has index 1
         Given a Niancat puzzle DATORSPLE
          When Alice guesses DATORSPEL
          Then the response is that DATORSPEL is the solution with index 1
 
-    @wip
     Scenario: The second alphabetical solution has index 2
         Given a Niancat puzzle DATORSPLE
          When Alice guesses LEDARPOST

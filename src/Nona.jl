@@ -28,6 +28,7 @@ export Guess, Response, Incorrect, Correct
 export NiancatPublisher
 export gameaction!, publish!
 export Dictionary
+export SolutionIndex, SingleSolutionIndex, MultipleSolutionIndex
 
 abstract type Response end
 
@@ -61,7 +62,8 @@ function NiancatGame(puzzle::String, publisher::NiancatPublisher, dictionary::Di
         for word in dictionary.words
         if isanagram(puzzle, word)
     ]
-    NiancatGame(puzzle, publisher, solutions)
+    sortedsolutions = sort(solutions)
+    NiancatGame(puzzle, publisher, sortedsolutions)
 end
 
 struct Guess
@@ -73,14 +75,35 @@ struct Incorrect <: Response
     guess::Guess
 end
 
+abstract type SolutionIndex end
+
+struct MultipleSolutionIndex <: SolutionIndex
+    index::Int
+
+    MultipleSolutionIndex() = new(0)
+    MultipleSolutionIndex(index::Int) = new(index)
+end
+
+struct SingleSolutionIndex <: SolutionIndex end
+
 struct Correct <: Response
     user::NickUser
     guess::Guess
+    solutionindex::SolutionIndex
+
+    Correct(user::NickUser, guess::Guess, index::SolutionIndex = SingleSolutionIndex()) = new(user, guess, index)
 end
 
 function gameaction!(game::NiancatGame, user::NickUser, guess::Guess)
     response = if guess.word in game.solutions
-        Correct(user, guess)
+        solutionindex = if length(game.solutions) == 1
+            SingleSolutionIndex()
+        else
+            index = findfirst(item -> item == guess.word, game.solutions)
+            MultipleSolutionIndex(index)
+        end
+
+        Correct(user, guess, solutionindex)
     else
         Incorrect(user, guess)
     end

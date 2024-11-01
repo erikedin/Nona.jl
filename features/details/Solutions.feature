@@ -55,8 +55,7 @@ Feature: Solutions
     # > Alice solved the puzzle
     # This scenario ensures that the front-end has enough information in the response
     # itself, that it does not have to keep in its state how many solutions there are.
-    @wip
     Scenario: Puzzles with a single solution may ignore the index
         Given a Niancat puzzle PUSSGUKAR
          When Alice guesses PUSSGURKA
-         Then the response indicates that this is the only possible solution
+         Then the response indicates that Alice has found the only possible solution PUSSGURKA
