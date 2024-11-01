@@ -36,7 +36,6 @@ Feature: Solutions
             | SPELDATOR |
             | LEDARPOST |
 
-    @wip
     Scenario Outline: Solutions are indexed in alphabetical order
         Given a Niancat puzzle DATORSPLE
          When Alice guesses <word>
