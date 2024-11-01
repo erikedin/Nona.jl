@@ -24,6 +24,12 @@
 using Behavior
 using Nona
 
+# This is the most basic type of user, where the user is identified by a single
+# string, which is also the display name.
+struct NickUser <: User
+    nick::String
+end
+
 struct MockNiancatPublisher <: NiancatPublisher
     responses::Vector{<:Response}
 
@@ -64,41 +70,73 @@ end
     dictionary = context[:dictionary]
     context[:publisher] = publisher
     context[:game] = NiancatGame(puzzle, publisher, dictionary)
+
+    # The default user is Alice, unless otherwise stated.
+    # Other users are stored in the :users map.
+    alice = NickUser("Alice")
+    context[:users] = Dict{String, User}(["Alice" => alice])
+    context[:defaultuser] = alice
 end
 
-@when("Alice guesses {String}") do context, guess
+@when("{String} guesses {String}") do context, username, guess
     game = context[:game]
 
-    alice = NickUser("Alice")
+    # Users are expected to be stored in a Map in the context.
+    users = context[:users]
+    user = users[username]
+
     guess = Guess(guess)
 
-    gameaction!(game, alice, guess)
+    gameaction!(game, user, guess)
 end
 
 @then("the response is that {String} is incorrect") do context, guess
     publisher = context[:publisher]
-    alice = NickUser("Alice")
+    user = context[:defaultuser]
 
-    @expect hasresponse(publisher, Incorrect(alice, Guess(guess)))
+    @expect hasresponse(publisher, Incorrect(user, Guess(guess)))
 end
 
 @then("the response is that {String} is correct") do context, guess
     publisher = context[:publisher]
-    alice = NickUser("Alice")
+    user = context[:defaultuser]
 
-    @expect hasresponse(publisher, Correct(alice, Guess(guess), AnySolutionIndex()))
+    @expect hasresponse(publisher, Correct(user, Guess(guess), AnySolutionIndex()))
 end
 
 @then("the response is that {String} is the solution with index {Int}") do context, guess, index
     publisher = context[:publisher]
-    alice = NickUser("Alice")
+    user = context[:defaultuser]
 
-    @expect hasresponse(publisher, Correct(alice, Guess(guess), MultipleSolutionIndex(index)))
+    @expect hasresponse(publisher, Correct(user, Guess(guess), MultipleSolutionIndex(index)))
 end
 
 @then("the response indicates that Alice has found the only possible solution {String}") do context, guess
     publisher = context[:publisher]
-    alice = NickUser("Alice")
+    user = context[:defaultuser]
 
-    @expect hasresponse(publisher, Correct(alice, Guess(guess), SingleSolutionIndex()))
+    @expect hasresponse(publisher, Correct(user, Guess(guess), SingleSolutionIndex()))
+end
+
+#
+# Users
+# These steps are specific to the `details/Users.feature` scenarios.
+#
+
+struct DisplayNameUser <: User
+    userid::String
+    displayname::String
+end
+
+@given("a front-end specific user Angleton with display name James") do context
+    users = context[:users]
+    users["Angleton"] = DisplayNameUser("Angleton", "James")
+end
+
+
+@then("the response is that {String} guessed {String} correctly") do context, username, guess
+    publisher = context[:publisher]
+    user = context[:users][username]
+
+    @expect hasresponse(publisher, Correct(user, Guess(guess), AnySolutionIndex()))
 end

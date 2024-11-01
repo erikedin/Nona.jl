@@ -23,7 +23,7 @@
 module Nona
 
 export NiancatGame
-export NickUser
+export User
 export Guess, Response, Incorrect, Correct
 export NiancatPublisher
 export gameaction!, publish!
@@ -46,9 +46,7 @@ sortword(word::String) = String(sort([c for c in word]))
 
 isanagram(a::String, b::String) = sortword(a) == sortword(b)
 
-struct NickUser
-    nick::String
-end
+abstract type User end
 
 struct NiancatGame
     puzzle::String
@@ -71,7 +69,7 @@ struct Guess
 end
 
 struct Incorrect <: Response
-    user::NickUser
+    user::User
     guess::Guess
 end
 
@@ -87,14 +85,14 @@ end
 struct SingleSolutionIndex <: SolutionIndex end
 
 struct Correct <: Response
-    user::NickUser
+    user::User
     guess::Guess
     solutionindex::SolutionIndex
 
-    Correct(user::NickUser, guess::Guess, index::SolutionIndex = SingleSolutionIndex()) = new(user, guess, index)
+    Correct(user::User, guess::Guess, index::SolutionIndex = SingleSolutionIndex()) = new(user, guess, index)
 end
 
-function gameaction!(game::NiancatGame, user::NickUser, guess::Guess)
+function gameaction!(game::NiancatGame, user::User, guess::Guess)
     response = if guess.word in game.solutions
         solutionindex = if length(game.solutions) == 1
             SingleSolutionIndex()
