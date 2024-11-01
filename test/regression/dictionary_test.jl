@@ -19,12 +19,21 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
-using Test
-using Behavior
-using Nona
+using Nona.NonaREPL
 
-include("regression/dictionary_test.jl")
+@testset "FileDictionary" begin
 
-parseoptions = Behavior.Gherkin.ParseOptions(use_experimental=true)
-@test runspec(pkgdir(Nona), tags="not @wip", parseoptions=parseoptions)
+@testset "FileDictionary construction; Path is a SubString; Dictionary is OK" begin
+    # Arrange
+    path = strip(pkgdir(Nona, "test", "assets", "test_dictionary.txt"))
+    # Pre-condition: Path is a SubString{String}
+    @test typeof(path) == SubString{String}
+
+    # Act and Assert
+    dictionary = FileDictionary(path)
+    # This throws an exception if FileDictionary(::String) is the only constructor.
+end
+
+end # FileDictionary

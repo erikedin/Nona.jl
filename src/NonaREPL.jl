@@ -32,7 +32,7 @@ export guess
 struct FileDictionary <: Dictionary
     words::Set{String}
 
-    function FileDictionary(path::String)
+    function FileDictionary(path::AbstractString)
         words = open(path, "r") do io
             readlines(io, keep=false)
         end
