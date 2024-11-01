@@ -55,6 +55,16 @@ Base.:(==)(::SingleSolutionIndex, ::MultipleSolutionIndex) = false
 
 Base.:(==)(r1::Correct, r2::Correct) = r1.user == r2.user && r1.guess == r2.guess && r1.solutionindex == r2.solutionindex
 
+struct SetDictionary <: Dictionary
+    words::Set{String}
+
+    SetDictionary(words::AbstractVector{String}) = new(Set{String}(words))
+end
+
+Base.iterate(sd::SetDictionary) = iterate(sd.words)
+Base.iterate(sd::SetDictionary, state) = iterate(sd.words, state)
+Base.length(sd::SetDictionary) = length(sd.words)
+
 @given("a dictionary") do context
     # Each row in context.datatables is an array of words,
     # but there is only one word in each array.
@@ -62,7 +72,7 @@ Base.:(==)(r1::Correct, r2::Correct) = r1.user == r2.user && r1.guess == r2.gues
         words[1]
         for words in context.datatable
     ]
-    context[:dictionary] = Dictionary(dictionary)
+    context[:dictionary] = SetDictionary(dictionary)
 end
 
 @given("a Niancat puzzle {String}") do context, puzzle

@@ -33,14 +33,9 @@ export SolutionIndex, SingleSolutionIndex, MultipleSolutionIndex
 abstract type Response end
 
 abstract type NiancatPublisher end
-
 publish!(::NiancatPublisher, ::Response) =  @error("Implement me")
 
-struct Dictionary
-    words::Set{String}
-
-    Dictionary(words::AbstractVector{String}) = new(Set{String}(words))
-end
+abstract type Dictionary end
 
 sortword(word::String) = String(sort([c for c in word]))
 
@@ -57,7 +52,7 @@ end
 function NiancatGame(puzzle::String, publisher::NiancatPublisher, dictionary::Dictionary)
     solutions = String[
         word
-        for word in dictionary.words
+        for word in dictionary
         if isanagram(puzzle, word)
     ]
     sortedsolutions = sort(solutions)
@@ -108,5 +103,7 @@ function gameaction!(game::NiancatGame, user::User, guess::Guess)
 
     publish!(game.publisher, response)
 end
+
+include("NonaREPL.jl")
 
 end # module Nona
