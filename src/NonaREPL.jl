@@ -71,4 +71,17 @@ function guess(replgame::NiancatREPL, word::String)
     gameaction!(replgame.game, user, guess)
 end
 
+#
+# Generate a new game
+#
+
+function newgame(dictionary::Dictionary; io::IO = stdout)
+    chosenword = rand(collect(dictionary))
+    puzzle = Nona.sortword(chosenword)
+
+    # TODO: Make this a publishable event
+    println(io, puzzle)
+    NiancatREPL(io, puzzle, dictionary)
+end
+
 end # module NonaREPL

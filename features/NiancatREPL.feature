@@ -38,3 +38,8 @@ Feature: Niancat in the Julia REPL
         Given a REPL Niancat game with puzzle PUSSGRUKA
          When the REPL user tries the guess PUSSAGURK
          Then the REPL shows "PUSSAGURK är inte korrekt."
+
+    Scenario: Start a new game with a randomly generated puzzle
+        When a new NiancatREPL game is generated
+        Then a puzzle is shown
+         And that puzzle is an anagram of a word in the dictionary

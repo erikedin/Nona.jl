@@ -46,6 +46,16 @@ end
     guess(game, word)
 end
 
+@when("a new NiancatREPL game is generated") do context
+    dictionary = context[:dictionary]
+
+    io = IOBuffer()
+    game = NonaREPL.newgame(dictionary; io=io)
+
+    context[:game] = game
+    context[:io] = io
+end
+
 @then("the REPL shows \"{String}\"") do context, message
     io = context[:io]
 
@@ -55,4 +65,26 @@ end
 
     output = read(io, String)
     @expect contains(output, message)
+end
+
+@then("a puzzle is shown") do context
+    io = context[:io]
+
+    seekstart(io)
+    puzzle = read(io, String)
+
+    context[:puzzle] = strip(puzzle)
+end
+
+@then("that puzzle is an anagram of a word in the dictionary") do context
+    puzzle = context[:puzzle]
+    dictionary = context[:dictionary]
+
+    solutions = [
+        word
+        for word in dictionary
+        if Nona.isanagram(String(word), String(puzzle))
+    ]
+
+    @expect length(solutions) > 0
 end
