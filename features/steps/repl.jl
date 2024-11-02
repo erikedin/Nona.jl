@@ -22,6 +22,8 @@
 #
 
 using Behavior
+using Nona.Niancat
+using Nona.Niancat: isanagram
 using Nona.NonaREPL
 
 @given("a dictionary in the file \"{String}\"") do context, dictionarypath
@@ -83,7 +85,7 @@ end
     solutions = [
         word
         for word in dictionary
-        if Nona.isanagram(word, puzzle)
+        if isanagram(word, puzzle)
     ]
 
     @expect length(solutions) > 0

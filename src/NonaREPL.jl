@@ -23,7 +23,9 @@
 
 module NonaREPL
 
-using Nona
+using Nona.Niancat
+
+import Nona.Niancat: publish!
 
 export FileDictionary
 export NiancatREPL
@@ -48,8 +50,8 @@ Base.length(fd::FileDictionary) = length(fd.words)
 struct ConsolePublisher <: NiancatPublisher
     io::IO
 end
-Nona.publish!(p::ConsolePublisher, response::Correct) = println(p.io, "$(response.guess.word) är rätt!")
-Nona.publish!(p::ConsolePublisher, response::Incorrect) = println(p.io, "$(response.guess.word) är inte korrekt.")
+publish!(p::ConsolePublisher, response::Correct) = println(p.io, "$(response.guess.word) är rätt!")
+publish!(p::ConsolePublisher, response::Incorrect) = println(p.io, "$(response.guess.word) är inte korrekt.")
 
 struct ThisUser <: User end
 

@@ -22,7 +22,10 @@
 #
 
 using Behavior
-using Nona
+using Nona.Niancat
+using Nona.Niancat: isanagram
+
+import Nona.Niancat: publish!
 
 # This is the most basic type of user, where the user is identified by a single
 # string, which is also the display name.
@@ -36,7 +39,7 @@ struct MockNiancatPublisher <: NiancatPublisher
     MockNiancatPublisher() = new(Response[])
 end
 
-Nona.publish!(publisher::MockNiancatPublisher, response::Response) = push!(publisher.responses, response)
+publish!(publisher::MockNiancatPublisher, response::Response) = push!(publisher.responses, response)
 
 function hasresponse(publisher::MockNiancatPublisher, response::Response) :: Bool
     response in publisher.responses
@@ -181,7 +184,7 @@ end
     anagrams = [
         word
         for word in dictionary
-        if Nona.isanagram(word, puzzle)
+        if isanagram(word, puzzle)
     ]
 
     @expect anagrams != []
