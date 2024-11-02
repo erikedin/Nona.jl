@@ -31,6 +31,7 @@ export FileDictionary
 export NiancatREPL
 export guess, start, userinput!
 
+# FileDictionary reads words from a file, where each word is on its own line.
 struct FileDictionary <: Dictionary
     words::Set{Word}
 
@@ -47,10 +48,13 @@ Base.iterate(fd::FileDictionary, state) = iterate(fd.words, state)
 Base.length(fd::FileDictionary) = length(fd.words)
 
 
+# ConsolePublisher prints all game events to the console.
 struct ConsolePublisher <: NiancatPublisher
     io::IO
 end
+
 publish!(p::ConsolePublisher, response::Correct) = println(p.io, "$(response.guess.word) är rätt!")
+
 function publish!(p::ConsolePublisher, response::Incorrect)
     println(p.io, "$(response.guess.word) är inte korrekt.")
 
@@ -66,12 +70,16 @@ function publish!(p::ConsolePublisher, response::CurrentPuzzle)
     println(p.io, response.puzzle)
 end
 
+# Since the REPL is a single-user game, there is no need to distinguish
+# between players. Thus, this is an empty implementation of the `User`
+# abstract type.
 struct ThisUser <: User end
 
 struct PromptIO
     io::IO
 end
 
+# prompt shows a prompt for the user to input text.
 prompt(p::PromptIO) = print(p.io, "> ")
 
 struct NiancatREPL
@@ -88,8 +96,14 @@ struct NiancatREPL
     end
 end
 
+# Override show to avoid displaying the solutions.
 Base.show(io::IO, replgame::NiancatREPL) = println(io, "NiancatRepl($(replgame.game.puzzle))")
 
+"""
+    guess(replgame::NiancatREPL, word::String)
+
+The player guesses the word in `word` as the solution.
+"""
 function guess(replgame::NiancatREPL, word::String)
     guess = Guess(word)
     user = ThisUser()
@@ -102,6 +116,11 @@ end
 
 prompt(game::NiancatREPL) = prompt(game.promptio)
 
+"""
+    start(game::NiancatREPL)
+
+The game starts by showing the puzzle, then an input prompt.
+"""
 function start(game::NiancatREPL)
     # Show the puzzle at game start
     user = ThisUser()
@@ -113,6 +132,11 @@ function start(game::NiancatREPL)
     prompt(game)
 end
 
+"""
+    userinput!(game::NiancatREPL, text::String)
+
+The user inputs `text` as the next command to the game.
+"""
 function userinput!(game::NiancatREPL, text::String)
     guess(game, text)
     prompt(game)
@@ -122,6 +146,11 @@ end
 # Generate a new game
 #
 
+"""
+    newgame(dictionary::Dictionary; io::IO = stdout)
+
+Create a new NiancatREPL game with a randomly generated puzzle.
+"""
 function newgame(dictionary::Dictionary; io::IO = stdout)
     puzzle = generatepuzzle(dictionary)
 
@@ -130,6 +159,11 @@ function newgame(dictionary::Dictionary; io::IO = stdout)
     game
 end
 
+"""
+    run(dictionary::Dictionary, io::IO = stdout)
+
+Run a REPL in a loop until the user exits.
+"""
 function run(dictionary::Dictionary, io::IO = stdout)
     game = newgame(dictionary; io=io)
 

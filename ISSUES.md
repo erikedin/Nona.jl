@@ -5,11 +5,12 @@ Issues
     + Word can be moved out
     + Dictionaries could probably be moved as well
 - Create a simpler Hamming-distance game as well
-- Code comments and documentation
 - Implement commands in the REPL
     + For getting the current puzzle
     + For exiting
 - REPL: Handle Ctrl+D, should exit
+- Rename User to Player
+- Documentation
 
 # Fixed
 - FileDictionary should take an AbstractString
@@ -20,3 +21,4 @@ Issues
 - Put NiancatGame in its own module, instead of in Nona
 - Show wrong/remaining letters when making a guess
 - Create a simple REPL instead of using the Julia REPL
+- Code comments
