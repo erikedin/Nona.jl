@@ -150,3 +150,58 @@ end
 
     @expect hasresponse(publisher, Correct(user, Guess(guess), AnySolutionIndex()))
 end
+
+#
+# Puzzle selection
+#
+
+@when("randomly generating a Niancat puzzle") do context
+    dictionary = context[:dictionary]
+
+    puzzle = generatepuzzle(dictionary)
+
+    context[:puzzle] = puzzle
+end
+
+@when("randomly generating a Niancat puzzle {Int} times") do context, n
+    dictionary = context[:dictionary]
+
+    puzzles = [
+        generatepuzzle(dictionary)
+        for i in 1:n
+    ]
+
+    context[:puzzles] = puzzles
+end
+
+@then("the puzzle is an anagram of a word in the dictionary") do context
+    dictionary = context[:dictionary]
+    puzzle = context[:puzzle]
+
+    anagrams = [
+        word
+        for word in dictionary
+        if Nona.isanagram(word, puzzle)
+    ]
+
+    @expect anagrams != []
+end
+
+@then("the letters in the puzzle are sorted in alphabetical order") do context
+    dictionary = context[:dictionary]
+    puzzle = context[:puzzle]
+
+    @expect sort(puzzle) == puzzle
+end
+
+@then("the puzzle has 9 letters") do context
+    puzzle = context[:puzzle]
+
+    @expect length(puzzle) == 9
+end
+
+@then("all randomly chosen puzzles have 9 letters") do context
+    puzzles = context[:puzzles]
+
+    @expect all(w -> length(w) == 9, puzzles)
+end

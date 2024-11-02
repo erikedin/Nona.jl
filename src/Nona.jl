@@ -27,11 +27,12 @@ export User
 export Guess, Response, Incorrect, Correct
 export NiancatPublisher
 export gameaction!, publish!
+export generatepuzzle
 export Dictionary
 export SolutionIndex, SingleSolutionIndex, MultipleSolutionIndex
 export Word
 
-import Base: convert, hash, iterate, length, isless, show
+import Base: convert, hash, iterate, length, isless, show, sort
 
 struct Word
     letters::String
@@ -47,6 +48,19 @@ Base.:(==)(a::Word, b::Word) = a.letters == b.letters
 hash(w::Word, h::UInt) = hash(w.letters, h)
 isless(a::Word, b::Word) = isless(a.letters, b.letters)
 show(io::IO, w::Word) = print(io, w.letters)
+function sort(
+    w::Word;
+    alg::Base.Sort.Algorithm=Base.Sort.QuickSort,
+    lt=isless,
+    by=identity,
+    rev::Bool=false,
+    order::Base.Order.Ordering=Base.Order.Forward)
+
+    Word(String(
+        sort([c for c in w.letters];
+             alg=alg, lt=lt, by=by, rev=rev, order=order)
+    ))
+end
 
 abstract type Response end
 
@@ -55,9 +69,7 @@ publish!(::NiancatPublisher, ::Response) =  @error("Implement me")
 
 abstract type Dictionary end
 
-sortword(word::Word) = Word(String(sort([c for c in word])))
-
-isanagram(a::Word, b::Word) = sortword(a) == sortword(b)
+isanagram(a::Word, b::Word) = sort(a) == sort(b)
 
 abstract type User end
 
@@ -121,6 +133,15 @@ function gameaction!(game::NiancatGame, user::User, guess::Guess)
     end
 
     publish!(game.publisher, response)
+end
+
+function generatepuzzle(dictionary::Dictionary) :: Word
+    nineletterword = w -> length(w) == 9
+    nineletterwords = collect(dictionary) |> filter(nineletterword)
+    chosenword = rand(nineletterwords)
+    puzzle = sort(chosenword)
+
+    puzzle
 end
 
 include("NonaREPL.jl")

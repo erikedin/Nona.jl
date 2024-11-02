@@ -62,3 +62,36 @@ Feature: Niancat
         Given a Niancat puzzle DATORSPLE
          When Alice guesses LEDARPOST
          Then the response is that LEDARPOST is the solution with index 2
+
+    Scenario: The puzzle is chosen from a dictionary
+        Given a dictionary
+            | DATORSPEL |
+            | PUSSGURKA |
+            | ORDPUSSEL |
+            | LEKA      |
+            | DATOR     |
+            | PUSSEL    |
+         When randomly generating a Niancat puzzle
+         Then the puzzle is an anagram of a word in the dictionary
+
+    Scenario: The puzzle is an anagram sorted in alphabetical order
+        Given a dictionary
+            | DATORSPEL |
+            | PUSSGURKA |
+            | ORDPUSSEL |
+            | LEKA      |
+            | DATOR     |
+            | PUSSEL    |
+         When randomly generating a Niancat puzzle
+         Then the letters in the puzzle are sorted in alphabetical order
+
+    Scenario: The puzzle is a 9 letter word
+        Given a dictionary
+            | DATORSPEL |
+            | PUSSGURKA |
+            | ORDPUSSEL |
+            | LEKA      |
+            | DATOR     |
+            | PUSSEL    |
+         When randomly generating a Niancat puzzle
+         Then the puzzle has 9 letters
