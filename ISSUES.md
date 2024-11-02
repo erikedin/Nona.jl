@@ -9,3 +9,4 @@ Issues
 - Make puzzles uppercase
 - Ensure case insensitivity
 - Create only 9 letter puzzles
+- Simplify use of the REPL

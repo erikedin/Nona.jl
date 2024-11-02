@@ -43,3 +43,5 @@ using Nona.NonaREPL
 dictionary = FileDictionary(String(dictionarypath))
 
 game = NonaREPL.newgame(dictionary)
+
+g = s -> guess(game, s)
