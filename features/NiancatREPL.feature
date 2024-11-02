@@ -63,3 +63,8 @@ Feature: Niancat in the Julia REPL
     Scenario: When a new game is created, a prompt is shown
         Given a REPL Niancat game with puzzle PUSSGRUKA
          Then the output ends with "> "
+
+    Scenario: Guess incorrectly, shows the next prompt
+        Given a REPL Niancat game with puzzle PUSSGRUKA
+         When the REPL user tries the guess PUSSAGURK
+         Then the output ends with "> "

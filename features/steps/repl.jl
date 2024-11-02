@@ -46,7 +46,8 @@ end
 @when("the REPL user tries the guess {String}") do context, word
     game = context[:game]
 
-    guess(game, word)
+    #guess(game, word)
+    userinput!(game, word)
 end
 
 @when("a new NiancatREPL game is generated") do context
@@ -110,9 +111,6 @@ end
 
     seekstart(io)
     output = read(io, String)
-
-    println()
-    println(output)
 
     @expect endswith(output, "> ")
 end

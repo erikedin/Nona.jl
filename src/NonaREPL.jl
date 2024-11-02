@@ -29,7 +29,7 @@ import Nona.Niancat: publish!
 
 export FileDictionary
 export NiancatREPL
-export guess, start
+export guess, start, userinput!
 
 struct FileDictionary <: Dictionary
     words::Set{Word}
@@ -113,6 +113,11 @@ function start(game::NiancatREPL)
     prompt(game)
 end
 
+function userinput!(game::NiancatREPL, text::String)
+    guess(game, text)
+    prompt(game)
+end
+
 #
 # Generate a new game
 #
@@ -123,6 +128,15 @@ function newgame(dictionary::Dictionary; io::IO = stdout)
     game = NiancatREPL(io, puzzle, dictionary)
     start(game)
     game
+end
+
+function run(dictionary::Dictionary, io::IO = stdout)
+    game = newgame(dictionary; io=io)
+
+    while true
+        text = readline(io)
+        userinput!(game, text)
+    end
 end
 
 end # module NonaREPL
