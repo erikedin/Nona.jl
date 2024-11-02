@@ -51,7 +51,16 @@ struct ConsolePublisher <: NiancatPublisher
     io::IO
 end
 publish!(p::ConsolePublisher, response::Correct) = println(p.io, "$(response.guess.word) är rätt!")
-publish!(p::ConsolePublisher, response::Incorrect) = println(p.io, "$(response.guess.word) är inte korrekt.")
+function publish!(p::ConsolePublisher, response::Incorrect)
+    println(p.io, "$(response.guess.word) är inte korrekt.")
+
+    if response.lettercorrection.extras != Word("")
+        println(p.io, "För många: $(response.lettercorrection.extras)")
+    end
+    if response.lettercorrection.missings != Word("")
+        println(p.io, "För få   : $(response.lettercorrection.missings)")
+    end
+end
 
 struct ThisUser <: User end
 

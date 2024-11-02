@@ -43,3 +43,19 @@ Feature: Niancat in the Julia REPL
         When a new NiancatREPL game is generated
         Then a puzzle is shown
          And that puzzle is an anagram of a word in the dictionary
+
+    Scenario: Incorrect guesses show extra and missing letters
+        Given a REPL Niancat game with puzzle PUSSGRUKA
+         When the REPL user tries the guess PUSSGRUXY
+         Then the REPL shows "För många: XY"
+          And the REPL shows "För få   : AK"
+
+    Scenario: If there are no extra letters, it is not shown
+        Given a REPL Niancat game with puzzle PUSSGRUKA
+         When the REPL user tries the guess PUSSGRUKA
+         Then the REPL does not show "För många"
+
+    Scenario: If there are no missing letters, it is not shown
+        Given a REPL Niancat game with puzzle PUSSGRUKA
+         When the REPL user tries the guess PUSSGRUKA
+         Then the REPL does not show "För få"

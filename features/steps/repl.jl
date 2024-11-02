@@ -69,6 +69,17 @@ end
     @expect contains(output, message)
 end
 
+@then("the REPL does not show \"{String}\"") do context, message
+    io = context[:io]
+
+    # The stream position is at the end, after all output has been written.
+    # Seek to the start so it can be read from the beginning.
+    seekstart(io)
+
+    output = read(io, String)
+    @expect !contains(output, message)
+end
+
 @then("a puzzle is shown") do context
     io = context[:io]
 
