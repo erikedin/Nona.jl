@@ -31,7 +31,7 @@ export gameaction!, publish!
 export generatepuzzle
 export Dictionary
 export SolutionIndex, SingleSolutionIndex, MultipleSolutionIndex
-export Word
+export Word, LetterCorrection
 
 import Base: convert, hash, iterate, length, isless, show, sort
 
@@ -162,9 +162,15 @@ struct Guess
     word::Word
 end
 
+struct LetterCorrection
+    missings::Word
+    extras::Word
+end
+
 struct Incorrect <: Response
     user::User
     guess::Guess
+    lettercorrection::LetterCorrection
 end
 
 abstract type SolutionIndex end
@@ -197,7 +203,10 @@ function gameaction!(game::NiancatGame, user::User, guess::Guess)
 
         Correct(user, guess, solutionindex)
     else
-        Incorrect(user, guess)
+        missings = game.puzzle - guess.word
+        extras = guess.word - game.puzzle
+        lettercorrection = LetterCorrection(missings, extras)
+        Incorrect(user, guess, lettercorrection)
     end
 
     publish!(game.publisher, response)

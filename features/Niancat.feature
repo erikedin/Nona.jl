@@ -63,6 +63,13 @@ Feature: Niancat
          When Alice guesses LEDARPOST
          Then the response is that LEDARPOST is the solution with index 2
 
+    Scenario: Guess a word with the wrong letters
+        Given a Niancat puzzle DATORSPLE
+         When Alice guesses DATORSPXY
+         Then the response is that DATORSPXY is incorrect
+          And the letters EL are missing
+          And the letters XY are extra
+
     Scenario: The puzzle is chosen from a dictionary
         Given a dictionary
             | DATORSPEL |

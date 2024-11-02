@@ -45,6 +45,10 @@ function hasresponse(publisher::MockNiancatPublisher, response::Response) :: Boo
     response in publisher.responses
 end
 
+function getonlyresponse(publisher::MockNiancatPublisher) :: Response
+    only(publisher.responses)
+end
+
 struct AnySolutionIndex <: SolutionIndex end
 
 # When comparing equality, AnySolutionIndex should be compared as equal to any other
@@ -67,6 +71,12 @@ end
 Base.iterate(sd::SetDictionary) = iterate(sd.words)
 Base.iterate(sd::SetDictionary, state) = iterate(sd.words, state)
 Base.length(sd::SetDictionary) = length(sd.words)
+
+const AnyLetterCorrection = LetterCorrection("", "")
+
+# WARNING: This equality does not look at lettercorrection, so we don't have to exactly
+# specify the letter correction in every step.
+Base.:(==)(a::Incorrect, b::Incorrect) = a.user == b.user && a.guess == b.guess # && a.lettercorrection == b.lettercorrection
 
 @given("a dictionary") do context
     # Each row in context.datatables is an array of words,
@@ -107,7 +117,7 @@ end
     publisher = context[:publisher]
     user = context[:defaultuser]
 
-    @expect hasresponse(publisher, Incorrect(user, Guess(guess)))
+    @expect hasresponse(publisher, Incorrect(user, Guess(guess), AnyLetterCorrection))
 end
 
 @then("the response is that {String} is correct") do context, guess
@@ -129,6 +139,20 @@ end
     user = context[:defaultuser]
 
     @expect hasresponse(publisher, Correct(user, Guess(guess), SingleSolutionIndex()))
+end
+
+@then("the letters {String} are missing") do context, missingletters
+    publisher = context[:publisher]
+    response = getonlyresponse(publisher)
+
+    @expect response.lettercorrection.missings == Word(missingletters)
+end
+
+@then("the letters {String} are extra") do context, extraletters
+    publisher = context[:publisher]
+    response = getonlyresponse(publisher)
+
+    @expect response.lettercorrection.extras == Word(extraletters)
 end
 
 #

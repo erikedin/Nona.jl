@@ -54,3 +54,4 @@ Feature: Language behavior
             | ABC    | ABCD  | -       | D     |
             | ABCD   | ABC   | D       | -     |
             | ABCD   | ABCE  | D       | E     |
+            | AAAB   | AB    | AA      | -     |
