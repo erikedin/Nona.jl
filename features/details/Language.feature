@@ -37,5 +37,5 @@ Feature: Language behavior
         Given a dictionary
             | DATORSPEL |
           And a Niancat puzzle DATORSPLE
-         When Alice guesses datrospel
+         When Alice guesses datorspel
          Then the response is that DATORSPEL is correct

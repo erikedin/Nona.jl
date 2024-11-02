@@ -35,6 +35,8 @@ import Base: convert, hash, iterate, length, isless, show
 
 struct Word
     letters::String
+
+    Word(s::AbstractString) = new(uppercase(s))
 end
 
 iterate(word::Word) = iterate(word.letters)
