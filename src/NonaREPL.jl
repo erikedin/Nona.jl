@@ -29,7 +29,7 @@ import Nona.Niancat: publish!
 
 export FileDictionary
 export NiancatREPL
-export guess
+export guess, start
 
 struct FileDictionary <: Dictionary
     words::Set{Word}
@@ -62,17 +62,29 @@ function publish!(p::ConsolePublisher, response::Incorrect)
     end
 end
 
+function publish!(p::ConsolePublisher, response::CurrentPuzzle)
+    println(p.io, response.puzzle)
+end
+
 struct ThisUser <: User end
+
+struct PromptIO
+    io::IO
+end
+
+prompt(p::PromptIO) = print(p.io, "> ")
 
 struct NiancatREPL
     publisher::ConsolePublisher
     game::NiancatGame
+    promptio::PromptIO
 
     function NiancatREPL(io::IO, puzzle::Word, dictionary::Dictionary)
         publisher = ConsolePublisher(io)
         game = NiancatGame(puzzle, publisher, dictionary)
+        promptio = PromptIO(io)
 
-        new(publisher, game)
+        new(publisher, game, promptio)
     end
 end
 
@@ -85,15 +97,32 @@ function guess(replgame::NiancatREPL, word::String)
 end
 
 #
+# REPL IO
+#
+
+prompt(game::NiancatREPL) = prompt(game.promptio)
+
+function start(game::NiancatREPL)
+    # Show the puzzle at game start
+    user = ThisUser()
+    command = ShowCurrentPuzzle()
+    gameaction!(game.game, user, command)
+
+    # Start off by showing the prompt, where
+    # the user will input new commands.
+    prompt(game)
+end
+
+#
 # Generate a new game
 #
 
 function newgame(dictionary::Dictionary; io::IO = stdout)
     puzzle = generatepuzzle(dictionary)
 
-    # TODO: Make this a publishable event
-    println(io, puzzle)
-    NiancatREPL(io, puzzle, dictionary)
+    game = NiancatREPL(io, puzzle, dictionary)
+    start(game)
+    game
 end
 
 end # module NonaREPL

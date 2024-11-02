@@ -39,6 +39,7 @@ end
     context[:io] = io
 
     game = NiancatREPL(io, Word(puzzle), dictionary)
+    start(game)
     context[:game] = game
 end
 
@@ -84,7 +85,9 @@ end
     io = context[:io]
 
     seekstart(io)
-    puzzle = read(io, String)
+    output = read(io, String)
+    # Remove the prompt, as a hack to get just the puzzle
+    puzzle = replace(output, "> " => "")
 
     context[:puzzle] = Word(strip(puzzle))
 end
@@ -100,4 +103,16 @@ end
     ]
 
     @expect length(solutions) > 0
+end
+
+@then("the output ends with \"{String}\"") do context, message
+    io = context[:io]
+
+    seekstart(io)
+    output = read(io, String)
+
+    println()
+    println(output)
+
+    @expect endswith(output, "> ")
 end

@@ -6,6 +6,7 @@ Issues
     + Dictionaries could probably be moved as well
 - Create a simple REPL instead of using the Julia REPL
 - Create a simpler Hamming-distance game as well
+- Code comments and documentation
 
 # Fixed
 - FileDictionary should take an AbstractString

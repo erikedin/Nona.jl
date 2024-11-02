@@ -59,3 +59,7 @@ Feature: Niancat in the Julia REPL
         Given a REPL Niancat game with puzzle PUSSGRUKA
          When the REPL user tries the guess PUSSGRUKA
          Then the REPL does not show "För få"
+
+    Scenario: When a new game is created, a prompt is shown
+        Given a REPL Niancat game with puzzle PUSSGRUKA
+         Then the output ends with "> "

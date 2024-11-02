@@ -1,4 +1,4 @@
-#!/usr/bin/env -S julia -i
+#!/usr/bin/env -S julia
 #
 # MIT License
 #
