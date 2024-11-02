@@ -62,6 +62,73 @@ function sort(
              alg=alg, lt=lt, by=by, rev=rev, order=order)
     ))
 end
+Base.getindex(w::Word, index) = getindex(w.letters, index)
+Base.lastindex(w::Word) = lastindex(w.letters)
+
+function Base.:(-)(word1::Word, word2::Word) :: Word
+    a = sort(word1)
+    b = sort(word2)
+
+    # Example of this algorithm:
+    # word1 = BCA, word2 = ACD
+    # Sorted:
+    # a = ABC
+    # b = ACD
+    # Iterate over the letters.
+    # If a[i] == b[j], then that letter is neither
+    # missing or extra.
+    # If a[i] != b[j]:
+    #       a[i] < b[j]: Missing a[i] in b
+    #       a[i] > b[j]: Extra b[j] in b
+    #
+    # Step 1:
+    # ABC     ACD
+    # i       j
+    # Both are A, so they match. Move forward both i, j
+    #
+    # ABC     ACD
+    #  i       j
+    # B != C. The second word is missing a B, because B < C.
+    # Move forward the first word, i.
+    #
+    # ABC     ACD
+    #   i      j
+    # Both are C, so this matches.
+    # Move both indexes.
+    #
+    # ABC     ACD
+    #    i      j
+    # First word has no more letters. The remaining letters in
+    # the second word are extra.
+
+    i = 1
+    j = 1
+    length1 = length(a)
+    length2 = length(b)
+
+    missingletters = Char[]
+
+    while i <= length1 && j <= length2
+        if a[i] == b[j]
+            i += 1
+            j += 1
+        else
+            if a[i] < b[j]
+                push!(missingletters, a[i])
+                i += 1
+            else
+                # We only care about missing letters here.
+                j += 1
+            end
+        end
+    end
+
+    if i <= length1
+        append!(missingletters, a[i:end])
+    end
+
+    Word(join(missingletters))
+end
 
 abstract type Response end
 

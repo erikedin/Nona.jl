@@ -2,6 +2,10 @@ Issues
 ======
 
 - Show wrong/remaining letters when making a guess
+- Move non-Niancat-game related functionality to other modules
+    + Word can be moved out
+    + Dictionaries could probably be moved as well
+- Create a simple REPL instead of using the Julia REPL
 
 # Fixed
 - FileDictionary should take an AbstractString

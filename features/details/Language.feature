@@ -39,3 +39,18 @@ Feature: Language behavior
           And a Niancat puzzle DATORSPLE
          When Alice guesses datorspel
          Then the response is that DATORSPEL is correct
+
+    Scenario Outline: Difference between the puzzle and the guess
+        Given a puzzle <puzzle> and a <guess>
+         When finding the differences
+         Then the missing letters are <missing>
+          And the extra letters are <extra>
+
+        Examples:
+            | puzzle | guess | missing | extra |
+            | A      | B     | A       | B     |
+            | AB     | B     | A       | -     |
+            | ABC    | ABC   | -       | -     |
+            | ABC    | ABCD  | -       | D     |
+            | ABCD   | ABC   | D       | -     |
+            | ABCD   | ABCE  | D       | E     |
