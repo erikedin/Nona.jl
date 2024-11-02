@@ -6,6 +6,10 @@ Issues
     + Dictionaries could probably be moved as well
 - Create a simpler Hamming-distance game as well
 - Code comments and documentation
+- Implement commands in the REPL
+    + For getting the current puzzle
+    + For exiting
+- REPL: Handle Ctrl+D, should exit
 
 # Fixed
 - FileDictionary should take an AbstractString
