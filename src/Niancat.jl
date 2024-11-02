@@ -25,7 +25,7 @@ module Niancat
 
 export NiancatGame
 export User
-export Guess, Response, Incorrect, Correct
+export Guess, Response, Incorrect, Correct, ShowCurrentPuzzle, CurrentPuzzle
 export NiancatPublisher
 export gameaction!, publish!
 export generatepuzzle
@@ -157,10 +157,19 @@ struct NiancatGame
     end
 end
 
+#
+# Commands
+#
 
 struct Guess
     word::Word
 end
+
+struct ShowCurrentPuzzle end
+
+#
+# Responses
+#
 
 struct LetterCorrection
     missings::Word
@@ -192,6 +201,15 @@ struct Correct <: Response
     Correct(user::User, guess::Guess, index::SolutionIndex = SingleSolutionIndex()) = new(user, guess, index)
 end
 
+struct CurrentPuzzle <: Response
+    user::User
+    puzzle::Word
+end
+
+#
+# Game actions
+#
+
 function gameaction!(game::NiancatGame, user::User, guess::Guess)
     response = if guess.word in game.solutions
         solutionindex = if length(game.solutions) == 1
@@ -210,6 +228,10 @@ function gameaction!(game::NiancatGame, user::User, guess::Guess)
     end
 
     publish!(game.publisher, response)
+end
+
+function gameaction!(game::NiancatGame, user::User, ::ShowCurrentPuzzle)
+    publish!(game.publisher, CurrentPuzzle(user, game.puzzle))
 end
 
 function generatepuzzle(dictionary::Dictionary) :: Word

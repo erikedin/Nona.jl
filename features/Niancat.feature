@@ -53,6 +53,11 @@ Feature: Niancat
          When Alice guesses PUSSGURKA
          Then the response is that PUSSGURKA is correct
 
+    Scenario: Get the current puzzle
+        Given a Niancat puzzle PUSSGUKRA
+         When Alice gets the puzzle
+         Then the puzzle response is PUSSGUKRA
+
     Scenario: The first alphabetical solution has index 1
         Given a Niancat puzzle DATORSPLE
          When Alice guesses DATORSPEL

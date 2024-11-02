@@ -113,6 +113,13 @@ end
     gameaction!(game, user, guess)
 end
 
+@when("Alice gets the puzzle") do context
+    game = context[:game]
+    user = context[:defaultuser]
+
+    gameaction!(game, user, ShowCurrentPuzzle())
+end
+
 @then("the response is that {String} is incorrect") do context, guess
     publisher = context[:publisher]
     user = context[:defaultuser]
@@ -139,6 +146,13 @@ end
     user = context[:defaultuser]
 
     @expect hasresponse(publisher, Correct(user, Guess(guess), SingleSolutionIndex()))
+end
+
+@then("the puzzle response is {String}") do context, puzzle
+    publisher = context[:publisher]
+    user = context[:defaultuser]
+
+    @expect hasresponse(publisher, CurrentPuzzle(user, Word(puzzle)))
 end
 
 @then("the letters {String} are missing") do context, missingletters
