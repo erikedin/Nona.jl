@@ -36,7 +36,7 @@ end
     io = IOBuffer()
     context[:io] = io
 
-    game = NiancatREPL(io, puzzle, dictionary)
+    game = NiancatREPL(io, Word(puzzle), dictionary)
     context[:game] = game
 end
 
@@ -73,7 +73,7 @@ end
     seekstart(io)
     puzzle = read(io, String)
 
-    context[:puzzle] = strip(puzzle)
+    context[:puzzle] = Word(strip(puzzle))
 end
 
 @then("that puzzle is an anagram of a word in the dictionary") do context
@@ -83,7 +83,7 @@ end
     solutions = [
         word
         for word in dictionary
-        if Nona.isanagram(String(word), String(puzzle))
+        if Nona.isanagram(word, puzzle)
     ]
 
     @expect length(solutions) > 0

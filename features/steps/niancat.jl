@@ -56,9 +56,9 @@ Base.:(==)(::SingleSolutionIndex, ::MultipleSolutionIndex) = false
 Base.:(==)(r1::Correct, r2::Correct) = r1.user == r2.user && r1.guess == r2.guess && r1.solutionindex == r2.solutionindex
 
 struct SetDictionary <: Dictionary
-    words::Set{String}
+    words::Set{Word}
 
-    SetDictionary(words::AbstractVector{String}) = new(Set{String}(words))
+    SetDictionary(words::AbstractVector{String}) = new(Set{Word}(Word[Word(s) for s in words]))
 end
 
 Base.iterate(sd::SetDictionary) = iterate(sd.words)
@@ -79,7 +79,7 @@ end
     publisher = MockNiancatPublisher()
     dictionary = context[:dictionary]
     context[:publisher] = publisher
-    context[:game] = NiancatGame(puzzle, publisher, dictionary)
+    context[:game] = NiancatGame(Word(puzzle), publisher, dictionary)
 
     # The default user is Alice, unless otherwise stated.
     # Other users are stored in the :users map.

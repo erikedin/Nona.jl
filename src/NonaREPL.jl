@@ -30,13 +30,13 @@ export NiancatREPL
 export guess
 
 struct FileDictionary <: Dictionary
-    words::Set{String}
+    words::Set{Word}
 
     function FileDictionary(path::AbstractString)
         words = open(path, "r") do io
             readlines(io, keep=false)
         end
-        new(Set{String}(words))
+        new(Set{Word}(Word[Word(s) for s in words]))
     end
 end
 
@@ -57,7 +57,7 @@ struct NiancatREPL
     publisher::ConsolePublisher
     game::NiancatGame
 
-    function NiancatREPL(io::IO, puzzle::String, dictionary::Dictionary)
+    function NiancatREPL(io::IO, puzzle::Word, dictionary::Dictionary)
         publisher = ConsolePublisher(io)
         game = NiancatGame(puzzle, publisher, dictionary)
 

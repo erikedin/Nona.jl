@@ -29,6 +29,22 @@ export NiancatPublisher
 export gameaction!, publish!
 export Dictionary
 export SolutionIndex, SingleSolutionIndex, MultipleSolutionIndex
+export Word
+
+import Base: convert, hash, iterate, length, isless, show
+
+struct Word
+    letters::String
+end
+
+iterate(word::Word) = iterate(word.letters)
+iterate(word::Word, state) = iterate(word.letters, state)
+length(word::Word) = length(word.letters)
+convert(::Type{Word}, s::String) = Word(s)
+Base.:(==)(a::Word, b::Word) = a.letters == b.letters
+hash(w::Word, h::UInt) = hash(w.letters, h)
+isless(a::Word, b::Word) = isless(a.letters, b.letters)
+show(io::IO, w::Word) = print(io, w.letters)
 
 abstract type Response end
 
@@ -37,30 +53,31 @@ publish!(::NiancatPublisher, ::Response) =  @error("Implement me")
 
 abstract type Dictionary end
 
-sortword(word::String) = String(sort([c for c in word]))
+sortword(word::Word) = Word(String(sort([c for c in word])))
 
-isanagram(a::String, b::String) = sortword(a) == sortword(b)
+isanagram(a::Word, b::Word) = sortword(a) == sortword(b)
 
 abstract type User end
 
 struct NiancatGame
-    puzzle::String
+    puzzle::Word
     publisher::NiancatPublisher
-    solutions::Vector{String}
+    solutions::Vector{Word}
+
+    function NiancatGame(puzzle::Word, publisher::NiancatPublisher, dictionary::Dictionary)
+        solutions = Word[
+            word
+            for word in dictionary
+            if isanagram(puzzle, word)
+        ]
+        sortedsolutions = sort(solutions)
+        new(puzzle, publisher, sortedsolutions)
+    end
 end
 
-function NiancatGame(puzzle::String, publisher::NiancatPublisher, dictionary::Dictionary)
-    solutions = String[
-        word
-        for word in dictionary
-        if isanagram(puzzle, word)
-    ]
-    sortedsolutions = sort(solutions)
-    NiancatGame(puzzle, publisher, sortedsolutions)
-end
 
 struct Guess
-    word::String
+    word::Word
 end
 
 struct Incorrect <: Response
