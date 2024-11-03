@@ -31,7 +31,6 @@ Feature: REPL details and additional tests
             | SPELDATOR |
             | LEDARPOST |
 
-    @wip
     Scenario: Show the current puzzle using the "nian" command
         Given a NonaREPL game Niancat with puzzle DATORPLES
          When the player enters command mode

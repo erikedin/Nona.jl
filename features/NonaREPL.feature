@@ -75,7 +75,6 @@ Feature: NonaREPL is a terminal based front-end for the games
          When the player presses "#"
          Then the output ends with "Niancat# "
 
-    @wip
     Scenario: Show the current puzzle using the "nian" command
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
          When the player enters command mode

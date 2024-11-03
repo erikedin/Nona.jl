@@ -76,62 +76,78 @@ end
 # abstract type.
 struct ThisUser <: User end
 
-# PromptIO is a type for all different types of prompts.
-# Currently, game prompts and command prompts.
-abstract type PromptIO end
-
-struct GamePromptIO <: PromptIO
-    io::IO
-end
-
-# prompt shows a prompt for the user to input text.
-prompt(p::GamePromptIO) = print(p.io, "Niancat> ")
-
-# CommandPromptIO shows a prompt for commands.
-struct CommandPromptIO <: PromptIO
-    io::IO
-end
-
-prompt(p::CommandPromptIO) = print(p.io, "Niancat# ")
-
 #
-# NonaREPL is the more general replacement of NiancatREPL
+# The REPL has two modes:
+# - Game mode: Entering guesses
+# - Command mode: Start new games, run game specific commands
 #
 
-const GamePromptIndex = 1
-const CommandPromptIndex = 2
+const GameModeIndex = 1
+const CommandModeIndex = 2
+
+abstract type REPLMode end
+
+struct GameMode <: REPLMode
+    io::IO
+
+    GameMode(io::IO) = new(io)
+end
+prompt(p::GameMode) = print(p.io, "Niancat> ")
+
+function userinput!(::GameMode, text::String, game::NiancatGame)
+    guess = Guess(Word(text))
+    user = ThisUser()
+    gameaction!(game, user, guess)
+end
+
+struct CommandMode <: REPLMode
+    io::IO
+
+    CommandMode(io::IO) = new(io)
+end
+prompt(p::CommandMode) = print(p.io, "Niancat# ")
+
+function userinput!(::CommandMode, ::String, game::NiancatGame)
+    command = ShowCurrentPuzzle()
+    user = ThisUser()
+    gameaction!(game, user, command)
+end
+
+#
+# NonaREPL is the REPL for the games (currently only Niancat)
+#
 
 mutable struct NonaREPL
     publisher::ConsolePublisher
-    prompts::Tuple{GamePromptIO, CommandPromptIO}
+    modes::Tuple{GameMode, CommandMode}
     game::NiancatGame
-    currentprompt::Int
+    currentmode::Int
 
     function NonaREPL(dictionary::Dictionary; io::IO = stdout)
         publisher = ConsolePublisher(io)
-        gamepromptio = GamePromptIO(io)
-        commandpromptio = CommandPromptIO(io)
+        gamemode = GameMode(io)
+        commandmode = CommandMode(io)
 
         puzzle = generatepuzzle(dictionary)
         game = NiancatGame(puzzle, publisher, dictionary)
 
-        new(publisher, (gamepromptio, commandpromptio), game, GamePromptIndex)
+        new(publisher, (gamemode, commandmode), game, GameModeIndex)
     end
 
     function NonaREPL(gamefactory::Function; io::IO = stdout)
         publisher = ConsolePublisher(io)
-        gamepromptio = GamePromptIO(io)
-        commandpromptio = CommandPromptIO(io)
+        gamemode = GameMode(io)
+        commandmode = CommandMode(io)
 
         # The gamefactory is a method (::Publisher) -> Game
         game = gamefactory(publisher)
 
-        new(publisher, (gamepromptio, commandpromptio), game, GamePromptIndex)
+        new(publisher, (gamemode, commandmode), game, GameModeIndex)
     end
 end
 
 function prompt(game::NonaREPL)
-    prompt(game.prompts[game.currentprompt])
+    prompt(game.modes[game.currentmode])
 end
 
 function start(nona::NonaREPL)
@@ -147,13 +163,10 @@ end
 
 function userinput!(nona::NonaREPL, text::String)
     if text == "#"
-        nona.currentprompt = CommandPromptIndex
+        nona.currentmode = CommandModeIndex
         prompt(nona)
     else
-        guess = Guess(Word(text))
-        user = ThisUser()
-        gameaction!(nona.game, user, guess)
-
+        userinput!(nona.modes[nona.currentmode], text, nona.game)
         # Show a new prompt.
         prompt(nona)
     end
