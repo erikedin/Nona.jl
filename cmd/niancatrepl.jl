@@ -38,12 +38,8 @@ dictionarypath = open(dictionaryconfigpath, "r") do io
     strip(read(io, String))
 end
 
-using Nona.NonaREPL
+using Nona.NonaREPLs
 
 dictionary = FileDictionary(String(dictionarypath))
 
-#game = NonaREPL.newgame(dictionary)
-#
-#g = s -> guess(game, s)
-
-NonaREPL.run(dictionary)
+NonaREPLs.run(dictionary)
