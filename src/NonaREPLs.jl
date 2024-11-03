@@ -98,6 +98,8 @@ function userinput!(::GameMode, text::String, game::NiancatGame)
     guess = Guess(Word(text))
     user = ThisUser()
     gameaction!(game, user, guess)
+
+    GameModeIndex
 end
 
 struct CommandMode <: REPLMode
@@ -111,6 +113,8 @@ function userinput!(::CommandMode, ::String, game::NiancatGame)
     command = ShowCurrentPuzzle()
     user = ThisUser()
     gameaction!(game, user, command)
+
+    GameModeIndex
 end
 
 #
@@ -166,7 +170,8 @@ function userinput!(nona::NonaREPL, text::String)
         nona.currentmode = CommandModeIndex
         prompt(nona)
     else
-        userinput!(nona.modes[nona.currentmode], text, nona.game)
+        newmode = userinput!(nona.modes[nona.currentmode], text, nona.game)
+        nona.currentmode = newmode
         # Show a new prompt.
         prompt(nona)
     end

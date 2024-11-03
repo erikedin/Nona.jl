@@ -80,3 +80,9 @@ Feature: NonaREPL is a terminal based front-end for the games
          When the player enters command mode
           And the player inputs "nian"
          Then the REPL shows "PUSSGRUKA"
+
+    Scenario: Showing the puzzle changes the mode back to game mode
+        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
+         When the player enters command mode
+          And the player inputs "nian"
+         Then the output ends with "Niancat> "
