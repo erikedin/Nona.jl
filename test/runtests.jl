@@ -27,4 +27,8 @@ using Nona
 include("regression/dictionary_test.jl")
 
 parseoptions = Behavior.Gherkin.ParseOptions(use_experimental=true)
-@test runspec(pkgdir(Nona), tags="not @wip", parseoptions=parseoptions)
+@test runspec(
+    pkgdir(Nona),
+    tags="not @wip",
+    presenter=Behavior.TerseRealTimePresenter(Behavior.ColorConsolePresenter()),
+    parseoptions=parseoptions)

@@ -21,7 +21,7 @@
 # SOFTWARE.
 #
 
-module NonaREPL
+module NonaREPLs
 
 using Nona.Niancat
 
@@ -173,4 +173,4 @@ function run(dictionary::Dictionary, io::IO = stdout)
     end
 end
 
-end # module NonaREPL
+end # module NonaREPLs

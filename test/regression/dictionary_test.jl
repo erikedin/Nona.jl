@@ -21,7 +21,7 @@
 # SOFTWARE.
 #
 
-using Nona.NonaREPL
+using Nona.NonaREPLs
 
 @testset "FileDictionary" begin
 

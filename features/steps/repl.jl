@@ -24,7 +24,7 @@
 using Behavior
 using Nona.Niancat
 using Nona.Niancat: isanagram
-using Nona.NonaREPL
+using Nona.NonaREPLs
 
 @given("a dictionary in the file \"{String}\"") do context, dictionarypath
     fullpath = pkgdir(Nona, dictionarypath)
@@ -54,7 +54,7 @@ end
     dictionary = context[:dictionary]
 
     io = IOBuffer()
-    game = NonaREPL.newgame(dictionary; io=io)
+    game = NonaREPLs.newgame(dictionary; io=io)
 
     context[:game] = game
     context[:io] = io

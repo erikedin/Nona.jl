@@ -23,6 +23,6 @@
 module Nona
 
 include("Niancat.jl")
-include("NonaREPL.jl")
+include("NonaREPLs.jl")
 
 end # module Nona
