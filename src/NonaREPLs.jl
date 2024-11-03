@@ -83,97 +83,6 @@ end
 # prompt shows a prompt for the user to input text.
 prompt(p::PromptIO) = print(p.io, "Niancat> ")
 
-struct NiancatREPL
-    publisher::ConsolePublisher
-    game::NiancatGame
-    promptio::PromptIO
-
-    function NiancatREPL(io::IO, puzzle::Word, dictionary::Dictionary)
-        publisher = ConsolePublisher(io)
-        game = NiancatGame(puzzle, publisher, dictionary)
-        promptio = PromptIO(io)
-
-        new(publisher, game, promptio)
-    end
-end
-
-# Override show to avoid displaying the solutions.
-Base.show(io::IO, replgame::NiancatREPL) = println(io, "NiancatRepl($(replgame.game.puzzle))")
-
-"""
-    guess(replgame::NiancatREPL, word::String)
-
-The player guesses the word in `word` as the solution.
-"""
-function guess(replgame::NiancatREPL, word::String)
-    guess = Guess(word)
-    user = ThisUser()
-    gameaction!(replgame.game, user, guess)
-end
-
-#
-# REPL IO
-#
-
-prompt(game::NiancatREPL) = prompt(game.promptio)
-
-"""
-    start(game::NiancatREPL)
-
-The game starts by showing the puzzle, then an input prompt.
-"""
-function start(game::NiancatREPL)
-    # Show the puzzle at game start
-    user = ThisUser()
-    command = ShowCurrentPuzzle()
-    gameaction!(game.game, user, command)
-
-    # Start off by showing the prompt, where
-    # the user will input new commands.
-    prompt(game)
-end
-
-"""
-    userinput!(game::NiancatREPL, text::String)
-
-The user inputs `text` as the next command to the game.
-"""
-function userinput!(game::NiancatREPL, text::String)
-    guess(game, text)
-    prompt(game)
-end
-
-#
-# Generate a new game
-#
-
-"""
-    newgame(dictionary::Dictionary; io::IO = stdout)
-
-Create a new NiancatREPL game with a randomly generated puzzle.
-"""
-function newgame(dictionary::Dictionary; io::IO = stdout)
-    puzzle = generatepuzzle(dictionary)
-
-    game = NiancatREPL(io, puzzle, dictionary)
-    start(game)
-    game
-end
-
-"""
-    run(dictionary::Dictionary, io::IO = stdout)
-
-Run a REPL in a loop until the user exits.
-"""
-function run(dictionary::Dictionary, io::IO = stdout)
-    game = newgame(dictionary; io=io)
-
-    while true
-        text = readline(io)
-        userinput!(game, text)
-    end
-end
-
 #
 # NonaREPL is the more general replacement of NiancatREPL
 #
@@ -204,14 +113,55 @@ struct NonaREPL
     end
 end
 
+prompt(game::NonaREPL) = prompt(game.promptio)
+
 function start(nona::NonaREPL)
-    prompt(nona.promptio)
+    # Show the puzzle at game start
+    user = ThisUser()
+    command = ShowCurrentPuzzle()
+    gameaction!(nona.game, user, command)
+
+    # Start off by showing the prompt, where
+    # the user will input new commands.
+    prompt(nona)
 end
 
 function userinput!(nona::NonaREPL, text::String)
     guess = Guess(Word(text))
     user = ThisUser()
     gameaction!(nona.game, user, guess)
+
+    # Show a new prompt.
+    prompt(nona)
+end
+
+#
+# Generate a new game
+#
+
+"""
+    newgame(dictionary::Dictionary; io::IO = stdout)
+
+Create a new NonaREPL game with a randomly generated puzzle.
+"""
+function newgame(dictionary::Dictionary; io::IO = stdout)
+    game = NonaREPL(dictionary; io=io)
+    start(game)
+    game
+end
+
+"""
+    run(dictionary::Dictionary, io::IO = stdout)
+
+Run a REPL in a loop until the user exits.
+"""
+function run(dictionary::Dictionary, io::IO = stdout)
+    game = newgame(dictionary; io=io)
+
+    while true
+        text = readline(io)
+        userinput!(game, text)
+    end
 end
 
 end # module NonaREPLs

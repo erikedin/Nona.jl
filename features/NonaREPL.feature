@@ -44,6 +44,32 @@ Feature: NonaREPL is a terminal based front-end for the games
          When the REPL user tries the guess PUSSGUKAR
          Then the REPL shows "PUSSGUKAR är inte korrekt."
 
+    Scenario: Start a new game with a randomly generated puzzle
+        When a new NonaREPL game is generated
+        Then a puzzle is shown
+         And that puzzle is an anagram of a word in the dictionary
+
+    Scenario: Incorrect guesses show extra and missing letters
+        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
+         When the REPL user tries the guess PUSSGRUXY
+         Then the REPL shows "För många: XY"
+          And the REPL shows "För få   : AK"
+
+    Scenario: If there are no extra letters, it is not shown
+        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
+         When the REPL user tries the guess PUSSGRUKA
+         Then the REPL does not show "För många"
+
+    Scenario: If there are no missing letters, it is not shown
+        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
+         When the REPL user tries the guess PUSSGRUKA
+         Then the REPL does not show "För få"
+
+    Scenario: Guess incorrectly, shows the next prompt
+        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
+         When the REPL user tries the guess PUSSAGURK
+         Then the output ends with "> "
+
     @wip
     Scenario: Entering command mode
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA

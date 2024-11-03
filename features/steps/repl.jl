@@ -49,7 +49,7 @@ end
     userinput!(game, word)
 end
 
-@when("a new NiancatREPL game is generated") do context
+@when("a new NonaREPL game is generated") do context
     dictionary = context[:dictionary]
 
     io = IOBuffer()
