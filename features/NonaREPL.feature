@@ -28,7 +28,7 @@ Feature: NonaREPL is a terminal based front-end for the games
 
     Scenario: The default game is Niancat
         When NonaREPL is started
-        Then the output ends with "Niancat>"
+        Then the output ends with "Niancat> "
 
     Scenario: The prompt includes the game name
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
@@ -70,7 +70,6 @@ Feature: NonaREPL is a terminal based front-end for the games
          When the REPL user tries the guess PUSSAGURK
          Then the output ends with "> "
 
-    @wip
     Scenario: Entering command mode
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
          When the player presses "#"

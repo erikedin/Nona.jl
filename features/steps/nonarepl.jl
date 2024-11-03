@@ -57,6 +57,13 @@ end
 end
 
 @when("the player enters command mode") do context
+    # Clear the current output. The reason is that we would like to check
+    # that the puzzle has been printed some time after this, for instance.
+    # However, the puzzle is printed at the start for Niancat. So we need
+    # to clear it, so that we can check that it is really printed after this.
+    io = context[:io]
+    mark(io)
+
     game = context[:game]
     userinput!(game, "#")
 end

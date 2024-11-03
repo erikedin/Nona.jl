@@ -64,7 +64,12 @@ end
 
     # The stream position is at the end, after all output has been written.
     # Seek to the start so it can be read from the beginning.
-    seekstart(io)
+    # Or, if there is a mark on the stream, seek to that.
+    if ismarked(io)
+        reset(io)
+    else
+        seekstart(io)
+    end
 
     output = read(io, String)
     @expect contains(output, message)
@@ -111,5 +116,5 @@ end
     seekstart(io)
     output = read(io, String)
 
-    @expect endswith(output, "> ")
+    @expect endswith(output, message)
 end

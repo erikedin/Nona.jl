@@ -76,44 +76,63 @@ end
 # abstract type.
 struct ThisUser <: User end
 
-struct PromptIO
+# PromptIO is a type for all different types of prompts.
+# Currently, game prompts and command prompts.
+abstract type PromptIO end
+
+struct GamePromptIO <: PromptIO
     io::IO
 end
 
 # prompt shows a prompt for the user to input text.
-prompt(p::PromptIO) = print(p.io, "Niancat> ")
+prompt(p::GamePromptIO) = print(p.io, "Niancat> ")
+
+# CommandPromptIO shows a prompt for commands.
+struct CommandPromptIO <: PromptIO
+    io::IO
+end
+
+prompt(p::CommandPromptIO) = print(p.io, "Niancat# ")
 
 #
 # NonaREPL is the more general replacement of NiancatREPL
 #
 
-struct NonaREPL
+const GamePromptIndex = 1
+const CommandPromptIndex = 2
+
+mutable struct NonaREPL
     publisher::ConsolePublisher
-    promptio::PromptIO
+    prompts::Tuple{GamePromptIO, CommandPromptIO}
     game::NiancatGame
+    currentprompt::Int
 
     function NonaREPL(dictionary::Dictionary; io::IO = stdout)
         publisher = ConsolePublisher(io)
-        promptio = PromptIO(io)
+        gamepromptio = GamePromptIO(io)
+        commandpromptio = CommandPromptIO(io)
 
         puzzle = generatepuzzle(dictionary)
         game = NiancatGame(puzzle, publisher, dictionary)
 
-        new(publisher, promptio, game)
+        new(publisher, (gamepromptio, commandpromptio), game, GamePromptIndex)
     end
 
     function NonaREPL(gamefactory::Function; io::IO = stdout)
         publisher = ConsolePublisher(io)
-        promptio = PromptIO(io)
+        gamepromptio = GamePromptIO(io)
+        commandpromptio = CommandPromptIO(io)
 
         # The gamefactory is a method (::Publisher) -> Game
         game = gamefactory(publisher)
 
-        new(publisher, promptio, game)
+        new(publisher, (gamepromptio, commandpromptio), game, GamePromptIndex)
     end
 end
 
-prompt(game::NonaREPL) = prompt(game.promptio)
+function prompt(game::NonaREPL)
+    prompt(game.prompts[game.currentprompt])
+end
 
 function start(nona::NonaREPL)
     # Show the puzzle at game start
@@ -127,12 +146,17 @@ function start(nona::NonaREPL)
 end
 
 function userinput!(nona::NonaREPL, text::String)
-    guess = Guess(Word(text))
-    user = ThisUser()
-    gameaction!(nona.game, user, guess)
+    if text == "#"
+        nona.currentprompt = CommandPromptIndex
+        prompt(nona)
+    else
+        guess = Guess(Word(text))
+        user = ThisUser()
+        gameaction!(nona.game, user, guess)
 
-    # Show a new prompt.
-    prompt(nona)
+        # Show a new prompt.
+        prompt(nona)
+    end
 end
 
 #
