@@ -30,6 +30,7 @@ import Nona.Niancat: publish!
 export FileDictionary
 export NiancatREPL
 export guess, start, userinput!
+export NonaREPL
 
 # FileDictionary reads words from a file, where each word is on its own line.
 struct FileDictionary <: Dictionary
@@ -80,7 +81,7 @@ struct PromptIO
 end
 
 # prompt shows a prompt for the user to input text.
-prompt(p::PromptIO) = print(p.io, "> ")
+prompt(p::PromptIO) = print(p.io, "Niancat> ")
 
 struct NiancatREPL
     publisher::ConsolePublisher
@@ -171,6 +172,46 @@ function run(dictionary::Dictionary, io::IO = stdout)
         text = readline(io)
         userinput!(game, text)
     end
+end
+
+#
+# NonaREPL is the more general replacement of NiancatREPL
+#
+
+struct NonaREPL
+    publisher::ConsolePublisher
+    promptio::PromptIO
+    game::NiancatGame
+
+    function NonaREPL(dictionary::Dictionary; io::IO = stdout)
+        publisher = ConsolePublisher(io)
+        promptio = PromptIO(io)
+
+        puzzle = generatepuzzle(dictionary)
+        game = NiancatGame(puzzle, publisher, dictionary)
+
+        new(publisher, promptio, game)
+    end
+
+    function NonaREPL(gamefactory::Function; io::IO = stdout)
+        publisher = ConsolePublisher(io)
+        promptio = PromptIO(io)
+
+        # The gamefactory is a method (::Publisher) -> Game
+        game = gamefactory(publisher)
+
+        new(publisher, promptio, game)
+    end
+end
+
+function start(nona::NonaREPL)
+    prompt(nona.promptio)
+end
+
+function userinput!(nona::NonaREPL, text::String)
+    guess = Guess(Word(text))
+    user = ThisUser()
+    gameaction!(nona.game, user, guess)
 end
 
 end # module NonaREPLs

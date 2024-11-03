@@ -46,7 +46,6 @@ end
 @when("the REPL user tries the guess {String}") do context, word
     game = context[:game]
 
-    #guess(game, word)
     userinput!(game, word)
 end
 
@@ -88,7 +87,7 @@ end
     seekstart(io)
     output = read(io, String)
     # Remove the prompt, as a hack to get just the puzzle
-    puzzle = replace(output, "> " => "")
+    puzzle = replace(output, "Niancat> " => "")
 
     context[:puzzle] = Word(strip(puzzle))
 end
