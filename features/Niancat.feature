@@ -58,6 +58,11 @@ Feature: Niancat
          When Alice gets the puzzle
          Then the puzzle response is PUSSGUKRA
 
+    Scenario: Showing the puzzle also includes how many solutions there are
+        Given a Niancat puzzle DATORSPLE
+         When Alice gets the puzzle
+         Then the puzzle response includes that there are 2 solutions
+
     Scenario: The first alphabetical solution has index 1
         Given a Niancat puzzle DATORSPLE
          When Alice guesses DATORSPEL

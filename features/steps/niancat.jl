@@ -152,7 +152,16 @@ end
     publisher = context[:publisher]
     user = context[:defaultuser]
 
-    @expect hasresponse(publisher, CurrentPuzzle(user, Word(puzzle)))
+    response = getonlyresponse(publisher)
+    @expect response.puzzle == Word(puzzle)
+end
+
+@then("the puzzle response includes that there are {Int} solutions") do context, n
+    publisher = context[:publisher]
+    user = context[:defaultuser]
+
+    response = getonlyresponse(publisher)
+    @expect response.n_solutions == n
 end
 
 @then("the letters {String} are missing") do context, missingletters

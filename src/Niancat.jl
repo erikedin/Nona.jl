@@ -235,6 +235,7 @@ end
 struct CurrentPuzzle <: Response
     user::User
     puzzle::Word
+    n_solutions::Int
 end
 
 #
@@ -272,7 +273,7 @@ end
 Show the current puzzle to the user.
 """
 function gameaction!(game::NiancatGame, user::User, ::ShowCurrentPuzzle)
-    publish!(game.publisher, CurrentPuzzle(user, game.puzzle))
+    publish!(game.publisher, CurrentPuzzle(user, game.puzzle, length(game.solutions)))
 end
 
 """
