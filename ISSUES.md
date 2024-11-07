@@ -22,3 +22,4 @@ Issues
 - Show wrong/remaining letters when making a guess
 - Create a simple REPL instead of using the Julia REPL
 - Code comments
+- Show the number of solutions

@@ -40,6 +40,21 @@ using Nona.NonaREPLs
     context[:game] = nona
 end
 
+@when("starting a NonaREPL game Niancat with puzzle {String}") do context, puzzle
+    # Niancat takes a publisher in the constructor method, but that publisher
+    # is created by NonaREPL, so we need to make a factory method.
+    dictionary = context[:dictionary]
+    io = IOBuffer()
+    context[:io] = io
+
+    niancatfactory = publisher -> NiancatGame(Word(puzzle), publisher, dictionary)
+
+    nona = NonaREPL(niancatfactory; io=io)
+    start(nona)
+
+    context[:game] = nona
+end
+
 @when("NonaREPL is started") do context
     io = IOBuffer()
     context[:io] = io

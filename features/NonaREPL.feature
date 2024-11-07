@@ -86,3 +86,22 @@ Feature: NonaREPL is a terminal based front-end for the games
          When the player enters command mode
           And the player inputs "nian"
          Then the output ends with "Niancat> "
+
+    Scenario: Nona shows the number of solutions when starting a new game
+        Given a dictionary
+            | DATORSPEL |
+            | LEDARPOST |
+            | SPELDATOR |
+            | REPSOLDAT |
+            | PUSSGURKA |
+            | ORDPUSSEL |
+         When starting a NonaREPL game Niancat with puzzle DATORSPLE
+         Then the REPL shows "4"
+
+    Scenario: Nona does not show the number of solutions when there is only one
+        Given a dictionary
+            | DATORSPEL |
+            | PUSSGURKA |
+            | ORDPUSSEL |
+         When starting a NonaREPL game Niancat with puzzle DATORSPLE
+         Then the REPL does not show "1"

@@ -69,6 +69,10 @@ end
 
 function publish!(p::ConsolePublisher, response::CurrentPuzzle)
     println(p.io, response.puzzle)
+
+    if response.n_solutions > 1
+        println(p.io, "Pusslet har $(response.n_solutions) lösningar!")
+    end
 end
 
 # Since the REPL is a single-user game, there is no need to distinguish

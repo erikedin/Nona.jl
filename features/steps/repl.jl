@@ -90,9 +90,8 @@ end
     io = context[:io]
 
     seekstart(io)
-    output = read(io, String)
-    # Remove the prompt, as a hack to get just the puzzle
-    puzzle = replace(output, "Niancat> " => "")
+    # Take only the first line, as that's the puzzle.
+    puzzle = readline(io)
 
     context[:puzzle] = Word(strip(puzzle))
 end
