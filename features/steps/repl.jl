@@ -93,7 +93,7 @@ end
 @then("a puzzle is shown") do context
     io = context[:io]
 
-    seekstart(io)
+    seekoutput(io)
     # Take only the first line, as that's the puzzle.
     puzzle = readline(io)
 

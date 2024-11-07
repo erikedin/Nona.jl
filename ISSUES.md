@@ -11,6 +11,7 @@ Issues
 - REPL: Handle Ctrl+D, should exit
 - Rename User to Player
 - Documentation
+- Show the solutions to the previous puzzle when starting a new game
 
 # Fixed
 - FileDictionary should take an AbstractString
@@ -23,3 +24,4 @@ Issues
 - Create a simple REPL instead of using the Julia REPL
 - Code comments
 - Show the number of solutions
+- Starting a new game in the REPL

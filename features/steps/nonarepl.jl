@@ -43,7 +43,7 @@ end
 
     niancatfactory = publisher -> NiancatGame(Word(puzzle), publisher, dictionary)
 
-    nona = NonaREPL(niancatfactory; io=io)
+    nona = NonaREPL(niancatfactory, dictionary; io=io)
     start(nona)
 
     context[:game] = nona
@@ -58,7 +58,7 @@ end
 
     niancatfactory = publisher -> NiancatGame(Word(puzzle), publisher, dictionary)
 
-    nona = NonaREPL(niancatfactory; io=io)
+    nona = NonaREPL(niancatfactory, dictionary; io=io)
     start(nona)
 
     context[:game] = nona

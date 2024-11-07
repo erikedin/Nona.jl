@@ -105,3 +105,10 @@ Feature: NonaREPL is a terminal based front-end for the games
             | ORDPUSSEL |
          When starting a NonaREPL game Niancat with puzzle DATORSPLE
          Then the REPL does not show "1"
+
+    Scenario: Start a new game
+        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
+         When the player enters command mode
+          And the player inputs "ny"
+         Then a puzzle is shown
+          And that puzzle is an anagram of a word in the dictionary
