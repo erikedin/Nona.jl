@@ -112,3 +112,27 @@ Feature: NonaREPL is a terminal based front-end for the games
           And the player inputs "ny"
          Then a puzzle is shown
           And that puzzle is an anagram of a word in the dictionary
+
+    @wip
+    Scenario: Starting a new game shows the solutions to the previous puzzle
+        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
+         When the player enters command mode
+          And the player inputs "ny"
+         Then the REPL shows "PUSSGURKA"
+
+    @wip
+    Scenario: Starting a new game shows all solutions to the previous puzzle
+        Given a dictionary
+            | DATORSPEL |
+            | LEDARPOST |
+            | SPELDATOR |
+            | REPSOLDAT |
+            | PUSSGURKA |
+            | ORDPUSSEL |
+          And a NonaREPL game Niancat with puzzle DATORSPLE
+         When the player enters command mode
+          And the player inputs "ny"
+         Then the REPL shows "DATORSPEL"
+          And the REPL shows "SPELDATOR"
+          And the REPL shows "LEDARPOST"
+          And the REPL shows "REPSOLDAT"

@@ -43,6 +43,13 @@ Feature: REPL details and additional tests
           And the player inputs "nonsense"
          Then the REPL shows "Okänt kommando: nonsense"
 
+    @wip
+    Scenario: When using an invalid command, you remain in command mode
+        Given a NonaREPL game Niancat with puzzle DATORPLES
+         When the player enters command mode
+          And the player inputs "nonsense"
+         Then the output ends with "Niancat# "
+
     Scenario: Using an invalid command does not show the puzzle
         Given a NonaREPL game Niancat with puzzle DATORPLES
          When the player enters command mode
