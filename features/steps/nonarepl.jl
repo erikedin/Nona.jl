@@ -25,6 +25,15 @@ using Behavior
 using Nona.Niancat
 using Nona.NonaREPLs
 
+function clearoutput(context)
+    # Clear the current output. The reason is that we would like to check
+    # that the puzzle has been printed some time after this, for instance.
+    # However, the puzzle is printed at the start for Niancat. So we need
+    # to clear it, so that we can check that it is really printed after this.
+    io = context[:io]
+    mark(io)
+end
+
 @given("a NonaREPL game Niancat with puzzle {String}") do context, puzzle
     # Niancat takes a publisher in the constructor method, but that publisher
     # is created by NonaREPL, so we need to make a factory method.
@@ -76,14 +85,15 @@ end
     # that the puzzle has been printed some time after this, for instance.
     # However, the puzzle is printed at the start for Niancat. So we need
     # to clear it, so that we can check that it is really printed after this.
-    io = context[:io]
-    mark(io)
+    clearoutput(context)
 
     game = context[:game]
     userinput!(game, "#")
 end
 
 @when("the player inputs \"{String}\"") do context, command
+    clearoutput(context)
+
     game = context[:game]
     userinput!(game, command)
 end

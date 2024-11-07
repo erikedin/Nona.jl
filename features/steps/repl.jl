@@ -26,6 +26,17 @@ using Nona.Niancat
 using Nona.Niancat: isanagram
 using Nona.NonaREPLs
 
+function seekoutput(io::IO)
+    # The stream position is at the end, after all output has been written.
+    # Seek to the start so it can be read from the beginning.
+    # Or, if there is a mark on the stream, seek to that.
+    if ismarked(io)
+        reset(io)
+    else
+        seekstart(io)
+    end
+end
+
 @given("a dictionary in the file \"{String}\"") do context, dictionarypath
     fullpath = pkgdir(Nona, dictionarypath)
     dictionary = FileDictionary(fullpath)
@@ -62,14 +73,7 @@ end
 @then("the REPL shows \"{String}\"") do context, message
     io = context[:io]
 
-    # The stream position is at the end, after all output has been written.
-    # Seek to the start so it can be read from the beginning.
-    # Or, if there is a mark on the stream, seek to that.
-    if ismarked(io)
-        reset(io)
-    else
-        seekstart(io)
-    end
+    seekoutput(io)
 
     output = read(io, String)
     @expect contains(output, message)
@@ -79,8 +83,8 @@ end
     io = context[:io]
 
     # The stream position is at the end, after all output has been written.
-    # Seek to the start so it can be read from the beginning.
-    seekstart(io)
+    # Seek to the start or a mark so it can be read from the beginning.
+    seekoutput(io)
 
     output = read(io, String)
     @expect !contains(output, message)

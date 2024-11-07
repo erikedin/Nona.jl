@@ -36,3 +36,15 @@ Feature: REPL details and additional tests
          When the player enters command mode
           And the player inputs "nian"
          Then the REPL shows "DATORPLES"
+
+    Scenario: Using an invalid command shows an error
+        Given a NonaREPL game Niancat with puzzle DATORPLES
+         When the player enters command mode
+          And the player inputs "nonsense"
+         Then the REPL shows "Okänt kommando: nonsense"
+
+    Scenario: Using an invalid command does not show the puzzle
+        Given a NonaREPL game Niancat with puzzle DATORPLES
+         When the player enters command mode
+          And the player inputs "nonsense"
+         Then the REPL does not show "DATORPLES"

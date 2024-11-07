@@ -113,10 +113,14 @@ struct CommandMode <: REPLMode
 end
 prompt(p::CommandMode) = print(p.io, "Niancat# ")
 
-function userinput!(::CommandMode, ::String, game::NiancatGame)
-    command = ShowCurrentPuzzle()
-    user = ThisUser()
-    gameaction!(game, user, command)
+function userinput!(mode::CommandMode, text::String, game::NiancatGame)
+    if text == "nian"
+        command = ShowCurrentPuzzle()
+        user = ThisUser()
+        gameaction!(game, user, command)
+    else
+        println(mode.io, "Okänt kommando: $(text)")
+    end
 
     GameModeIndex
 end
