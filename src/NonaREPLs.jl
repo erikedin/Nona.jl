@@ -88,6 +88,7 @@ struct ThisUser <: User end
 
 struct NewGameAction end
 struct BackToGameModeAction end
+struct ExitAction end
 
 const GameModeIndex = 1
 const CommandModeIndex = 2
@@ -125,6 +126,8 @@ function userinput!(mode::CommandMode, text::String, game::NiancatGame)
         [BackToGameModeAction()]
     elseif text == "ny"
         [BackToGameModeAction(), NewGameAction()]
+    elseif text == "avsluta"
+        [ExitAction()]
     else
         println(mode.io, "Okänt kommando: $(text)")
         []
@@ -195,6 +198,10 @@ end
 function doaction(nona::NonaREPL, ::NewGameAction)
     nona.game = createnewgame(nona.dictionary, nona.publisher)
     showpuzzle(nona)
+end
+
+function doaction(nona::NonaREPL, ::ExitAction)
+    exit(0)
 end
 
 function userinput!(nona::NonaREPL, text::String)

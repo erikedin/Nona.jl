@@ -5,9 +5,6 @@ Issues
     + Word can be moved out
     + Dictionaries could probably be moved as well
 - Create a simpler Hamming-distance game as well
-- Implement commands in the REPL
-    + For getting the current puzzle
-    + For exiting
 - REPL: Handle Ctrl+D, should exit
 - Rename User to Player
 - Documentation
@@ -26,3 +23,6 @@ Issues
 - Show the number of solutions
 - Starting a new game in the REPL
 - Change the config path to .config/nonarepl
+- Implement commands in the REPL
+    + For getting the current puzzle
+    + For exiting
