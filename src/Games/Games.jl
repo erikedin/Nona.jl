@@ -26,11 +26,15 @@ module Games
 import Base: convert, hash, iterate, length, isless, show, sort
 
 export Player, Response, Dictionary
+export GameCommand, Game, gameaction!
 export Word
 
 abstract type Player end
 abstract type Response end
 abstract type Dictionary end
+abstract type GameCommand end
+abstract type Game end
+gameaction!(::Game, ::Player, ::GameCommand) = @error("Implement me")
 
 # Word is a normalized string that is case-insensitive, and
 # ignores some diacritics, in a Swedish-specific manner.

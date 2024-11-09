@@ -27,13 +27,14 @@ export NiancatGame
 export Guess, Response, Incorrect, Correct, ShowCurrentPuzzle, CurrentPuzzle
 export ShowSolutions, Solutions
 export NiancatPublisher
-export gameaction!, publish!
+export publish!
 export generatepuzzle
 export Dictionary
 export SolutionIndex, SingleSolutionIndex, MultipleSolutionIndex
 export LetterCorrection
 
 using Nona.Games
+import Nona.Games: gameaction!
 
 
 """
@@ -119,7 +120,7 @@ publish!(::NiancatPublisher, ::Response) =  @error("Implement me")
 
 isanagram(a::Word, b::Word) = sort(a) == sort(b)
 
-struct NiancatGame
+struct NiancatGame <: Game
     puzzle::Word
     publisher::NiancatPublisher
     solutions::Vector{Word}
@@ -146,13 +147,13 @@ end
 # Commands
 #
 
-struct Guess
+struct Guess <: GameCommand
     word::Word
 end
 
-struct ShowCurrentPuzzle end
+struct ShowCurrentPuzzle  <: GameCommand end
 
-struct ShowSolutions end
+struct ShowSolutions <: GameCommand end
 
 #
 # Responses
