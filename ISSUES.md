@@ -12,7 +12,6 @@ Issues
 - Rename User to Player
 - Documentation
 - Show the solutions to the previous puzzle when starting a new game
-- Change the config path to .config/nonarepl
 
 # Fixed
 - FileDictionary should take an AbstractString
@@ -26,3 +25,4 @@ Issues
 - Code comments
 - Show the number of solutions
 - Starting a new game in the REPL
+- Change the config path to .config/nonarepl

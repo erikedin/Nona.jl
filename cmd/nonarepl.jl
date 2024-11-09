@@ -31,7 +31,7 @@ Pkg.instantiate()
 
 # The dictionarypath.txt config file contains the path to the dictionary.
 # It is not the dictionary itself.
-dictionaryconfigpath = expanduser("~/.config/niancatrepl/dictionarypath.txt")
+dictionaryconfigpath = expanduser("~/.config/nonarepl/dictionarypath.txt")
 
 # Read the dictionary path from the config file.
 dictionarypath = open(dictionaryconfigpath, "r") do io
