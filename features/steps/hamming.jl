@@ -19,11 +19,28 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
-module Nona
+using Behavior
+using Nona.Hamming
 
-include("Niancat.jl")
-include("Hamming.jl")
-include("NonaREPLs.jl")
+struct MockHammingPublisher <: Hamming.Publisher
+    io::IO
+end
 
-end # module Nona
+@given("a Hamming puzzle {String}") do context, puzzle
+    io = IOBuffer()
+    context[:io] = io
+
+    publisher = MockHammingPublisher(io)
+    game = HammingGame(publisher, puzzle)
+
+    context[:publisher] = publisher
+    context[:game] = game
+
+    # The default user is Alice, unless otherwise stated.
+    # Other users are stored in the :users map.
+    alice = NickUser("Alice")
+    context[:users] = Dict{String, User}(["Alice" => alice])
+    context[:defaultuser] = alice
+end

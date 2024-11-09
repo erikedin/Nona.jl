@@ -19,11 +19,20 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
-module Nona
+module Hamming
 
-include("Niancat.jl")
-include("Hamming.jl")
-include("NonaREPLs.jl")
+export Publisher
+export HammingGame
 
-end # module Nona
+abstract type Publisher end
+
+struct HammingGame
+    publisher::Publisher
+    puzzle::String
+end
+
+#gameaction!(game::HammingGame, user::User, guess::Guess) = nothing
+
+end
