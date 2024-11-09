@@ -24,19 +24,20 @@
 module Hamming
 
 using Nona.Games
-import Nona.Games: gameaction!
+import Nona.Games: gameaction!, publish!
 
-export Publisher
+export HammingPublisher
 export HammingGame
 
-abstract type Publisher end
+abstract type HammingPublisher <: Publisher end
 
 #
-# Game commands
+# Responses
 #
 
-struct Guess <: GameCommand
-    word::Word
+struct Correct <: Response
+    player::Player
+    guess::Guess
 end
 
 #
@@ -49,6 +50,9 @@ struct HammingGame <: Game
 end
 
 
-gameaction!(game::HammingGame, player::Player, guess::Guess) = nothing
+function gameaction!(game::HammingGame, player::Player, guess::Guess)
+    response = Correct(player, guess)
+    publish!(game.publisher, response)
+end
 
 end

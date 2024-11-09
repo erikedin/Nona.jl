@@ -22,17 +22,29 @@
 #
 
 using Behavior
+using Nona.Games
 using Nona.Games.Hamming
+import Nona.Games: publish!
 
-struct MockHammingPublisher <: Hamming.Publisher
-    io::IO
+struct MockHammingPublisher <: HammingPublisher
+    responses::Vector{Response}
+
+    MockHammingPublisher() = new(Response[])
+end
+
+function publish!(publisher::MockHammingPublisher, response::Response)
+    push!(publisher.responses, response)
+end
+
+function getonlyresponse(publisher::MockHammingPublisher) :: Response
+    only(publisher.responses)
 end
 
 @given("a Hamming puzzle {String}") do context, puzzle
     io = IOBuffer()
     context[:io] = io
 
-    publisher = MockHammingPublisher(io)
+    publisher = MockHammingPublisher()
     game = HammingGame(publisher, puzzle)
 
     context[:publisher] = publisher
@@ -43,4 +55,12 @@ end
     alice = NickPlayer("Alice")
     context[:players] = Dict{String, Player}(["Alice" => alice])
     context[:defaultplayer] = alice
+end
+
+@then("the Hamming response is that {String} is correct") do context, guess
+    publisher = context[:publisher]
+    player = context[:defaultplayer]
+
+    response = getonlyresponse(publisher)
+    @expect response == Hamming.Correct(player, Guess(guess))
 end

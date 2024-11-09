@@ -24,7 +24,7 @@
 module Niancat
 
 export NiancatGame
-export Guess, Response, Incorrect, Correct, ShowCurrentPuzzle, CurrentPuzzle
+export Response, Incorrect, Correct, ShowCurrentPuzzle, CurrentPuzzle
 export ShowSolutions, Solutions
 export NiancatPublisher
 export publish!
@@ -34,7 +34,7 @@ export SolutionIndex, SingleSolutionIndex, MultipleSolutionIndex
 export LetterCorrection
 
 using Nona.Games
-import Nona.Games: gameaction!
+import Nona.Games: gameaction!, publish!
 
 
 """
@@ -115,8 +115,8 @@ function Base.:(-)(word1::Word, word2::Word) :: Word
     Word(join(missingletters))
 end
 
-abstract type NiancatPublisher end
-publish!(::NiancatPublisher, ::Response) =  @error("Implement me")
+abstract type NiancatPublisher <: Publisher end
+publish!(::NiancatPublisher, ::Response) = @error("Implement me")
 
 isanagram(a::Word, b::Word) = sort(a) == sort(b)
 
@@ -146,10 +146,6 @@ end
 #
 # Commands
 #
-
-struct Guess <: GameCommand
-    word::Word
-end
 
 struct ShowCurrentPuzzle  <: GameCommand end
 

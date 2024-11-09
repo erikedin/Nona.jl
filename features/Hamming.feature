@@ -21,7 +21,6 @@
 # SOFTWARE.
 #
 
-@wip
 Feature: Hamming distance game
     The game is to guess a word, and only the length of the word and the
     Hamming distance to any guess is known.
@@ -39,23 +38,27 @@ Feature: Hamming distance game
     Scenario: A correct guess has Hamming distance 0
         Given a Hamming puzzle DATORSPEL
          When Alice guesses DATORSPEL
-         Then the response is that DATORSPEL is correct
+         Then the Hamming response is that DATORSPEL is correct
 
+    @wip
     Scenario: Get the current puzzle
         Given a Hamming puzzle PUSSGURKA
          When Alice gets the Hamming puzzle
          Then the Hamming puzzle response is "9"
 
+    @wip
     Scenario: Get the current puzzle
         Given a Hamming puzzle LEKA
          When Alice gets the Hamming puzzle
          Then the Hamming puzzle response is "4"
 
+    @wip
     Scenario: A guess with only one different letter has distance 1
         Given a Hamming puzzle DATORSPEL
          When Alice guesses DATORSPEX
          Then the response is that the Hamming distance is 1
 
+    @wip
     Scenario: Guesses must be the same length as the puzzle
         Given a Hamming puzzle DATORSPEL
          When Alice guesses DATORSPE

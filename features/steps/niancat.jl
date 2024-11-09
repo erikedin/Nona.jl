@@ -26,7 +26,7 @@ using Nona.Games
 using Nona.Games.Niancat
 using Nona.Games.Niancat: isanagram
 
-import Nona.Games.Niancat: publish!
+import Nona.Games: publish!
 
 # This is the most basic type of player, where the player is identified by a single
 # string, which is also the display name.

@@ -25,16 +25,20 @@ module Games
 
 import Base: convert, hash, iterate, length, isless, show, sort
 
-export Player, Response, Dictionary
+export Player, Response, Dictionary, Publisher
 export GameCommand, Game, gameaction!
 export Word
+export Guess
 
 abstract type Player end
-abstract type Response end
 abstract type Dictionary end
+abstract type Response end
+abstract type Publisher end
+publish!(::Publisher, ::Response) = @error("Implement Publisher.publish!")
+
 abstract type GameCommand end
 abstract type Game end
-gameaction!(::Game, ::Player, ::GameCommand) = @error("Implement me")
+gameaction!(::Game, ::Player, ::GameCommand) = @error("Implement gameaction!")
 
 # Word is a normalized string that is case-insensitive, and
 # ignores some diacritics, in a Swedish-specific manner.
@@ -67,6 +71,11 @@ function sort(
 end
 Base.getindex(w::Word, index) = getindex(w.letters, index)
 Base.lastindex(w::Word) = lastindex(w.letters)
+
+# Guess is a command game command to guess a word.
+struct Guess <: GameCommand
+    word::Word
+end
 
 include("Niancat.jl")
 include("Hamming.jl")
