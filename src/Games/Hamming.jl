@@ -23,16 +23,32 @@
 
 module Hamming
 
+using Nona.Games
+import Nona.Games: gameaction!
+
 export Publisher
 export HammingGame
 
 abstract type Publisher end
 
-struct HammingGame
+#
+# Game commands
+#
+
+struct Guess <: GameCommand
+    word::Word
+end
+
+#
+# Game
+#
+
+struct HammingGame <: Game
     publisher::Publisher
     puzzle::String
 end
 
-#gameaction!(game::HammingGame, player::User, guess::Guess) = nothing
+
+gameaction!(game::HammingGame, player::Player, guess::Guess) = nothing
 
 end
