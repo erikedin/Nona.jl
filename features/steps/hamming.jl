@@ -22,7 +22,7 @@
 #
 
 using Behavior
-using Nona.Hamming
+using Nona.Games.Hamming
 
 struct MockHammingPublisher <: Hamming.Publisher
     io::IO

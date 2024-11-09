@@ -23,9 +23,9 @@
 
 module NonaREPLs
 
-using Nona.Niancat
+using Nona.Games.Niancat
 
-import Nona.Niancat: publish!
+import Nona.Games.Niancat: publish!
 
 export FileDictionary
 export NiancatREPL

@@ -22,10 +22,10 @@
 #
 
 using Behavior
-using Nona.Niancat
-using Nona.Niancat: isanagram
+using Nona.Games.Niancat
+using Nona.Games.Niancat: isanagram
 
-import Nona.Niancat: publish!
+import Nona.Games.Niancat: publish!
 
 # This is the most basic type of user, where the user is identified by a single
 # string, which is also the display name.

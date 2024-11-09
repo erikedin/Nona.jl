@@ -19,10 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
-module Nona
+module Games
 
-include("Games/Games.jl")
-include("NonaREPLs.jl")
+include("Niancat.jl")
+include("Hamming.jl")
 
-end # module Nona
+end # module Games

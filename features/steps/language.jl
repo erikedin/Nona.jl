@@ -22,7 +22,7 @@
 #
 
 using Behavior
-using Nona.Niancat
+using Nona.Games.Niancat
 
 @given("a puzzle {String} and a {String}") do context, puzzle, guess
     context[:puzzle] = Word(puzzle)

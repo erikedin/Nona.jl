@@ -22,8 +22,8 @@
 #
 
 using Behavior
-using Nona.Niancat
-using Nona.Niancat: isanagram
+using Nona.Games.Niancat
+using Nona.Games.Niancat: isanagram
 using Nona.NonaREPLs
 
 function seekoutput(io::IO)

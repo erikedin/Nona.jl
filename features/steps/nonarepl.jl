@@ -22,7 +22,7 @@
 #
 
 using Behavior
-using Nona.Niancat
+using Nona.Games.Niancat
 using Nona.NonaREPLs
 
 function clearoutput(context)
