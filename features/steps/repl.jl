@@ -54,10 +54,10 @@ end
     context[:game] = game
 end
 
-@when("the REPL user tries the guess {String}") do context, word
+@when("the REPL player tries the guess {String}") do context, word
     game = context[:game]
 
-    userinput!(game, word)
+    playerinput!(game, word)
 end
 
 @when("a new NonaREPL game is generated") do context

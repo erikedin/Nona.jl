@@ -33,6 +33,6 @@ struct HammingGame
     puzzle::String
 end
 
-#gameaction!(game::HammingGame, user::User, guess::Guess) = nothing
+#gameaction!(game::HammingGame, player::User, guess::Guess) = nothing
 
 end

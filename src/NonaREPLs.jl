@@ -23,13 +23,14 @@
 
 module NonaREPLs
 
+using Nona.Games
 using Nona.Games.Niancat
 
 import Nona.Games.Niancat: publish!
 
 export FileDictionary
 export NiancatREPL
-export guess, start, userinput!
+export guess, start, playerinput!
 export NonaREPL
 
 # FileDictionary reads words from a file, where each word is on its own line.
@@ -85,10 +86,10 @@ function publish!(p::ConsolePublisher, response::Solutions)
     println(p.io, "")
 end
 
-# Since the REPL is a single-user game, there is no need to distinguish
-# between players. Thus, this is an empty implementation of the `User`
+# Since the REPL is a single-player game, there is no need to distinguish
+# between players. Thus, this is an empty implementation of the `Player`
 # abstract type.
-struct ThisUser <: User end
+struct ThisPlayer <: Player end
 
 #
 # The REPL has two modes:
@@ -112,10 +113,10 @@ struct GameMode <: REPLMode
 end
 prompt(p::GameMode) = print(p.io, "Niancat> ")
 
-function userinput!(::GameMode, text::String, game::NiancatGame)
+function playerinput!(::GameMode, text::String, game::NiancatGame)
     guess = Guess(Word(text))
-    user = ThisUser()
-    gameaction!(game, user, guess)
+    player = ThisPlayer()
+    gameaction!(game, player, guess)
 
     [BackToGameModeAction()]
 end
@@ -127,11 +128,11 @@ struct CommandMode <: REPLMode
 end
 prompt(p::CommandMode) = print(p.io, "Niancat# ")
 
-function userinput!(mode::CommandMode, text::String, game::NiancatGame)
+function playerinput!(mode::CommandMode, text::String, game::NiancatGame)
     if text == "nian"
         command = ShowCurrentPuzzle()
-        user = ThisUser()
-        gameaction!(game, user, command)
+        player = ThisPlayer()
+        gameaction!(game, player, command)
 
         [BackToGameModeAction()]
     elseif text == "ny"
@@ -187,15 +188,15 @@ function prompt(game::NonaREPL)
 end
 
 function showpuzzle(nona::NonaREPL)
-    user = ThisUser()
+    player = ThisPlayer()
     command = ShowCurrentPuzzle()
-    gameaction!(nona.game, user, command)
+    gameaction!(nona.game, player, command)
 end
 
 function showsolutions(nona::NonaREPL)
-    user = ThisUser()
+    player = ThisPlayer()
     command = ShowSolutions()
-    gameaction!(nona.game, user, command)
+    gameaction!(nona.game, player, command)
 end
 
 function start(nona::NonaREPL)
@@ -203,7 +204,7 @@ function start(nona::NonaREPL)
     showpuzzle(nona)
 
     # Start off by showing the prompt, where
-    # the user will input new commands.
+    # the player will input new commands.
     prompt(nona)
 end
 
@@ -221,15 +222,15 @@ function doaction(nona::NonaREPL, ::ExitAction)
     exit(0)
 end
 
-function userinput!(nona::NonaREPL, text::String)
+function playerinput!(nona::NonaREPL, text::String)
     if text == "#"
         nona.currentmode = CommandModeIndex
         prompt(nona)
     else
-        # The user input will result in possibly something published,
+        # The player input will result in possibly something published,
         # but also some actions for NonaREPL to take.
         # Examples: Go back to game mode. Start a new game.
-        actions = userinput!(nona.modes[nona.currentmode], text, nona.game)
+        actions = playerinput!(nona.modes[nona.currentmode], text, nona.game)
         for action in actions
             doaction(nona, action)
         end
@@ -257,14 +258,14 @@ end
 """
     run(dictionary::Dictionary, io::IO = stdout)
 
-Run a REPL in a loop until the user exits.
+Run a REPL in a loop until the player exits.
 """
 function run(dictionary::Dictionary, io::IO = stdout)
     game = newgame(dictionary; io=io)
 
     while true
         text = readline(io)
-        userinput!(game, text)
+        playerinput!(game, text)
     end
 end
 

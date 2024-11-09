@@ -38,9 +38,9 @@ end
     context[:publisher] = publisher
     context[:game] = game
 
-    # The default user is Alice, unless otherwise stated.
-    # Other users are stored in the :users map.
-    alice = NickUser("Alice")
-    context[:users] = Dict{String, User}(["Alice" => alice])
-    context[:defaultuser] = alice
+    # The default player is Alice, unless otherwise stated.
+    # Other players are stored in the :players map.
+    alice = NickPlayer("Alice")
+    context[:players] = Dict{String, Player}(["Alice" => alice])
+    context[:defaultplayer] = alice
 end

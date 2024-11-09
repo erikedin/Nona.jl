@@ -6,7 +6,6 @@ Issues
     + Dictionaries could probably be moved as well
 - Create a simpler Hamming-distance game as well
 - REPL: Handle Ctrl+D, should exit
-- Rename User to Player
 - Documentation
 - Show the solutions to the previous puzzle when starting a new game
 
@@ -26,3 +25,4 @@ Issues
 - Implement commands in the REPL
     + For getting the current puzzle
     + For exiting
+- Rename User to Player

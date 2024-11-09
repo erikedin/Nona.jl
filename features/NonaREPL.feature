@@ -36,12 +36,12 @@ Feature: NonaREPL is a terminal based front-end for the games
 
     Scenario: Correct guess in Niancat
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the REPL user tries the guess PUSSGURKA
+         When the REPL player tries the guess PUSSGURKA
          Then the REPL shows "PUSSGURKA är rätt!"
 
     Scenario: Incorrect guess in Niancat
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the REPL user tries the guess PUSSGUKAR
+         When the REPL player tries the guess PUSSGUKAR
          Then the REPL shows "PUSSGUKAR är inte korrekt."
 
     Scenario: Start a new game with a randomly generated puzzle
@@ -51,23 +51,23 @@ Feature: NonaREPL is a terminal based front-end for the games
 
     Scenario: Incorrect guesses show extra and missing letters
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the REPL user tries the guess PUSSGRUXY
+         When the REPL player tries the guess PUSSGRUXY
          Then the REPL shows "För många: XY"
           And the REPL shows "För få   : AK"
 
     Scenario: If there are no extra letters, it is not shown
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the REPL user tries the guess PUSSGRUKA
+         When the REPL player tries the guess PUSSGRUKA
          Then the REPL does not show "För många"
 
     Scenario: If there are no missing letters, it is not shown
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the REPL user tries the guess PUSSGRUKA
+         When the REPL player tries the guess PUSSGRUKA
          Then the REPL does not show "För få"
 
     Scenario: Guess incorrectly, shows the next prompt
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the REPL user tries the guess PUSSAGURK
+         When the REPL player tries the guess PUSSAGURK
          Then the output ends with "> "
 
     Scenario: Entering command mode

@@ -22,14 +22,15 @@
 #
 
 using Behavior
+using Nona.Games
 using Nona.Games.Niancat
 using Nona.Games.Niancat: isanagram
 
 import Nona.Games.Niancat: publish!
 
-# This is the most basic type of user, where the user is identified by a single
+# This is the most basic type of player, where the player is identified by a single
 # string, which is also the display name.
-struct NickUser <: User
+struct NickPlayer <: Player
     nick::String
 end
 
@@ -60,7 +61,7 @@ Base.:(==)(::SingleSolutionIndex, ::SingleSolutionIndex) = true
 Base.:(==)(::MultipleSolutionIndex, ::SingleSolutionIndex) = false
 Base.:(==)(::SingleSolutionIndex, ::MultipleSolutionIndex) = false
 
-Base.:(==)(r1::Correct, r2::Correct) = r1.user == r2.user && r1.guess == r2.guess && r1.solutionindex == r2.solutionindex
+Base.:(==)(r1::Correct, r2::Correct) = r1.player == r2.player && r1.guess == r2.guess && r1.solutionindex == r2.solutionindex
 
 struct SetDictionary <: Dictionary
     words::Set{Word}
@@ -76,7 +77,7 @@ const AnyLetterCorrection = LetterCorrection("", "")
 
 # WARNING: This equality does not look at lettercorrection, so we don't have to exactly
 # specify the letter correction in every step.
-Base.:(==)(a::Incorrect, b::Incorrect) = a.user == b.user && a.guess == b.guess # && a.lettercorrection == b.lettercorrection
+Base.:(==)(a::Incorrect, b::Incorrect) = a.player == b.player && a.guess == b.guess # && a.lettercorrection == b.lettercorrection
 
 @given("a dictionary") do context
     # Each row in context.datatables is an array of words,
@@ -94,70 +95,70 @@ end
     context[:publisher] = publisher
     context[:game] = NiancatGame(Word(puzzle), publisher, dictionary)
 
-    # The default user is Alice, unless otherwise stated.
-    # Other users are stored in the :users map.
-    alice = NickUser("Alice")
-    context[:users] = Dict{String, User}(["Alice" => alice])
-    context[:defaultuser] = alice
+    # The default player is Alice, unless otherwise stated.
+    # Other players are stored in the :players map.
+    alice = NickPlayer("Alice")
+    context[:players] = Dict{String, Player}(["Alice" => alice])
+    context[:defaultplayer] = alice
 end
 
-@when("{String} guesses {String}") do context, username, guess
+@when("{String} guesses {String}") do context, playername, guess
     game = context[:game]
 
-    # Users are expected to be stored in a Map in the context.
-    users = context[:users]
-    user = users[username]
+    # Players are expected to be stored in a Map in the context.
+    players = context[:players]
+    player = players[playername]
 
     guess = Guess(guess)
 
-    gameaction!(game, user, guess)
+    gameaction!(game, player, guess)
 end
 
 @when("Alice gets the puzzle") do context
     game = context[:game]
-    user = context[:defaultuser]
+    player = context[:defaultplayer]
 
-    gameaction!(game, user, ShowCurrentPuzzle())
+    gameaction!(game, player, ShowCurrentPuzzle())
 end
 
 @when("Alice shows the solutions") do context
     game = context[:game]
-    user = context[:defaultuser]
+    player = context[:defaultplayer]
 
-    gameaction!(game, user, ShowSolutions())
+    gameaction!(game, player, ShowSolutions())
 end
 
 @then("the response is that {String} is incorrect") do context, guess
     publisher = context[:publisher]
-    user = context[:defaultuser]
+    player = context[:defaultplayer]
 
-    @expect hasresponse(publisher, Incorrect(user, Guess(guess), AnyLetterCorrection))
+    @expect hasresponse(publisher, Incorrect(player, Guess(guess), AnyLetterCorrection))
 end
 
 @then("the response is that {String} is correct") do context, guess
     publisher = context[:publisher]
-    user = context[:defaultuser]
+    player = context[:defaultplayer]
 
-    @expect hasresponse(publisher, Correct(user, Guess(guess), AnySolutionIndex()))
+    @expect hasresponse(publisher, Correct(player, Guess(guess), AnySolutionIndex()))
 end
 
 @then("the response is that {String} is the solution with index {Int}") do context, guess, index
     publisher = context[:publisher]
-    user = context[:defaultuser]
+    player = context[:defaultplayer]
 
-    @expect hasresponse(publisher, Correct(user, Guess(guess), MultipleSolutionIndex(index)))
+    @expect hasresponse(publisher, Correct(player, Guess(guess), MultipleSolutionIndex(index)))
 end
 
 @then("the response indicates that Alice has found the only possible solution {String}") do context, guess
     publisher = context[:publisher]
-    user = context[:defaultuser]
+    player = context[:defaultplayer]
 
-    @expect hasresponse(publisher, Correct(user, Guess(guess), SingleSolutionIndex()))
+    @expect hasresponse(publisher, Correct(player, Guess(guess), SingleSolutionIndex()))
 end
 
 @then("the puzzle response is {String}") do context, puzzle
     publisher = context[:publisher]
-    user = context[:defaultuser]
+    player = context[:defaultplayer]
 
     response = getonlyresponse(publisher)
     @expect response.puzzle == Word(puzzle)
@@ -165,7 +166,7 @@ end
 
 @then("the puzzle response includes that there are {Int} solutions") do context, n
     publisher = context[:publisher]
-    user = context[:defaultuser]
+    player = context[:defaultplayer]
 
     response = getonlyresponse(publisher)
     @expect response.n_solutions == n
@@ -200,26 +201,26 @@ end
 end
 
 #
-# Users
-# These steps are specific to the `details/Users.feature` scenarios.
+# Players
+# These steps are specific to the `details/Players.feature` scenarios.
 #
 
-struct DisplayNameUser <: User
-    userid::String
+struct DisplayNamePlayer <: Player
+    playerid::String
     displayname::String
 end
 
-@given("a front-end specific user Angleton with display name James") do context
-    users = context[:users]
-    users["Angleton"] = DisplayNameUser("Angleton", "James")
+@given("a front-end specific player Angleton with display name James") do context
+    players = context[:players]
+    players["Angleton"] = DisplayNamePlayer("Angleton", "James")
 end
 
 
-@then("the response is that {String} guessed {String} correctly") do context, username, guess
+@then("the response is that {String} guessed {String} correctly") do context, playername, guess
     publisher = context[:publisher]
-    user = context[:users][username]
+    player = context[:players][playername]
 
-    @expect hasresponse(publisher, Correct(user, Guess(guess), AnySolutionIndex()))
+    @expect hasresponse(publisher, Correct(player, Guess(guess), AnySolutionIndex()))
 end
 
 #

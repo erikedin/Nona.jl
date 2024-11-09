@@ -77,7 +77,7 @@ end
 
 @when("the player presses \"#\"") do context
     game = context[:game]
-    userinput!(game, "#")
+    playerinput!(game, "#")
 end
 
 @when("the player enters command mode") do context
@@ -88,12 +88,12 @@ end
     clearoutput(context)
 
     game = context[:game]
-    userinput!(game, "#")
+    playerinput!(game, "#")
 end
 
 @when("the player inputs \"{String}\"") do context, command
     clearoutput(context)
 
     game = context[:game]
-    userinput!(game, command)
+    playerinput!(game, command)
 end

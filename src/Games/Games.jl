@@ -23,6 +23,10 @@
 
 module Games
 
+export Player
+
+abstract type Player end
+
 include("Niancat.jl")
 include("Hamming.jl")
 

@@ -22,8 +22,8 @@
 #
 
 Feature: Users
-    In order to support different types of users, the game
-    needs to be transparent to the type of user.
+    In order to support different types of players, the game
+    needs to be transparent to the type of player.
 
     Background: A dictionary
         Given a dictionary
@@ -32,13 +32,13 @@ Feature: Users
             | PUSSGURKA |
             | ORDPUSSEL |
 
-    # The main scenarios use a simple user implementation that is simply
-    # a string. More complex user implementations, such as in Slack where
-    # there is a distinction between the user id and the display name,
-    # need to be supported. This scenario tests that such users are
+    # The main scenarios use a simple player implementation that is simply
+    # a string. More complex player implementations, such as in Slack where
+    # there is a distinction between the player id and the display name,
+    # need to be supported. This scenario tests that such players are
     # supported.
-    Scenario: Front-end specific users
+    Scenario: Front-end specific players
         Given a Niancat puzzle ORDPUSSLE
-          And a front-end specific user Angleton with display name James
+          And a front-end specific player Angleton with display name James
          When Angleton guesses ORDPUSSEL
          Then the response is that Angleton guessed ORDPUSSEL correctly

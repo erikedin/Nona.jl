@@ -24,7 +24,6 @@
 module Niancat
 
 export NiancatGame
-export User
 export Guess, Response, Incorrect, Correct, ShowCurrentPuzzle, CurrentPuzzle
 export ShowSolutions, Solutions
 export NiancatPublisher
@@ -33,6 +32,8 @@ export generatepuzzle
 export Dictionary
 export SolutionIndex, SingleSolutionIndex, MultipleSolutionIndex
 export Word, LetterCorrection
+
+using Nona.Games
 
 import Base: convert, hash, iterate, length, isless, show, sort
 
@@ -155,8 +156,6 @@ abstract type Dictionary end
 
 isanagram(a::Word, b::Word) = sort(a) == sort(b)
 
-abstract type User end
-
 struct NiancatGame
     puzzle::Word
     publisher::NiancatPublisher
@@ -204,12 +203,12 @@ struct LetterCorrection
 end
 
 struct Incorrect <: Response
-    user::User
+    player::Player
     guess::Guess
     lettercorrection::LetterCorrection
 end
 
-# SolutionIndex is an abstract type for letting the user know which
+# SolutionIndex is an abstract type for letting the player know which
 # of multiple solutions was just solved, or if there is a single solution.
 abstract type SolutionIndex end
 
@@ -225,24 +224,24 @@ end
 # so it's not necessary to print which word it was.
 struct SingleSolutionIndex <: SolutionIndex end
 
-# Correct is a response to the user that the guess was correct.
+# Correct is a response to the player that the guess was correct.
 struct Correct <: Response
-    user::User
+    player::Player
     guess::Guess
     solutionindex::SolutionIndex
 
-    Correct(user::User, guess::Guess, index::SolutionIndex = SingleSolutionIndex()) = new(user, guess, index)
+    Correct(player::Player, guess::Guess, index::SolutionIndex = SingleSolutionIndex()) = new(player, guess, index)
 end
 
-# CurrentPuzzle is a response to a user with the current puzzle.
+# CurrentPuzzle is a response to a player with the current puzzle.
 struct CurrentPuzzle <: Response
-    user::User
+    player::Player
     puzzle::Word
     n_solutions::Int
 end
 
 struct Solutions <: Response
-    user::User
+    player::Player
     solutions::Vector{Word}
 end
 
@@ -251,11 +250,11 @@ end
 #
 
 """
-    gameaction!(game::NiancatGame, user::User, guess::Guess)
+    gameaction!(game::NiancatGame, player::Player, guess::Guess)
 
 Guess a word. The game will reply with correct or incorrect.
 """
-function gameaction!(game::NiancatGame, user::User, guess::Guess)
+function gameaction!(game::NiancatGame, player::Player, guess::Guess)
     response = if guess.word in game.solutions
         solutionindex = if length(game.solutions) == 1
             SingleSolutionIndex()
@@ -264,28 +263,28 @@ function gameaction!(game::NiancatGame, user::User, guess::Guess)
             MultipleSolutionIndex(index)
         end
 
-        Correct(user, guess, solutionindex)
+        Correct(player, guess, solutionindex)
     else
         missings = game.puzzle - guess.word
         extras = guess.word - game.puzzle
         lettercorrection = LetterCorrection(missings, extras)
-        Incorrect(user, guess, lettercorrection)
+        Incorrect(player, guess, lettercorrection)
     end
 
     publish!(game.publisher, response)
 end
 
 """
-    gameaction!(game::NiancatGame, user::User, ::ShowCurrentPuzzle)
+    gameaction!(game::NiancatGame, player::Player, ::ShowCurrentPuzzle)
 
-Show the current puzzle to the user.
+Show the current puzzle to the player.
 """
-function gameaction!(game::NiancatGame, user::User, ::ShowCurrentPuzzle)
-    publish!(game.publisher, CurrentPuzzle(user, game.puzzle, length(game.solutions)))
+function gameaction!(game::NiancatGame, player::Player, ::ShowCurrentPuzzle)
+    publish!(game.publisher, CurrentPuzzle(player, game.puzzle, length(game.solutions)))
 end
 
-function gameaction!(game::NiancatGame, user::User, ::ShowSolutions)
-    publish!(game.publisher, Solutions(user, game.solutions))
+function gameaction!(game::NiancatGame, player::Player, ::ShowSolutions)
+    publish!(game.publisher, Solutions(player, game.solutions))
 end
 
 """
