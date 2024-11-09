@@ -31,43 +31,10 @@ export gameaction!, publish!
 export generatepuzzle
 export Dictionary
 export SolutionIndex, SingleSolutionIndex, MultipleSolutionIndex
-export Word, LetterCorrection
+export LetterCorrection
 
 using Nona.Games
 
-import Base: convert, hash, iterate, length, isless, show, sort
-
-# Word is a normalized string that is case-insensitive, and
-# ignores some diacritics, in a Swedish-specific manner.
-struct Word
-    letters::String
-
-    Word(s::AbstractString) = new(uppercase(s))
-end
-
-iterate(word::Word) = iterate(word.letters)
-iterate(word::Word, state) = iterate(word.letters, state)
-length(word::Word) = length(word.letters)
-convert(::Type{Word}, s::String) = Word(s)
-Base.:(==)(a::Word, b::Word) = a.letters == b.letters
-hash(w::Word, h::UInt) = hash(w.letters, h)
-isless(a::Word, b::Word) = isless(a.letters, b.letters)
-show(io::IO, w::Word) = print(io, w.letters)
-function sort(
-    w::Word;
-    alg::Base.Sort.Algorithm=Base.Sort.QuickSort,
-    lt=isless,
-    by=identity,
-    rev::Bool=false,
-    order::Base.Order.Ordering=Base.Order.Forward)
-
-    Word(String(
-        sort([c for c in w.letters];
-             alg=alg, lt=lt, by=by, rev=rev, order=order)
-    ))
-end
-Base.getindex(w::Word, index) = getindex(w.letters, index)
-Base.lastindex(w::Word) = lastindex(w.letters)
 
 """
     Base.:(-)(word1::Word, word2::Word) :: Word
@@ -147,12 +114,8 @@ function Base.:(-)(word1::Word, word2::Word) :: Word
     Word(join(missingletters))
 end
 
-abstract type Response end
-
 abstract type NiancatPublisher end
 publish!(::NiancatPublisher, ::Response) =  @error("Implement me")
-
-abstract type Dictionary end
 
 isanagram(a::Word, b::Word) = sort(a) == sort(b)
 
