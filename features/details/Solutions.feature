@@ -58,3 +58,12 @@ Feature: Solutions
         Given a Niancat puzzle PUSSGUKAR
          When Alice guesses PUSSGURKA
          Then the response indicates that Alice has found the only possible solution PUSSGURKA
+
+    Scenario: Show multiple solutions
+        Given a Niancat puzzle DATORPSLE
+         When Alice shows the solutions
+         Then the solutions response is
+            | DATORSPEL |
+            | LEDARPOST |
+            | REPSOLDAT |
+            | SPELDATOR |

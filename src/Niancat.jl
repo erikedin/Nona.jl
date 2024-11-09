@@ -26,6 +26,7 @@ module Niancat
 export NiancatGame
 export User
 export Guess, Response, Incorrect, Correct, ShowCurrentPuzzle, CurrentPuzzle
+export ShowSolutions, Solutions
 export NiancatPublisher
 export gameaction!, publish!
 export generatepuzzle
@@ -189,6 +190,8 @@ end
 
 struct ShowCurrentPuzzle end
 
+struct ShowSolutions end
+
 #
 # Responses
 #
@@ -238,6 +241,11 @@ struct CurrentPuzzle <: Response
     n_solutions::Int
 end
 
+struct Solutions <: Response
+    user::User
+    solutions::Vector{Word}
+end
+
 #
 # Game actions
 #
@@ -274,6 +282,10 @@ Show the current puzzle to the user.
 """
 function gameaction!(game::NiancatGame, user::User, ::ShowCurrentPuzzle)
     publish!(game.publisher, CurrentPuzzle(user, game.puzzle, length(game.solutions)))
+end
+
+function gameaction!(game::NiancatGame, user::User, ::ShowSolutions)
+    publish!(game.publisher, Solutions(user, game.solutions))
 end
 
 """

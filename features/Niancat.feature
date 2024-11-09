@@ -112,3 +112,9 @@ Feature: Niancat
             | PUSSEL    |
          When randomly generating a Niancat puzzle
          Then the puzzle has 9 letters
+
+    Scenario: Show solution
+        Given a Niancat puzzle PUSSGUKRA
+         When Alice shows the solutions
+         Then the solutions response is
+            | PUSSGURKA |

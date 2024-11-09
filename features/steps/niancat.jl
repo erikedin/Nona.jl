@@ -120,6 +120,13 @@ end
     gameaction!(game, user, ShowCurrentPuzzle())
 end
 
+@when("Alice shows the solutions") do context
+    game = context[:game]
+    user = context[:defaultuser]
+
+    gameaction!(game, user, ShowSolutions())
+end
+
 @then("the response is that {String} is incorrect") do context, guess
     publisher = context[:publisher]
     user = context[:defaultuser]
@@ -176,6 +183,20 @@ end
     response = getonlyresponse(publisher)
 
     @expect response.lettercorrection.extras == Word(extraletters)
+end
+
+@then("the solutions response is") do context
+    # Each row in context.datatables is an array of words,
+    # but there is only one word in each array.
+    solutions = [
+        Word(words[1])
+        for words in context.datatable
+    ]
+
+    publisher = context[:publisher]
+    response = getonlyresponse(publisher)
+
+    @expect solutions == response.solutions
 end
 
 #
