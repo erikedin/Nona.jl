@@ -94,8 +94,13 @@ end
     io = context[:io]
 
     seekoutput(io)
-    # Take only the first line, as that's the puzzle.
-    puzzle = readline(io)
+    # Find the row that starts with "Pussel:" and use the following
+    # word as the puzzle.
+    pattern = r"Pussel: (.*)"
+    output = read(io, String)
+    m = match(pattern, output)
+    @expect length(m) == 1
+    puzzle = m[1]
 
     context[:puzzle] = Word(strip(puzzle))
 end

@@ -68,11 +68,21 @@ function publish!(p::ConsolePublisher, response::Incorrect)
 end
 
 function publish!(p::ConsolePublisher, response::CurrentPuzzle)
-    println(p.io, response.puzzle)
+    println(p.io, "Pussel: $(response.puzzle)")
 
     if response.n_solutions > 1
         println(p.io, "Pusslet har $(response.n_solutions) lösningar!")
     end
+end
+
+function publish!(p::ConsolePublisher, response::Solutions)
+    println(p.io, "Pusslet hade lösningar")
+    solutions = ["  $(solution)"
+                 for solution in response.solutions]
+    for solution in solutions
+        println(p.io, solution)
+    end
+    println(p.io, "")
 end
 
 # Since the REPL is a single-user game, there is no need to distinguish
@@ -182,6 +192,12 @@ function showpuzzle(nona::NonaREPL)
     gameaction!(nona.game, user, command)
 end
 
+function showsolutions(nona::NonaREPL)
+    user = ThisUser()
+    command = ShowSolutions()
+    gameaction!(nona.game, user, command)
+end
+
 function start(nona::NonaREPL)
     # Show the puzzle at game start
     showpuzzle(nona)
@@ -196,6 +212,7 @@ function doaction(nona::NonaREPL, ::BackToGameModeAction)
 end
 
 function doaction(nona::NonaREPL, ::NewGameAction)
+    showsolutions(nona)
     nona.game = createnewgame(nona.dictionary, nona.publisher)
     showpuzzle(nona)
 end
