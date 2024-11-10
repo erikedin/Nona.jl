@@ -48,5 +48,7 @@ Feature: Hamming distance game details
          Then the response is that the Hamming distance is <distance>
 
       Examples:
-        | puzzle | guess | distance |
-        | LEKA   | KAKA  | 2        |
+        | puzzle    | guess     | distance |
+        | LEKA      | KAKA      | 2        |
+        | DATORSPEL | LEDARPOST | 8        |
+        | ORDPUSSEL | PUSSGURKA | 9        |

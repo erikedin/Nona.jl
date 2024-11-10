@@ -63,17 +63,24 @@ end
 
 struct HammingGame <: Game
     publisher::Publisher
-    puzzle::String
+    puzzle::Word
 end
 
+distancepair((x, y)) = if x == y 0 else 1 end
+
+function hammingdistance(a::Word, b::Word) :: Int
+    pairs = zip(a, b)
+    mapreduce(distancepair, +, pairs; init = 0)
+end
 
 function gameaction!(game::HammingGame, player::Player, guess::Guess)
-    response = if guess.word == Word("DATORSPEX")
-        Incorrect(player, guess, 1)
+    response = if guess.word == game.puzzle
+        Correct(player, guess)
     elseif length(guess.word) != length(game.puzzle)
         IncorrectLength(player, guess, length(game.puzzle))
     else
-        Correct(player, guess)
+        d = hammingdistance(game.puzzle, guess.word)
+        Incorrect(player, guess, d)
     end
     publish!(game.publisher, response)
 end
