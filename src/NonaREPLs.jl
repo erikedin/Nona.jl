@@ -91,6 +91,22 @@ struct HammingConsolePublisher <: Publisher
     io::IO
 end
 
+function publish!(p::HammingConsolePublisher, response::Hamming.Correct)
+    println(p.io, "$(response.guess.word) är rätt!")
+end
+
+function publish!(p::HammingConsolePublisher, response::Hamming.Incorrect)
+    println(p.io, "$(response.hammingdistance)")
+end
+
+function publish!(p::HammingConsolePublisher, response::Hamming.IncorrectLength)
+    println(p.io, "Ordet måste vara $(response.wordlength) tecken långt.")
+end
+
+function publish!(p::HammingConsolePublisher, response::Hamming.CurrentPuzzle)
+    println(p.io, "Pusslet är $(response.puzzlelength) tecken långt.")
+end
+
 # Since the REPL is a single-player game, there is no need to distinguish
 # between players. Thus, this is an empty implementation of the `Player`
 # abstract type.
@@ -121,7 +137,7 @@ struct GameMode <: REPLMode
 end
 prompt(p::GameMode, game::Game) = print(p.io, "$(gamename(game))> ")
 
-function playerinput!(::GameMode, text::String, game::NiancatGame)
+function playerinput!(::GameMode, text::String, game::Game)
     guess = Guess(Word(text))
     player = ThisPlayer()
     gameaction!(game, player, guess)
@@ -134,10 +150,9 @@ struct CommandMode <: REPLMode
 
     CommandMode(io::IO) = new(io)
 end
-# TODO: Add test for the game name here and fix it.
-prompt(p::CommandMode, game::Game) = print(p.io, "Niancat# ")
+prompt(p::CommandMode, game::Game) = print(p.io, "$(gamename(game))# ")
 
-function playerinput!(mode::CommandMode, text::String, game::NiancatGame)
+function playerinput!(mode::CommandMode, text::String, game::Game)
     if text == "nian"
         command = ShowCurrentPuzzle()
         player = ThisPlayer()

@@ -50,6 +50,22 @@ end
     context[:game] = nona
 end
 
+@given("a NonaREPL game Hamming with puzzle {String}") do context, puzzle
+    # We need to create a specific NiancatGame object, with a specific puzzle,
+    # so we do that using this factory method. It replaces the `NonaREPLs.createnewgame`
+    # method, and does the same thing.
+    dictionary = context[:dictionary]
+    io = IOBuffer()
+    context[:io] = io
+
+    gamefactory = io -> HammingGame(NonaREPLs.HammingConsolePublisher(io), Word(puzzle))
+
+    nona = NonaREPL(gamefactory, dictionary; io=io)
+    start(nona)
+
+    context[:game] = nona
+end
+
 @when("starting a NonaREPL game Niancat with puzzle {String}") do context, puzzle
     # Niancat takes a publisher in the constructor method, but that publisher
     # is created by NonaREPL, so we need to make a factory method.
