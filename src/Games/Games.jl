@@ -26,7 +26,7 @@ module Games
 import Base: convert, hash, iterate, length, isless, show, sort
 
 export Player, Response, Dictionary, Publisher
-export GameCommand, Game, gameaction!
+export GameCommand, Game, gameaction!, gamename
 export Word
 export Guess, ShowCurrentPuzzle
 
@@ -39,6 +39,9 @@ publish!(::Publisher, ::Response) = @error("Implement Publisher.publish!")
 abstract type GameCommand end
 abstract type Game end
 gameaction!(::Game, ::Player, ::GameCommand) = @error("Implement gameaction!")
+function gamename(::Game) :: String
+    @error("Implement gamename(::Game)")
+end
 
 # Word is a normalized string that is case-insensitive, and
 # ignores some diacritics, in a Swedish-specific manner.

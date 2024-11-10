@@ -24,7 +24,7 @@
 module Hamming
 
 using Nona.Games
-import Nona.Games: gameaction!, publish!
+import Nona.Games: gameaction!, gamename, publish!
 
 export HammingPublisher
 export HammingGame
@@ -68,6 +68,8 @@ struct HammingGame <: Game
     HammingGame(publisher::Publisher, puzzle::Word) = new(publisher, puzzle)
     HammingGame(publisher::Publisher) = new(publisher, Word("LEKA"))
 end
+
+gamename(::HammingGame) = "Hamming"
 
 distancepair((x, y)) = if x == y 0 else 1 end
 

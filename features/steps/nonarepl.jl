@@ -57,7 +57,7 @@ end
     io = IOBuffer()
     context[:io] = io
 
-    niancatfactory = publisher -> NiancatGame(Word(puzzle), publisher, dictionary)
+    niancatfactory = io -> NiancatGame(Word(puzzle), NonaREPLs.ConsolePublisher(io), dictionary)
 
     nona = NonaREPL(niancatfactory, dictionary; io=io)
     start(nona)

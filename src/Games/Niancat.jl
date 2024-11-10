@@ -34,7 +34,7 @@ export SolutionIndex, SingleSolutionIndex, MultipleSolutionIndex
 export LetterCorrection
 
 using Nona.Games
-import Nona.Games: gameaction!, publish!
+import Nona.Games: gameaction!, gamename, publish!
 
 
 """
@@ -161,6 +161,8 @@ struct NiancatGame <: Game
         new(puzzle, publisher, sortedsolutions)
     end
 end
+
+gamename(::NiancatGame) = "Niancat"
 
 #
 # Commands

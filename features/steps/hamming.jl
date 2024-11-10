@@ -45,7 +45,7 @@ end
     context[:io] = io
 
     publisher = MockHammingPublisher()
-    game = HammingGame(publisher, puzzle)
+    game = HammingGame(publisher, Word(puzzle))
 
     context[:publisher] = publisher
     context[:game] = game

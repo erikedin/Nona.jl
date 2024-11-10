@@ -103,8 +103,8 @@ struct ThisPlayer <: Player end
 #
 
 struct NewGameAction end
-struct newGameTypeAction
-    gametype::Type{Game}
+struct NewGameTypeAction
+    gametype::Type{<:Game}
 end
 struct BackToGameModeAction end
 struct ExitAction end
@@ -119,7 +119,7 @@ struct GameMode <: REPLMode
 
     GameMode(io::IO) = new(io)
 end
-prompt(p::GameMode) = print(p.io, "Niancat> ")
+prompt(p::GameMode, game::Game) = print(p.io, "$(gamename(game))> ")
 
 function playerinput!(::GameMode, text::String, game::NiancatGame)
     guess = Guess(Word(text))
@@ -134,7 +134,8 @@ struct CommandMode <: REPLMode
 
     CommandMode(io::IO) = new(io)
 end
-prompt(p::CommandMode) = print(p.io, "Niancat# ")
+# TODO: Add test for the game name here and fix it.
+prompt(p::CommandMode, game::Game) = print(p.io, "Niancat# ")
 
 function playerinput!(mode::CommandMode, text::String, game::NiancatGame)
     if text == "nian"
@@ -173,7 +174,7 @@ mutable struct NonaREPL
     io::IO
     dictionary::Dictionary
     modes::Tuple{GameMode, CommandMode}
-    game::NiancatGame
+    game::Game
     currentmode::Int
 
     function NonaREPL(dictionary::Dictionary; io::IO = stdout)
@@ -197,7 +198,7 @@ mutable struct NonaREPL
 end
 
 function prompt(game::NonaREPL)
-    prompt(game.modes[game.currentmode])
+    prompt(game.modes[game.currentmode], game.game)
 end
 
 function showpuzzle(nona::NonaREPL)
@@ -228,6 +229,12 @@ end
 function doaction(nona::NonaREPL, ::NewGameAction)
     showsolutions(nona)
     nona.game = createnewgame(typeof(nona.game), nona.dictionary, nona.io)
+    showpuzzle(nona)
+end
+
+function doaction(nona::NonaREPL, newgame::NewGameTypeAction)
+    showsolutions(nona)
+    nona.game = createnewgame(newgame.gametype, nona.dictionary, nona.io)
     showpuzzle(nona)
 end
 
