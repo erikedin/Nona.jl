@@ -64,6 +64,9 @@ end
 struct HammingGame <: Game
     publisher::Publisher
     puzzle::Word
+
+    HammingGame(publisher::Publisher, puzzle::Word) = new(publisher, puzzle)
+    HammingGame(publisher::Publisher) = new(publisher, Word("LEKA"))
 end
 
 distancepair((x, y)) = if x == y 0 else 1 end

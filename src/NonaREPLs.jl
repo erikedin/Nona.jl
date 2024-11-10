@@ -25,6 +25,7 @@ module NonaREPLs
 
 using Nona.Games
 using Nona.Games.Niancat
+using Nona.Games.Hamming
 
 import Nona.Games.Niancat: publish!
 
@@ -50,7 +51,7 @@ Base.iterate(fd::FileDictionary, state) = iterate(fd.words, state)
 Base.length(fd::FileDictionary) = length(fd.words)
 
 
-# ConsolePublisher prints all game events to the console.
+# ConsolePublisher prints all game Niancat events to the console.
 struct ConsolePublisher <: NiancatPublisher
     io::IO
 end
@@ -86,6 +87,10 @@ function publish!(p::ConsolePublisher, response::Solutions)
     println(p.io, "")
 end
 
+struct HammingConsolePublisher <: Publisher
+    io::IO
+end
+
 # Since the REPL is a single-player game, there is no need to distinguish
 # between players. Thus, this is an empty implementation of the `Player`
 # abstract type.
@@ -98,6 +103,9 @@ struct ThisPlayer <: Player end
 #
 
 struct NewGameAction end
+struct newGameTypeAction
+    gametype::Type{Game}
+end
 struct BackToGameModeAction end
 struct ExitAction end
 
@@ -135,6 +143,8 @@ function playerinput!(mode::CommandMode, text::String, game::NiancatGame)
         gameaction!(game, player, command)
 
         [BackToGameModeAction()]
+    elseif text == "ny Hamming"
+        [BackToGameModeAction(), NewGameTypeAction(HammingGame)]
     elseif text == "ny"
         [BackToGameModeAction(), NewGameAction()]
     elseif text == "avsluta"
@@ -149,37 +159,40 @@ end
 # NonaREPL is the REPL for the games (currently only Niancat)
 #
 
-function createnewgame(dictionary::Dictionary, publisher::ConsolePublisher)
-    puzzle = generatepuzzle(dictionary)
-    NiancatGame(puzzle, publisher, dictionary)
+function createnewgame(::Type{NiancatGame}, dictionary::Dictionary, io::IO)
+    publisher = ConsolePublisher(io)
+    NiancatGame(publisher, dictionary)
+end
+
+function createnewgame(::Type{HammingGame}, dictionary::Dictionary, io::IO)
+    publisher = HammingConsolePublisher(io)
+    HammingGame(publisher)
 end
 
 mutable struct NonaREPL
-    publisher::ConsolePublisher
+    io::IO
     dictionary::Dictionary
     modes::Tuple{GameMode, CommandMode}
     game::NiancatGame
     currentmode::Int
 
     function NonaREPL(dictionary::Dictionary; io::IO = stdout)
-        publisher = ConsolePublisher(io)
         gamemode = GameMode(io)
         commandmode = CommandMode(io)
 
-        game = createnewgame(dictionary, publisher)
+        game = createnewgame(NiancatGame, dictionary, io)
 
-        new(publisher, dictionary, (gamemode, commandmode), game, GameModeIndex)
+        new(io, dictionary, (gamemode, commandmode), game, GameModeIndex)
     end
 
     function NonaREPL(gamefactory::Function, dictionary::Dictionary; io::IO = stdout)
-        publisher = ConsolePublisher(io)
         gamemode = GameMode(io)
         commandmode = CommandMode(io)
 
-        # The gamefactory is a method (::Publisher) -> Game
-        game = gamefactory(publisher)
+        # The gamefactory is a method (::IO) -> Game
+        game = gamefactory(io)
 
-        new(publisher, dictionary, (gamemode, commandmode), game, GameModeIndex)
+        new(io, dictionary, (gamemode, commandmode), game, GameModeIndex)
     end
 end
 
@@ -214,7 +227,7 @@ end
 
 function doaction(nona::NonaREPL, ::NewGameAction)
     showsolutions(nona)
-    nona.game = createnewgame(nona.dictionary, nona.publisher)
+    nona.game = createnewgame(typeof(nona.game), nona.dictionary, nona.io)
     showpuzzle(nona)
 end
 

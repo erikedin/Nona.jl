@@ -134,3 +134,9 @@ Feature: NonaREPL is a terminal based front-end for the games
           And the REPL shows "SPELDATOR"
           And the REPL shows "LEDARPOST"
           And the REPL shows "REPSOLDAT"
+
+    Scenario: Start another type of new game
+        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
+         When the player enters command mode
+          And the player inputs "ny Hamming"
+         Then the output ends with "Hamming> "

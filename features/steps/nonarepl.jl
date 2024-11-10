@@ -35,13 +35,14 @@ function clearoutput(context)
 end
 
 @given("a NonaREPL game Niancat with puzzle {String}") do context, puzzle
-    # Niancat takes a publisher in the constructor method, but that publisher
-    # is created by NonaREPL, so we need to make a factory method.
+    # We need to create a specific NiancatGame object, with a specific puzzle,
+    # so we do that using this factory method. It replaces the `NonaREPLs.createnewgame`
+    # method, and does the same thing.
     dictionary = context[:dictionary]
     io = IOBuffer()
     context[:io] = io
 
-    niancatfactory = publisher -> NiancatGame(Word(puzzle), publisher, dictionary)
+    niancatfactory = io -> NiancatGame(Word(puzzle), NonaREPLs.ConsolePublisher(io), dictionary)
 
     nona = NonaREPL(niancatfactory, dictionary; io=io)
     start(nona)
