@@ -182,7 +182,7 @@ end
 
 function createnewgame(::Type{HammingGame}, dictionary::Dictionary, io::IO)
     publisher = HammingConsolePublisher(io)
-    HammingGame(publisher)
+    HammingGame(publisher, dictionary)
 end
 
 mutable struct NonaREPL

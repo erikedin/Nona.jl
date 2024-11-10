@@ -61,12 +61,16 @@ end
 # Game
 #
 
+function generatepuzzle(dictionary::Dictionary) :: Word
+    rand(collect(dictionary))
+end
+
 struct HammingGame <: Game
     publisher::Publisher
     puzzle::Word
 
     HammingGame(publisher::Publisher, puzzle::Word) = new(publisher, puzzle)
-    HammingGame(publisher::Publisher) = new(publisher, Word("LEKA"))
+    HammingGame(publisher::Publisher, dictionary::Dictionary) = new(publisher, generatepuzzle(dictionary))
 end
 
 gamename(::HammingGame) = "Hamming"
