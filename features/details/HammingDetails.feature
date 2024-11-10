@@ -21,19 +21,32 @@
 # SOFTWARE.
 #
 
-Feature: Niancat puzzle requirements
+Feature: Hamming distance game details
+    Mostly these are additional test cases that don't contribute to
+    understanding the game.
 
-    Scenario: The puzzle is a 9 letter word
-        This is intended as a more stringent test than the similar scenario
-        in Niancat.feature, which has a 50% chance of success even without
-        proper implementation.
-
+    Background: A dictionary
         Given a dictionary
             | DATORSPEL |
+            | LEDARPOST |
             | PUSSGURKA |
             | ORDPUSSEL |
             | LEKA      |
+            | KAKA      |
             | DATOR     |
+            | GATOR     |
             | PUSSEL    |
-         When randomly generating a Niancat puzzle 30 times
-         Then all randomly chosen puzzles have 9 letters
+
+    Scenario: Guesses must be the same length as the puzzle
+        Given a Hamming puzzle LEKA
+         When Alice guesses DATORSPE
+         Then the response is that the word length must be 4 letters
+
+    Scenario Outline: Distance for an incorrect guess
+        Given a Hamming puzzle <puzzle>
+         When Alice guesses <guess>
+         Then the response is that the Hamming distance is <distance>
+
+      Examples:
+        | puzzle | guess | distance |
+        | LEKA   | KAKA  | 2        |

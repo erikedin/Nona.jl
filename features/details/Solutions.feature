@@ -21,7 +21,7 @@
 # SOFTWARE.
 #
 
-Feature: Solutions
+Feature: Niancat solutions
     As a group of players
     We need to have consistent identifiers for each solution
     So that we compare progress between ourselves

@@ -40,26 +40,22 @@ Feature: Hamming distance game
          When Alice guesses DATORSPEL
          Then the Hamming response is that DATORSPEL is correct
 
-    @wip
     Scenario: Get the current puzzle
         Given a Hamming puzzle PUSSGURKA
-         When Alice gets the Hamming puzzle
+         When Alice gets the puzzle
          Then the Hamming puzzle response is "9"
 
-    @wip
     Scenario: Get the current puzzle
         Given a Hamming puzzle LEKA
-         When Alice gets the Hamming puzzle
+         When Alice gets the puzzle
          Then the Hamming puzzle response is "4"
 
-    @wip
     Scenario: A guess with only one different letter has distance 1
         Given a Hamming puzzle DATORSPEL
          When Alice guesses DATORSPEX
          Then the response is that the Hamming distance is 1
 
-    @wip
     Scenario: Guesses must be the same length as the puzzle
         Given a Hamming puzzle DATORSPEL
          When Alice guesses DATORSPE
-         Then the response is that the word must be 9 letters
+         Then the response is that the word length must be 9 letters

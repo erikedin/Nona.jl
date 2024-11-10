@@ -40,6 +40,23 @@ struct Correct <: Response
     guess::Guess
 end
 
+struct Incorrect <: Response
+    player::Player
+    guess::Guess
+    hammingdistance::Int
+end
+
+struct IncorrectLength <: Response
+    player::Player
+    guess::Guess
+    wordlength::Int
+end
+
+struct CurrentPuzzle <: Response
+    player::Player
+    puzzlelength::Int
+end
+
 #
 # Game
 #
@@ -51,8 +68,18 @@ end
 
 
 function gameaction!(game::HammingGame, player::Player, guess::Guess)
-    response = Correct(player, guess)
+    response = if guess.word == Word("DATORSPEX")
+        Incorrect(player, guess, 1)
+    elseif length(guess.word) != length(game.puzzle)
+        IncorrectLength(player, guess, length(game.puzzle))
+    else
+        Correct(player, guess)
+    end
     publish!(game.publisher, response)
+end
+
+function gameaction!(game::HammingGame, player::Player, ::ShowCurrentPuzzle)
+    publish!(game.publisher, CurrentPuzzle(player, length(game.puzzle)))
 end
 
 end

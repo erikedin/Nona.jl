@@ -24,7 +24,7 @@
 module Niancat
 
 export NiancatGame
-export Response, Incorrect, Correct, ShowCurrentPuzzle, CurrentPuzzle
+export Response, Incorrect, Correct, CurrentPuzzle
 export ShowSolutions, Solutions
 export NiancatPublisher
 export publish!
@@ -146,8 +146,6 @@ end
 #
 # Commands
 #
-
-struct ShowCurrentPuzzle  <: GameCommand end
 
 struct ShowSolutions <: GameCommand end
 

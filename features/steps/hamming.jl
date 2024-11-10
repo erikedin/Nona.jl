@@ -64,3 +64,25 @@ end
     response = getonlyresponse(publisher)
     @expect response == Hamming.Correct(player, Guess(guess))
 end
+
+@then("the Hamming puzzle response is \"{Int}\"") do context, n
+    publisher = context[:publisher]
+    player = context[:defaultplayer]
+
+    response = getonlyresponse(publisher)
+    @expect response == Hamming.CurrentPuzzle(player, n)
+end
+
+@then("the response is that the Hamming distance is {Int}") do context, d
+    publisher = context[:publisher]
+
+    response = getonlyresponse(publisher)
+    @expect response.hammingdistance == d
+end
+
+@then("the response is that the word length must be {Int} letters") do context, n
+    publisher = context[:publisher]
+
+    response = getonlyresponse(publisher)
+    @expect response.wordlength == n
+end

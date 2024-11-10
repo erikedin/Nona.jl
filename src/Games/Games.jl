@@ -28,7 +28,7 @@ import Base: convert, hash, iterate, length, isless, show, sort
 export Player, Response, Dictionary, Publisher
 export GameCommand, Game, gameaction!
 export Word
-export Guess
+export Guess, ShowCurrentPuzzle
 
 abstract type Player end
 abstract type Dictionary end
@@ -76,6 +76,8 @@ Base.lastindex(w::Word) = lastindex(w.letters)
 struct Guess <: GameCommand
     word::Word
 end
+
+struct ShowCurrentPuzzle  <: GameCommand end
 
 include("Niancat.jl")
 include("Hamming.jl")
