@@ -140,3 +140,19 @@ Feature: NonaREPL is a terminal based front-end for the games
          When the player enters command mode
           And the player inputs "ny Hamming"
          Then the output ends with "Hamming> "
+
+    @wip
+    Scenario: Switch to another type of new game
+        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
+         When the player enters command mode
+          And the player inputs "switch Hamming"
+         Then the output ends with "Hamming> "
+
+    @wip
+    Scenario: Switching back retains the same puzzle as before
+        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
+         When the player enters command mode
+          And the player inputs "switch Hamming"
+          And the player inputs "switch Niancat"
+          And the player inputs "nian"
+         Then the REPL shows "PUSSGRUKA"

@@ -55,3 +55,11 @@ Feature: REPL details and additional tests
          When the player enters command mode
           And the player inputs "nonsense"
          Then the REPL does not show "DATORPLES"
+
+    @wip
+    Scenario: Switch back to Niancat
+        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
+         When the player enters command mode
+          And the player inputs "switch Hamming"
+          And the player inputs "switch Niancat"
+         Then the output ends with "Niancat> "

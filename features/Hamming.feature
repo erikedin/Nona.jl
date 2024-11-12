@@ -59,3 +59,9 @@ Feature: Hamming distance game
         Given a Hamming puzzle DATORSPEL
          When Alice guesses DATORSPE
          Then the response is that the word length must be 9 letters
+
+    @wip
+    Scenario: Start a Hamming game with a provided length of the puzzle
+        Given a Hamming game with puzzle length 5
+         When Alice gets the puzzle
+         Then the Hamming puzzle response is "5"
