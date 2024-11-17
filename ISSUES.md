@@ -1,7 +1,6 @@
 Issues
 ======
 
-- REPL: Handle Ctrl+D, should exit
 - Documentation
 - Usage documentation
 - Replace "ny Hamming" with a switch command
@@ -32,3 +31,4 @@ Issues
     + Dictionaries could probably be moved as well
 - Create a simpler Hamming-distance game as well
 - Show the solutions to the previous puzzle when starting a new game
+- REPL: Handle Ctrl+D, should exit
