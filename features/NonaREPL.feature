@@ -70,17 +70,20 @@ Feature: NonaREPL is a terminal based front-end for the games
          When the REPL player tries the guess PUSSAGURK
          Then the output ends with "> "
 
+    @deprecated
     Scenario: Entering command mode
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
          When the player presses "#"
          Then the output ends with "Niancat# "
 
+    @command
     Scenario: Show the current puzzle using the "nian" command
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
          When the player enters command mode
           And the player inputs "nian"
          Then the REPL shows "PUSSGRUKA"
 
+    @deprecated
     Scenario: Showing the puzzle changes the mode back to game mode
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
          When the player enters command mode
@@ -106,6 +109,7 @@ Feature: NonaREPL is a terminal based front-end for the games
          When starting a NonaREPL game Niancat with puzzle DATORSPLE
          Then the REPL does not show "1"
 
+    @command
     Scenario: Start a new game
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
          When the player enters command mode
@@ -113,12 +117,14 @@ Feature: NonaREPL is a terminal based front-end for the games
          Then a puzzle is shown
           And that puzzle is an anagram of a word in the dictionary
 
+    @command
     Scenario: Starting a new game shows the solutions to the previous puzzle
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
          When the player enters command mode
           And the player inputs "ny"
          Then the REPL shows "PUSSGURKA"
 
+    @command
     Scenario: Starting a new game shows all solutions to the previous puzzle
         Given a dictionary
             | DATORSPEL |
@@ -135,20 +141,21 @@ Feature: NonaREPL is a terminal based front-end for the games
           And the REPL shows "LEDARPOST"
           And the REPL shows "REPSOLDAT"
 
+    @command
     Scenario: Start another type of new game
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
          When the player enters command mode
           And the player inputs "ny Hamming"
          Then the output ends with "Hamming> "
 
-    @wip
+    @wip @command
     Scenario: Switch to another type of new game
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
          When the player enters command mode
           And the player inputs "switch Hamming"
          Then the output ends with "Hamming> "
 
-    @wip
+    @wip @command
     Scenario: Switching back retains the same puzzle as before
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
          When the player enters command mode

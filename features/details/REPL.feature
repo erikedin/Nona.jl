@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+
 Feature: REPL details and additional tests
 
     Background: A dictionary
@@ -31,32 +32,35 @@ Feature: REPL details and additional tests
             | SPELDATOR |
             | LEDARPOST |
 
+    @command
     Scenario: Show the current puzzle using the "nian" command
         Given a NonaREPL game Niancat with puzzle DATORPLES
          When the player enters command mode
           And the player inputs "nian"
          Then the REPL shows "DATORPLES"
 
+    @command
     Scenario: Using an invalid command shows an error
         Given a NonaREPL game Niancat with puzzle DATORPLES
          When the player enters command mode
           And the player inputs "nonsense"
          Then the REPL shows "Okänt kommando: nonsense"
 
-    @wip
+    @wip @command
     Scenario: When using an invalid command, you remain in command mode
         Given a NonaREPL game Niancat with puzzle DATORPLES
          When the player enters command mode
           And the player inputs "nonsense"
          Then the output ends with "Niancat# "
 
+    @command
     Scenario: Using an invalid command does not show the puzzle
         Given a NonaREPL game Niancat with puzzle DATORPLES
          When the player enters command mode
           And the player inputs "nonsense"
          Then the REPL does not show "DATORPLES"
 
-    @wip
+    @wip @command
     Scenario: Switch back to Niancat
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
          When the player enters command mode

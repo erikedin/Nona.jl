@@ -53,6 +53,7 @@ Feature: Hamming distance game details
         | DATORSPEL | LEDARPOST | 8        |
         | ORDPUSSEL | PUSSGURKA | 9        |
 
+    @command
     Scenario: Command mode includes the game name
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
           And the player enters command mode
