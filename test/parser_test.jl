@@ -66,4 +66,16 @@ end
     @test result.value == NonaREPLs.NewGameAction()
 end
 
+@testset "Parse; Input is !PUSSGURKA; Result is not a valid command" begin
+    # Arrange
+    input = ParserInput("!PUSSGURKA")
+
+    # Act
+    parser = NonaREPLParser()
+    result = parser(input)
+
+    # Assert
+    @test !isok(result)
+end
+
 end # Parser

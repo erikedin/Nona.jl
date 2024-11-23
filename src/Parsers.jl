@@ -35,6 +35,9 @@ end
 
 abstract type Parser{T} end
 
+# ParseResult is the abstract type. A ParseResult is either an
+# - OKParseResult, which is a successful parse
+# - BadParseResult, which is unsuccessful
 abstract type ParseResult{T} end
 
 struct OKParseResult{T} <: ParseResult{T}
@@ -45,6 +48,11 @@ isok(::OKParseResult{T}) where {T} = true
 struct BadParseResult{T} <: ParseResult{T} end
 isok(::BadParseResult{T}) where {T} = false
 
+#
+# Parsers
+#
+
+# Is matches an exact string, and is used for most commands without parameters.
 struct Is{T}
     text::String
 end
@@ -57,9 +65,81 @@ function (parser::Is{T})(input::ParserInput) :: ParseResult{Command} where {T}
     end
 end
 
+# Character matches a single character.
+struct Character <: Parser{Char}
+    c::Char
+end
+
+function (parser::Character)(input::ParserInput) :: ParseResult{Char}
+    if parser.c == input.text[1]
+        OKParseResult{Char}(parser.c)
+    else
+        BadParseResult{Char}()
+    end
+end
+
+# Not inverses a parse result from the supplied parser, but throws away any result value.
+struct Not{T} <: Parser{Nothing}
+    inner::Parser{T}
+end
+
+function (parser::Not{T})(input::ParserInput) :: ParseResult{Nothing} where {T}
+    result = parser.inner(input)
+    if isok(result)
+        BadParseResult{Nothing}()
+    else
+        OKParseResult{Nothing}(nothing)
+    end
+end
+
+# And parses two inner parsers, and only succeeds if they succeed.
+struct And{S, T} <: Parser{Tuple{S, T}}
+    first::Parser{S}
+    second::Parser{T}
+end
+
+function (parser::And{S, T})(input::ParserInput) :: ParseResult{Tuple{S, T}} where {S, T}
+    result1 = parser.first(input)
+    result2 = parser.second(input)
+
+    if isok(result1) && isok(result2)
+        OKParseResult{Tuple{S, T}}((result1.value, result2.value))
+    else
+        BadParseResult{Tuple{S, T}}()
+    end
+end
+
+# WordParser produces a Word from the rest of the input
+struct WordParser <: Parser{Word} end
+
+function (parser::WordParser)(input::ParserInput) :: ParseResult{Word}
+    OKParseResult{Word}(input.text)
+end
+
+# GuessParser ensures that a guess does not start with a !.
+struct GuessParser <: Parser{Guess} end
+
+function (parser::GuessParser)(input::ParserInput) :: ParseResult{Guess}
+    notexclamation = Not{Char}(Character('!'))
+    inner = And(notexclamation, WordParser())
+    result = inner(input)
+    if isok(result)
+        # The word is the second part of the tuple (nothing, word)
+        # produced by the inner parser.
+        word = result.value[2]
+        OKParseResult{Guess}(Guess(word))
+    else
+        BadParseResult{Guess}()
+    end
+end
+
+# NonaREPLParser is the main parser for all commands that are either
+# - generic game commands, applicable to all games
+# - REPL commands, such as switching games or exiting
+# Game specific commands are not included here.
 struct NonaREPLParser <: Parser{Command} end
 
-function (p::NonaREPLParser)(input::ParserInput) :: ParseResult{Command}
+function (p::NonaREPLParser)(input::ParserInput) :: ParseResult{<:Command}
     commands = [Is{ShowCurrentPuzzle}("!visa"), Is{NewGameAction}("!nytt")]
     for c in commands
         result = c(input)
@@ -67,7 +147,8 @@ function (p::NonaREPLParser)(input::ParserInput) :: ParseResult{Command}
             return result
         end
     end
-    OKParseResult{Command}(Guess(Word("PUSSGURKA")))
+    guessparser = GuessParser()
+    guessparser(input)
 end
 
 
