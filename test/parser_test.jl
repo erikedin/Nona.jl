@@ -20,10 +20,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-module Nona
+using Nona.Parsers
+using Nona.Games
 
-include("Games/Games.jl")
-include("Parsers.jl")
-include("NonaREPLs.jl")
+# Testing parsing of commands from the player REPL command line.
+@testset "Parser " begin
 
-end # module Nona
+@testset "Parse; Input is PUSSGURKA; Result is the Guess command" begin
+    # Arrange
+    input = ParserInput("PUSSGURKA")
+
+    # Act
+    parser = NonaREPLParser()
+    result = parser(input)
+
+    # Assert
+    @test isok(result)
+    @test result.value == Guess(Word("PUSSGURKA"))
+end
+
+end # Parser

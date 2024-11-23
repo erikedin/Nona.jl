@@ -20,10 +20,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-module Nona
+module Parsers
 
-include("Games/Games.jl")
-include("Parsers.jl")
-include("NonaREPLs.jl")
+using Nona.Games
 
-end # module Nona
+export ParserInput, OKParseResult
+export NonaREPLParser
+export isok
+
+struct ParserInput
+    text::String
+end
+
+abstract type Parser{T} end
+
+abstract type ParseResult{T} end
+
+struct OKParseResult{T} <: ParseResult{T}
+    value::T
+end
+
+struct NonaREPLParser <: Parser{GameCommand} end
+
+function (p::NonaREPLParser)(input::ParserInput) :: ParseResult{GameCommand}
+    OKParseResult{GameCommand}(Guess(Word("PUSSGURKA")))
+end
+
+isok(::OKParseResult{T}) where {T} = true
+
+end # module Parsers

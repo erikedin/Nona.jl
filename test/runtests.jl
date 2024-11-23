@@ -24,6 +24,7 @@ using Test
 using Behavior
 using Nona
 
+include("parser_test.jl")
 include("regression/dictionary_test.jl")
 
 parseoptions = Behavior.Gherkin.ParseOptions(use_experimental=true)
