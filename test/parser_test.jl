@@ -25,7 +25,7 @@ using Nona.Games
 using Nona.NonaREPLs
 
 # Testing parsing of commands from the player REPL command line.
-@testset "Parser " begin
+@testset "Parser  " begin
 
 @testset "Parse; Input is PUSSGURKA; Result is the Guess command" begin
     # Arrange

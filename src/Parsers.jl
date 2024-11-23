@@ -40,19 +40,35 @@ abstract type ParseResult{T} end
 struct OKParseResult{T} <: ParseResult{T}
     value::T
 end
+isok(::OKParseResult{T}) where {T} = true
+
+struct BadParseResult{T} <: ParseResult{T} end
+isok(::BadParseResult{T}) where {T} = false
+
+struct Is{T}
+    text::String
+end
+
+function (parser::Is{T})(input::ParserInput) :: ParseResult{Command} where {T}
+    if input.text == parser.text
+        OKParseResult{Command}(T())
+    else
+        BadParseResult{Command}()
+    end
+end
 
 struct NonaREPLParser <: Parser{Command} end
 
 function (p::NonaREPLParser)(input::ParserInput) :: ParseResult{Command}
-    if input.text == "!visa"
-        OKParseResult{Command}(ShowCurrentPuzzle())
-    elseif input.text == "!nytt"
-        OKParseResult{Command}(NewGameAction())
-    else
-        OKParseResult{Command}(Guess(Word("PUSSGURKA")))
+    commands = [Is{ShowCurrentPuzzle}("!visa"), Is{NewGameAction}("!nytt")]
+    for c in commands
+        result = c(input)
+        if isok(result)
+            return result
+        end
     end
+    OKParseResult{Command}(Guess(Word("PUSSGURKA")))
 end
 
-isok(::OKParseResult{T}) where {T} = true
 
 end # module Parsers
