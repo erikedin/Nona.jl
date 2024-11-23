@@ -26,7 +26,7 @@ module Games
 import Base: convert, hash, iterate, length, isless, show, sort
 
 export Player, Response, Dictionary, Publisher
-export GameCommand, Game, gameaction!, gamename
+export Command, GameCommand, Game, gameaction!, gamename
 export Word
 export Guess, ShowCurrentPuzzle
 
@@ -36,7 +36,8 @@ abstract type Response end
 abstract type Publisher end
 publish!(::Publisher, ::Response) = @error("Implement Publisher.publish!")
 
-abstract type GameCommand end
+abstract type Command end
+abstract type GameCommand <: Command end
 abstract type Game end
 gameaction!(::Game, ::Player, ::GameCommand) = @error("Implement gameaction!")
 function gamename(::Game) :: String

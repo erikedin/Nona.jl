@@ -118,7 +118,8 @@ struct ThisPlayer <: Player end
 # - Command mode: Start new games, run game specific commands
 #
 
-struct NewGameAction end
+abstract type REPLCommand <: Command end
+struct NewGameAction <: REPLCommand end
 struct NewGameTypeAction
     gametype::Type{<:Game}
 end

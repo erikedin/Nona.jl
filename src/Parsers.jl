@@ -23,6 +23,7 @@
 module Parsers
 
 using Nona.Games
+using Nona.NonaREPLs: NewGameAction
 
 export ParserInput, OKParseResult
 export NonaREPLParser
@@ -40,10 +41,16 @@ struct OKParseResult{T} <: ParseResult{T}
     value::T
 end
 
-struct NonaREPLParser <: Parser{GameCommand} end
+struct NonaREPLParser <: Parser{Command} end
 
-function (p::NonaREPLParser)(input::ParserInput) :: ParseResult{GameCommand}
-    OKParseResult{GameCommand}(Guess(Word("PUSSGURKA")))
+function (p::NonaREPLParser)(input::ParserInput) :: ParseResult{Command}
+    if input.text == "!visa"
+        OKParseResult{Command}(ShowCurrentPuzzle())
+    elseif input.text == "!nytt"
+        OKParseResult{Command}(NewGameAction())
+    else
+        OKParseResult{Command}(Guess(Word("PUSSGURKA")))
+    end
 end
 
 isok(::OKParseResult{T}) where {T} = true

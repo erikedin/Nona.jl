@@ -22,6 +22,7 @@
 
 using Nona.Parsers
 using Nona.Games
+using Nona.NonaREPLs
 
 # Testing parsing of commands from the player REPL command line.
 @testset "Parser " begin
@@ -37,6 +38,32 @@ using Nona.Games
     # Assert
     @test isok(result)
     @test result.value == Guess(Word("PUSSGURKA"))
+end
+
+@testset "Parse; Input is !visa; Result is the ShowCurrentPuzzle command" begin
+    # Arrange
+    input = ParserInput("!visa")
+
+    # Act
+    parser = NonaREPLParser()
+    result = parser(input)
+
+    # Assert
+    @test isok(result)
+    @test result.value == ShowCurrentPuzzle()
+end
+
+@testset "Parse; Input is !nytt; Result is the NewGameAction command" begin
+    # Arrange
+    input = ParserInput("!nytt")
+
+    # Act
+    parser = NonaREPLParser()
+    result = parser(input)
+
+    # Assert
+    @test isok(result)
+    @test result.value == NonaREPLs.NewGameAction()
 end
 
 end # Parser

@@ -23,7 +23,7 @@
 module Nona
 
 include("Games/Games.jl")
-include("Parsers.jl")
 include("NonaREPLs.jl")
+include("Parsers.jl")
 
 end # module Nona
