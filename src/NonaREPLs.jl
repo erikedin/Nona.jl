@@ -301,7 +301,7 @@ function run(dictionary::Dictionary, io::IO = stdout)
 
     while true
         text = readline(io)
-        if eof(io)
+        if !isreadable(io)
             exit(0)
         end
         playerinput!(game, text)
