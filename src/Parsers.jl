@@ -53,7 +53,7 @@ isok(::BadParseResult{T}) where {T} = false
 #
 
 # Is matches an exact string, and is used for most commands without parameters.
-struct Is{T}
+struct Is{T} <: Parser{T}
     text::String
 end
 
@@ -116,6 +116,21 @@ function (parser::WordParser)(input::ParserInput) :: ParseResult{Word}
     OKParseResult{Word}(input.text)
 end
 
+# OrParser parses one of a list of parsers.
+struct OrParser{S}
+    parsers::Vector{Parser{<:S}}
+end
+
+function (parser::OrParser{S})(input::ParserInput) :: ParseResult{<:S} where {S}
+    for p in parser.parsers
+        result = p(input)
+        if isok(result)
+            return result
+        end
+    end
+    BadParseResult{S}()
+end
+
 # GuessParser ensures that a guess does not start with a !.
 struct GuessParser <: Parser{Guess} end
 
@@ -140,15 +155,8 @@ end
 struct NonaREPLParser <: Parser{Command} end
 
 function (p::NonaREPLParser)(input::ParserInput) :: ParseResult{<:Command}
-    commands = [Is{ShowCurrentPuzzle}("!visa"), Is{NewGameAction}("!nytt")]
-    for c in commands
-        result = c(input)
-        if isok(result)
-            return result
-        end
-    end
-    guessparser = GuessParser()
-    guessparser(input)
+    commands = OrParser{Command}([Is{ShowCurrentPuzzle}("!visa"), Is{NewGameAction}("!nytt"), GuessParser()])
+    commands(input)
 end
 
 
