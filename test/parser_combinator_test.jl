@@ -92,4 +92,72 @@ end
     @test result2 == 'b'
 end
 
+@testset "Choice of any or EOF; Input is a; Result is a" begin
+    # Arrange
+    input = ParserInput("a")
+    parser = Parsers.choiceP(Parsers.anyP, Parsers.eofP)
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == 'a'
+end
+
+@testset "Choice of any or EOF; Input is EOF; Result is nothing" begin
+    # Arrange
+    input = ParserInput("")
+    parser = Parsers.choiceP(Parsers.anyP, Parsers.eofP)
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result === nothing
+end
+
+@testset "Character a; Input is a; Result is a" begin
+    # Arrange
+    input = ParserInput("a")
+
+    # Act
+    (_rest, result) = Parsers.charC('a')(input)
+
+    # Assert
+    @test result == 'a'
+end
+
+@testset "Character a; Input is b; Result is BadParse" begin
+    # Arrange
+    input = ParserInput("b")
+
+    # Act
+    (_rest, result) = Parsers.charC('a')(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+end
+
+@testset "Is space; Input is a space; Result is a space" begin
+    # Arrange
+    input = ParserInput(" ")
+
+    # Act
+    (_rest, result) = Parsers.isspaceP(input)
+
+    # Assert
+    @test result == ' '
+end
+
+@testset "Is space; Input is a; Result is BadParse" begin
+    # Arrange
+    input = ParserInput("a")
+
+    # Act
+    (_rest, result) = Parsers.isspaceP(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+end
+
 end # Parser Combinators

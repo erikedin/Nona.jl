@@ -56,4 +56,33 @@ Parse any character. Fails on EOF.
 """
 anyP(input::ParserInput) = eof(input) ? (input, BadParse()) : consume(input)
 
+function satisfyC(predicate)
+    input -> begin
+        (rest, x) = anyP(input)
+        if predicate(x)
+            (rest, x)
+        else
+            (input, BadParse())
+        end
+    end
+end
+
+charC(c::Char) = satisfyC(x -> x == c)
+
+const isspaceP = satisfyC(x -> x == ' ')
+
+# The previous parser failed, returning a BadParse. Try the next parser in the list.
+choice((input, _badParse)::Tuple{ParserInput, BadParse}, parser) = parser(input)
+# A previous parser was successful. Return the successful result and skip this parser.
+choice(result::Tuple{ParserInput, T}, _parser) where {T} = result
+# The first parser takes two parsers, and forwards to one of the above choice methods.
+choice(p, q) = input -> choice(p(input), q)
+
+"""
+    choice(p, q)
+
+Create a parser that chooses between several other parsers.
+"""
+choiceP(p, q) = foldr(choice, [p, q])
+
 end # module Parsers
