@@ -22,10 +22,17 @@
 
 module Parsers
 
+# Methods named
+# - xyzP: parser that take a ParserInput and produces a ParserInput and a result.
+# - xyzC: combinators that combines values or parsers to create a new parser.
+
 export
     ParserInput,
     eofP,
     anyP,
+    charC,
+    choiceC,
+    isspaceP,
     BadParse
 
 struct ParserInput
@@ -83,6 +90,8 @@ choice(p, q) = input -> choice(p(input), q)
 
 Create a parser that chooses between several other parsers.
 """
-choiceP(p, q) = foldr(choice, [p, q])
+choiceC(parsers...) = foldr(choice, collect(parsers))
+
+Base.:|(p::Function, q::Function) = choiceC(p, q)
 
 end # module Parsers

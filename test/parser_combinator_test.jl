@@ -95,7 +95,7 @@ end
 @testset "Choice of any or EOF; Input is a; Result is a" begin
     # Arrange
     input = ParserInput("a")
-    parser = Parsers.choiceP(Parsers.anyP, Parsers.eofP)
+    parser = Parsers.choiceC(Parsers.anyP, Parsers.eofP)
 
     # Act
     (_rest, result) = parser(input)
@@ -107,7 +107,7 @@ end
 @testset "Choice of any or EOF; Input is EOF; Result is nothing" begin
     # Arrange
     input = ParserInput("")
-    parser = Parsers.choiceP(Parsers.anyP, Parsers.eofP)
+    parser = Parsers.choiceC(Parsers.anyP, Parsers.eofP)
 
     # Act
     (_rest, result) = parser(input)
@@ -158,6 +158,66 @@ end
 
     # Assert
     @test typeof(result) == BadParse
+end
+
+@testset "Choice of a or b; Input is a; Result is a" begin
+    # Arrange
+    input = ParserInput("a")
+    parser = Parsers.choiceC(charC('a'), charC('b'))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == 'a'
+end
+
+@testset "Choice of a or b; Input is b; Result is b" begin
+    # Arrange
+    input = ParserInput("b")
+    parser = Parsers.choiceC(charC('a'), charC('b'))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == 'b'
+end
+
+@testset "Choice of a, b, or c; Input is c; Result is c" begin
+    # Arrange
+    input = ParserInput("c")
+    parser = Parsers.choiceC(charC('a'), charC('b'), charC('c'))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == 'c'
+end
+
+@testset "Choice of a, b, or c; Input is b; Result is b" begin
+    # Arrange
+    input = ParserInput("b")
+    parser = charC('a') | charC('b') | charC('c')
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == 'b'
+end
+
+@testset "Choice of a, b, or c; Input is c; Result is c" begin
+    # Arrange
+    input = ParserInput("c")
+    parser = charC('a') | charC('b') | charC('c')
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == 'c'
 end
 
 end # Parser Combinators
