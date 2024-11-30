@@ -33,6 +33,7 @@ export
     charC,
     choiceC,
     isspaceP,
+    sequenceC,
     BadParse
 
 struct ParserInput
@@ -90,8 +91,18 @@ choice(p, q) = input -> choice(p(input), q)
 
 Create a parser that chooses between several other parsers.
 """
-choiceC(parsers...) = foldr(choice, collect(parsers))
+choiceC(parsers...) = foldl(choice, collect(parsers))
 
 Base.:|(p::Function, q::Function) = choiceC(p, q)
+
+sequenceCombine(valuep::BadParse, _valueq) = valuep
+sequenceCombine(_valuep, valueq::BadParse) = valueq
+sequenceCombine(valuep, valueq) = (valuep..., valueq)
+sequence(result::Tuple{ParserInput, BadParse}, _q) = result
+function sequence((restp, valuep)::Tuple{ParserInput, T}, q) where {T}
+    (restq, valueq) = q(restp)
+    (restq, sequenceCombine(valuep, valueq))
+end
+sequenceC(parsers...) = input -> foldl(sequence, collect(parsers); init = (input, ()))
 
 end # module Parsers

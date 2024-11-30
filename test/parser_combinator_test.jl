@@ -220,4 +220,80 @@ end
     @test result == 'c'
 end
 
+@testset "SequenceC" begin
+
+@testset "Sequence a, b; Input is ab; Result is a, b" begin
+    # Arrange
+    input = ParserInput("ab")
+    parser = sequenceC(charC('a'), charC('b'))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == ('a', 'b')
+end
+
+@testset "Sequence b, b; Input is bb; Result is b, b" begin
+    # Arrange
+    input = ParserInput("bb")
+    parser = sequenceC(charC('b'), charC('b'))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == ('b', 'b')
+end
+
+@testset "Sequence a, b, c; Input is abc; Result is abc" begin
+    # Arrange
+    input = ParserInput("abc")
+    parser = sequenceC(charC('a'), charC('b'), charC('c'))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == ('a', 'b', 'c')
+end
+
+@testset "Sequence a, b, EOF; Input is ab; Result is ab, then nothing" begin
+    # Arrange
+    input = ParserInput("ab")
+    parser = sequenceC(charC('a'), charC('b'), eofP)
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == ('a', 'b', nothing)
+end
+
+@testset "Sequence a, b; Input is bb; Result is BadParse" begin
+    # Arrange
+    input = ParserInput("bb")
+    parser = sequenceC(charC('a'), charC('b'))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+end
+
+@testset "Sequence a, b, EOF; Input is abc; Result is BadParse" begin
+    # Arrange
+    input = ParserInput("abc")
+    parser = sequenceC(charC('a'), charC('b'), eofP)
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+end
+
+end # SequenceC
+
 end # Parser Combinators
