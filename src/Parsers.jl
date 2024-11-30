@@ -36,6 +36,8 @@ export
     sequenceC,
     manyC,
     notC,
+    transformC,
+    symbolP,
     BadParse
 
 struct ParserInput
@@ -122,5 +124,15 @@ function manyC(p)
 end
 
 notC(c::Char) = satisfyC(x -> x != c)
+
+function transformC(p, f)
+    input -> begin
+        (rest, value) = p(input)
+        (rest, f(value))
+    end
+end
+
+# TODO Must handle trailing spaces.
+const symbolP = transformC(manyC(anyP), join)
 
 end # module Parsers

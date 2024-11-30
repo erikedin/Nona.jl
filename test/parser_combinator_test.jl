@@ -352,4 +352,35 @@ end
 
 end # ManyC
 
+@testset "Parser transform" begin
+
+@testset "Many chars joined; Input is abc; Result is abc" begin
+    # Arrange
+    input = ParserInput("abc")
+    parser = transformC(manyC(anyP), join)
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == "abc"
+end
+
+end # Parser transformation
+
+@testset "symbolC" begin
+
+@testset "Symbol; Input is abc; Symbol is abc" begin
+    # Arrange
+    input = ParserInput("abc")
+
+    # Act
+    (_rest, result) = symbolP(input)
+
+    # Assert
+    @test result == "abc"
+end
+
+end # symbolC
+
 end # Parser Combinators
