@@ -296,4 +296,60 @@ end
 
 end # SequenceC
 
+@testset "notC" begin
+
+@testset "notC b; Input is a; Result is a" begin
+    # Arrange
+    input = ParserInput("a")
+    parser = notC('b')
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == 'a'
+end
+
+@testset "notC b; Input is b; Result is BadParse" begin
+    # Arrange
+    input = ParserInput("b")
+    parser = notC('b')
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+end
+
+end # notC
+
+@testset "ManyC" begin
+
+@testset "Many of any; Input is a; Result is a" begin
+    # Arrange
+    input = ParserInput("a")
+    parser = manyC(anyP)
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == ('a', )
+end
+
+@testset "Many of any; Input is abc; Result is abc" begin
+    # Arrange
+    input = ParserInput("abc")
+    parser = manyC(anyP)
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == ('a', 'b', 'c')
+end
+
+end # ManyC
+
 end # Parser Combinators

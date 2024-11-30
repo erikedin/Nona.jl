@@ -34,6 +34,8 @@ export
     choiceC,
     isspaceP,
     sequenceC,
+    manyC,
+    notC,
     BadParse
 
 struct ParserInput
@@ -104,5 +106,21 @@ function sequence((restp, valuep)::Tuple{ParserInput, T}, q) where {T}
     (restq, sequenceCombine(valuep, valueq))
 end
 sequenceC(parsers...) = input -> foldl(sequence, collect(parsers); init = (input, ()))
+
+many(value, (rest, _)::Tuple{ParserInput, BadParse}) = (rest, value, false)
+many(value, (rest, nextvalue)) = (rest, (value..., nextvalue), true)
+function manyC(p)
+    input -> begin
+        value = ()
+        rest = input
+        successful = true
+        while successful
+            (rest, value, successful) = many(value, p(rest))
+        end
+        (rest, value)
+    end
+end
+
+notC(c::Char) = satisfyC(x -> x != c)
 
 end # module Parsers
