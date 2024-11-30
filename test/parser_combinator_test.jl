@@ -381,6 +381,57 @@ end # Parser transformation
     @test result == "abc"
 end
 
+#@testset "Symbol; Input is 'abc '; Symbol is abc" begin
+#    # Arrange
+#    input = ParserInput("abc ")
+#
+#    # Act
+#    (_rest, result) = symbolP(input)
+#
+#    # Assert
+#    @test result == "abc"
+#end
+
 end # symbolC
+
+@testset "Ignore suffix" begin
+
+@testset "a then ignore b; Input is ab; Result is a" begin
+    # Arrange
+    input = ParserInput("ab")
+    parser = sequenceC(charC('a'), ignoreC(charC('b')))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == ('a', )
+end
+
+@testset "Ignore a then b; Input is ab; Result is b" begin
+    # Arrange
+    input = ParserInput("ab")
+    parser = sequenceC(ignoreC(charC('a')), charC('b'))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == ('b', )
+end
+
+@testset "a then ignore many b, then ignore EOF; Input is abb; Result is a" begin
+    # Arrange
+    input = ParserInput("abb")
+    parser = sequenceC(charC('a'), ignoreC(manyC(charC('b'))), ignoreC(eofP))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == ('a', )
+end
+
+end # Ignore suffix
 
 end # Parser Combinators

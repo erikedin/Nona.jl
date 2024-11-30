@@ -38,6 +38,7 @@ export
     notC,
     transformC,
     symbolP,
+    ignoreC,
     BadParse
 
 struct ParserInput
@@ -99,8 +100,24 @@ choiceC(parsers...) = foldl(choice, collect(parsers))
 
 Base.:|(p::Function, q::Function) = choiceC(p, q)
 
+function transformC(p, f)
+    input -> begin
+        (rest, value) = p(input)
+        (rest, f(value))
+    end
+end
+
+# Sequences
+
+struct Ignored
+    Ignored(x...) = new()
+end
+
+ignoreC(p) = transformC(p, Ignored)
+
 sequenceCombine(valuep::BadParse, _valueq) = valuep
 sequenceCombine(_valuep, valueq::BadParse) = valueq
+sequenceCombine(valuep, ::Ignored) = valuep
 sequenceCombine(valuep, valueq) = (valuep..., valueq)
 sequence(result::Tuple{ParserInput, BadParse}, _q) = result
 function sequence((restp, valuep)::Tuple{ParserInput, T}, q) where {T}
@@ -125,12 +142,6 @@ end
 
 notC(c::Char) = satisfyC(x -> x != c)
 
-function transformC(p, f)
-    input -> begin
-        (rest, value) = p(input)
-        (rest, f(value))
-    end
-end
 
 # TODO Must handle trailing spaces.
 const symbolP = transformC(manyC(anyP), join)
