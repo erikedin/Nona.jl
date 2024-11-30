@@ -109,20 +109,24 @@ function Base.:|(p::Parser{S}, q::Parser{T}) :: Parser{Union{S, T}} where {S, T}
     choiceC(p, q)
 end
 
-_transform(result::Tuple{ParserInput, BadParse}, _f) = result
-_transform((rest, value)::Tuple{ParserInput, T}, f) where {T} = (rest, f(value))
-
 struct To{T}
     f::Function
+
+    To{T}(f::Function) where {T} = new{T}(f)
+    # Shorthand to convert to a given type.
+    To{T}() where {T} = new{T}((xs...) -> T(xs...))
 end
 (to::To{T})(x...) where {T} = to.f(x...)
+
+_transform(result::Tuple{ParserInput, BadParse}, _f::To{T}) where {T} = result
+_transform((rest, value)::Tuple{ParserInput, S}, f::To{T}) where {S, T} = (rest, f(value))
 
 struct transformC{S, T} <: Parser{T}
     p::Parser{S}
     f::To{T}
 end
 
-function (parser::transformC{S, T})(input::ParserInput) :: Tuple{ParserInput, T} where {S, T}
+function (parser::transformC{S, T})(input::ParserInput) where {S, T}
     _transform(parser.p(input), parser.f)
 end
 
@@ -134,10 +138,11 @@ struct Ignored
     Ignored(x...) = new()
 end
 
-ignoreC(p) = transformC(p, Ignored)
+ignoreC(p) = transformC(p, To{Ignored}())
 
 sequenceCombine(valuep::BadParse, _valueq) = valuep
 sequenceCombine(_valuep, valueq::BadParse) = valueq
+sequenceCombine(::Ignored, value) = value
 sequenceCombine(valuep, ::Ignored) = valuep
 sequenceCombine(valuep, valueq) = (valuep..., valueq)
 sequence(result::Tuple{ParserInput, BadParse}, _q) = result
@@ -145,7 +150,6 @@ function sequence((restp, valuep)::Tuple{ParserInput, T}, q) where {T}
     (restq, valueq) = q(restp)
     (restq, sequenceCombine(valuep, valueq))
 end
-#sequenceC(parsers...) = input -> foldl(sequence, collect(parsers); init = (input, ()))
 
 struct sequenceC{S, T} <: Parser{Tuple{S, T}}
     p::Parser{S}

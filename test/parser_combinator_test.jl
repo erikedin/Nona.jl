@@ -422,57 +422,57 @@ end # Parser transformation
 
 # end # tokenP
 
-# @testset "Ignore" begin
+@testset "Ignore" begin
 
-# @testset "a then ignore b; Input is ab; Result is a" begin
-#     # Arrange
-#     input = ParserInput("ab")
-#     parser = sequenceC(charC('a'), ignoreC(charC('b')))
+@testset "a then ignore b; Input is ab; Result is a" begin
+    # Arrange
+    input = ParserInput("ab")
+    parser = charC('a') >> ignoreC(charC('b'))
 
-#     # Act
-#     (_rest, result) = parser(input)
+    # Act
+    (_rest, result) = parser(input)
 
-#     # Assert
-#     @test result == ('a', )
-# end
+    # Assert
+    @test result == 'a'
+end
 
-# @testset "Ignore a then b; Input is ab; Result is b" begin
-#     # Arrange
-#     input = ParserInput("ab")
-#     parser = sequenceC(ignoreC(charC('a')), charC('b'))
+@testset "Ignore a then b; Input is ab; Result is b" begin
+    # Arrange
+    input = ParserInput("ab")
+    parser = ignoreC(charC('a')) >> charC('b')
 
-#     # Act
-#     (_rest, result) = parser(input)
+    # Act
+    (_rest, result) = parser(input)
 
-#     # Assert
-#     @test result == ('b', )
-# end
+    # Assert
+    @test result == 'b'
+end
 
-# @testset "a then ignore many b, then ignore EOF; Input is abb; Result is a" begin
-#     # Arrange
-#     input = ParserInput("abb")
-#     parser = sequenceC(charC('a'), ignoreC(manyC(charC('b'))), ignoreC(eofP))
+@testset "a then ignore many b, then ignore EOF; Input is abb; Result is a" begin
+    # Arrange
+    input = ParserInput("abb")
+    parser = charC('a') >> ignoreC(manyC(charC('b'))) >> ignoreC(eofP)
 
-#     # Act
-#     (_rest, result) = parser(input)
+    # Act
+    (_rest, result) = parser(input)
 
-#     # Assert
-#     @test result == ('a', )
-# end
+    # Assert
+    @test result == 'a'
+end
 
-# @testset "a then ignore EOF; Input is ab; Result is BadParse" begin
-#     # Arrange
-#     input = ParserInput("ab")
-#     parser = sequenceC(charC('a'), ignoreC(eofP))
+@testset "a then ignore EOF; Input is ab; Result is BadParse" begin
+    # Arrange
+    input = ParserInput("ab")
+    parser = charC('a') >> ignoreC(eofP)
 
-#     # Act
-#     (_rest, result) = parser(input)
+    # Act
+    (_rest, result) = parser(input)
 
-#     # Assert
-#     @test typeof(result) == BadParse
-# end
+    # Assert
+    @test typeof(result) == BadParse
+end
 
-# end # Ignore
+end # Ignore
 
 # @testset "Ignore suffix" begin
 
