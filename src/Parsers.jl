@@ -30,6 +30,7 @@ export
     ParserInput,
     eofP,
     anyP,
+    satisfyC,
     charC,
     choiceC,
     spaceP,
@@ -40,6 +41,8 @@ export
     tokenP,
     ignoreC,
     ignoreSuffixC,
+    repeatC,
+    symbolC,
     To,
     BadParse
 
@@ -127,7 +130,6 @@ struct transformC{S, T} <: Parser{T}
 end
 
 function (parser::transformC{S, T})(input::ParserInput) where {S, T}
-    result = parser.p(input)
     _transform(parser.p(input), parser.f)
 end
 
@@ -141,6 +143,7 @@ end
 
 ignoreC(p) = transformC(p, To{Ignored}())
 
+sequenceCombine(result1::BadParse, ::BadParse) = result1
 sequenceCombine(_v, result::BadParse) = result
 sequenceCombine(result::BadParse, _v) = result
 sequenceCombine(v, ::Ignored) = v
@@ -197,5 +200,34 @@ end
 const tokenCharP = satisfyC(x -> x != ' ')
 const tokenCharsP = manyC(tokenCharP) >> ignoreC(manyC(spaceP))
 const tokenP = tokenCharsP |> To{String}(join)
+
+struct repeatC{T} <: Parser{Vector{T}}
+    p::Parser{T}
+    n::Int
+end
+
+function (parser::repeatC{Char})(input::ParserInput)
+    rest = input
+    values = ()
+    for i = 1:parser.n
+        (rest, value) = parser.p(rest)
+        values = (values..., value)
+    end
+    (rest, collect(values))
+end
+
+repeatAnyToStringC(n::Int) = repeatC(anyP, n) |> To{String}(join)
+
+struct symbolC <: Parser{String}
+    s::String
+end
+function (p::symbolC)(input::ParserInput)
+    (rest, value) = repeatAnyToStringC(length(p.s))(input)
+    if value == p.s
+        (rest, p.s)
+    else
+        (input, BadParse())
+    end
+end
 
 end # module Parsers

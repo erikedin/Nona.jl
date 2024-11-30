@@ -186,6 +186,18 @@ end
     @test result == 'b'
 end
 
+@testset "Choice of a or b; Input is c; Result is BadParse" begin
+    # Arrange
+    input = ParserInput("c")
+    parser = charC('a') | charC('b')
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+end
+
 @testset "Choice of a, b, or c; Input is c; Result is a" begin
     # Arrange
     input = ParserInput("a")
@@ -593,5 +605,127 @@ end
 end
 
 end # Ignore
+
+@testset "RepeatC" begin
+
+@testset "Repeat anyP 1 times; Input is a; Result is a" begin
+    # Arrange
+    input = ParserInput("a")
+    parser = repeatC(anyP, 1)
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == ['a']
+end
+
+@testset "Repeat anyP 1 times; Input is b; Result is b" begin
+    # Arrange
+    input = ParserInput("b")
+    parser = repeatC(anyP, 1)
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == ['b']
+end
+
+@testset "Repeat anyP 2 times; Input is ab; Result is a, b" begin
+    # Arrange
+    input = ParserInput("ab")
+    parser = repeatC(anyP, 2)
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == ['a', 'b']
+end
+
+end # RepeatC
+
+@testset "SymbolC" begin
+
+@testset "Symbol abc; Input is abc; Symbol is abc" begin
+    # Arrange
+    input = ParserInput("abc")
+    parser = symbolC("abc")
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == "abc"
+end
+
+@testset "Symbol abc; Input is abb; Result is BadParse" begin
+    # Arrange
+    input = ParserInput("abb")
+    parser = symbolC("abc")
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+end
+
+@testset "! followed by Symbol abc; Input is !abc; Symbol is abc" begin
+    # Arrange
+    input = ParserInput("!abc")
+    parser = charC('!') >> symbolC("abc")
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == ('!', "abc")
+end
+
+@testset "a or ! then abc; Input is !abc; Symbol is abc " begin
+    # Arrange
+    input = ParserInput("!abc")
+    abcP = charC('!') >> symbolC("abc")
+    aP = charC('a')
+    parser = aP | abcP
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == ('!', "abc")
+end
+
+@testset "a or ! then abc; Input is !foo; BadResult" begin
+    # Arrange
+    input = ParserInput("!foo")
+    abcP = charC('!') >> symbolC("abc")
+    aP = charC('a')
+    parser = aP | abcP
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+end
+
+@testset "a or ! then abc; Input is baz; BadResult" begin
+    # Arrange
+    input = ParserInput("baz")
+    abcP = charC('!') >> symbolC("abc")
+    aP = charC('a')
+    parser = aP | abcP
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+end
+
+end # SymbolC
 
 end # Parser Combinators

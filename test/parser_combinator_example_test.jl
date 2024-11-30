@@ -41,11 +41,15 @@ struct Baz <: ExamplesCommand
     value::String
 end
 
-# TODO Operator syntax for transformation: transformC(tokenP, Foo) -> tokenP |> Foo
+const notExclamationP = satisfyC(x -> x != '!')
+const guessTokenP = (notExclamationP >> tokenP) |> To{String}(join)
+const guessP = guessTokenP |> To{Foo}()
 
-const fooP = transformC(tokenP, Foo)
+const commandMarkerP = charC('!')
+const barTokenP = commandMarkerP >> symbolC("bar")
+const barP = barTokenP |> To{Bar}()
 
-const examplesP = fooP
+const examplesP = guessP | barP
 
 @testset "Parser Combinator Examples" begin
 
@@ -58,6 +62,39 @@ const examplesP = fooP
 
     # Assert
     @test result == Foo("foo")
+end
+
+@testset "Examples; Input is fnord; Result is Foo(fnord)" begin
+    # Arrange
+    input = ParserInput("fnord")
+
+    # Act
+    (rest, result) = examplesP(input)
+
+    # Assert
+    @test result == Foo("fnord")
+end
+
+@testset "Examples; Input is !foo; Result is BadParse" begin
+    # Arrange
+    input = ParserInput("!foo")
+
+    # Act
+    (rest, result) = examplesP(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+end
+
+@testset "Examples; Input is !bar; Result is Bar()" begin
+   # Arrange
+   input = ParserInput("!bar")
+
+   # Act
+   (rest, result) = examplesP(input)
+
+   # Assert
+   @test result == Bar()
 end
 
 end # Parser Combinator Examples
