@@ -32,13 +32,14 @@ export
     anyP,
     charC,
     choiceC,
-    isspaceP,
+    spaceP,
     sequenceC,
     manyC,
     notC,
     transformC,
-    symbolP,
+    tokenP,
     ignoreC,
+    ignoreSuffixC,
     BadParse
 
 struct ParserInput
@@ -82,7 +83,7 @@ end
 
 charC(c::Char) = satisfyC(x -> x == c)
 
-const isspaceP = satisfyC(x -> x == ' ')
+const spaceP = satisfyC(x -> x == ' ')
 
 # The previous parser failed, returning a BadParse. Try the next parser in the list.
 choice((input, _badParse)::Tuple{ParserInput, BadParse}, parser) = parser(input)
@@ -100,12 +101,9 @@ choiceC(parsers...) = foldl(choice, collect(parsers))
 
 Base.:|(p::Function, q::Function) = choiceC(p, q)
 
-function transformC(p, f)
-    input -> begin
-        (rest, value) = p(input)
-        (rest, f(value))
-    end
-end
+_transform(result::Tuple{ParserInput, BadParse}, _f) = result
+_transform((rest, value)::Tuple{ParserInput, T}, f) where {T} = (rest, f(value))
+transformC(p, f) = input -> _transform(p(input), f)
 
 # Sequences
 
@@ -126,6 +124,9 @@ function sequence((restp, valuep)::Tuple{ParserInput, T}, q) where {T}
 end
 sequenceC(parsers...) = input -> foldl(sequence, collect(parsers); init = (input, ()))
 
+# ignoreSuffixC parses p and suffix in a sequence, then retains only the result of p.
+ignoreSuffixC(p, suffix) = transformC(sequenceC(p, suffix), first)
+
 many(value, (rest, _)::Tuple{ParserInput, BadParse}) = (rest, value, false)
 many(value, (rest, nextvalue)) = (rest, (value..., nextvalue), true)
 function manyC(p)
@@ -142,8 +143,9 @@ end
 
 notC(c::Char) = satisfyC(x -> x != c)
 
-
 # TODO Must handle trailing spaces.
-const symbolP = transformC(manyC(anyP), join)
+const tokenCharP = satisfyC(x -> x != ' ')
+const tokenCharsP = ignoreSuffixC(manyC(tokenCharP), manyC(spaceP))
+const tokenP = transformC(tokenCharsP, join)
 
 end # module Parsers

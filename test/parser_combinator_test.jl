@@ -138,23 +138,23 @@ end
     @test typeof(result) == BadParse
 end
 
-@testset "Is space; Input is a space; Result is a space" begin
+@testset "Space; Input is a space; Result is a space" begin
     # Arrange
     input = ParserInput(" ")
 
     # Act
-    (_rest, result) = Parsers.isspaceP(input)
+    (_rest, result) = Parsers.spaceP(input)
 
     # Assert
     @test result == ' '
 end
 
-@testset "Is space; Input is a; Result is BadParse" begin
+@testset "Space; Input is a; Result is BadParse" begin
     # Arrange
     input = ParserInput("a")
 
     # Act
-    (_rest, result) = Parsers.isspaceP(input)
+    (_rest, result) = Parsers.spaceP(input)
 
     # Assert
     @test typeof(result) == BadParse
@@ -368,33 +368,47 @@ end
 
 end # Parser transformation
 
-@testset "symbolC" begin
+@testset "tokenP" begin
 
-@testset "Symbol; Input is abc; Symbol is abc" begin
+@testset "Token; Input is abc; Token is abc" begin
     # Arrange
     input = ParserInput("abc")
 
     # Act
-    (_rest, result) = symbolP(input)
+    (_rest, result) = tokenP(input)
 
     # Assert
     @test result == "abc"
 end
 
-#@testset "Symbol; Input is 'abc '; Symbol is abc" begin
-#    # Arrange
-#    input = ParserInput("abc ")
-#
-#    # Act
-#    (_rest, result) = symbolP(input)
-#
-#    # Assert
-#    @test result == "abc"
-#end
+@testset "Token swallows trailing spaces; Input is 'abc '; Token is abc" begin
+    # Arrange
+    input = ParserInput("abc ")
 
-end # symbolC
+    # Act
+    (rest, result) = tokenP(input)
+    (_eofrest, eofresult) = eofP(rest)
 
-@testset "Ignore suffix" begin
+    # Assert
+    @test result == "abc"
+    @test eofresult === nothing
+end
+
+@testset "Token swallows all trailing spaces; Input is 'abc  '; Token is abc" begin
+    # Arrange
+    input = ParserInput("abc  ")
+    parser = sequenceC(tokenP, ignoreC(eofP))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == ("abc", )
+end
+
+end # tokenP
+
+@testset "Ignore" begin
 
 @testset "a then ignore b; Input is ab; Result is a" begin
     # Arrange
@@ -430,6 +444,34 @@ end
 
     # Assert
     @test result == ('a', )
+end
+
+@testset "a then ignore EOF; Input is ab; Result is BadParse" begin
+    # Arrange
+    input = ParserInput("ab")
+    parser = sequenceC(charC('a'), ignoreC(eofP))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+end
+
+end # Ignore
+
+@testset "Ignore suffix" begin
+
+@testset "a then ignore suffix b; Input is ab; Result is a" begin
+    # Arrange
+    input = ParserInput("ab")
+    parser = ignoreSuffixC(charC('a'), charC('b'))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == 'a'
 end
 
 end # Ignore suffix
