@@ -127,10 +127,22 @@ function sequence((restp, valuep)::Tuple{ParserInput, T}, q) where {T}
     (restq, valueq) = q(restp)
     (restq, sequenceCombine(valuep, valueq))
 end
-sequenceC(parsers...) = input -> foldl(sequence, collect(parsers); init = (input, ()))
+#sequenceC(parsers...) = input -> foldl(sequence, collect(parsers); init = (input, ()))
+
+struct sequenceC{S, T} <: Parser{Tuple{S, T}}
+    p::Parser{S}
+    q::Parser{T}
+end
+function (parser::sequenceC{S, T})(input::ParserInput) where {S, T}
+    sequence(parser.p(input), parser.q)
+end
+
+function Base.:>>(p::Parser{S}, q::Parser{T}) :: Parser{Tuple{S, T}} where {S, T}
+    sequenceC(p, q)
+end
 
 # ignoreSuffixC parses p and suffix in a sequence, then retains only the result of p.
-ignoreSuffixC(p, suffix) = transformC(sequenceC(p, suffix), first)
+#ignoreSuffixC(p, suffix) = transformC(sequenceC(p, suffix), first)
 
 many(value, (rest, _)::Tuple{ParserInput, BadParse}) = (rest, value, false)
 many(value, (rest, nextvalue)) = (rest, (value..., nextvalue), true)
@@ -148,8 +160,8 @@ end
 
 notC(c::Char) = satisfyC(x -> x != c)
 
-const tokenCharP = satisfyC(x -> x != ' ')
-const tokenCharsP = ignoreSuffixC(manyC(tokenCharP), manyC(spaceP))
-const tokenP = transformC(tokenCharsP, join)
+#const tokenCharP = satisfyC(x -> x != ' ')
+#const tokenCharsP = ignoreSuffixC(manyC(tokenCharP), manyC(spaceP))
+#const tokenP = transformC(tokenCharsP, join)
 
 end # module Parsers
