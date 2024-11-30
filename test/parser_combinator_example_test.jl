@@ -20,18 +20,44 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-using Test
-using Behavior
-using Nona
+using Nona.Parsers
 
-include("parser_combinator_test.jl")
-include("parser_combinator_example_test.jl")
-#include("command_parser_test.jl")
-include("regression/dictionary_test.jl")
+# These tests ensure that that the Nona.Parsers module has enough functionality
+# to implement the game commands.
+# Here we will create a parser that recognizes three forms:
+# foo       : Corresponds to a guess, may not start with a !
+# !bar      : A command without parameters
+# !baz quux : A command with a single parameter
 
-parseoptions = Behavior.Gherkin.ParseOptions(use_experimental=true)
-@test runspec(
-    pkgdir(Nona),
-    tags="not @wip",
-    presenter=Behavior.TerseRealTimePresenter(Behavior.ColorConsolePresenter()),
-    parseoptions=parseoptions)
+abstract type ExamplesCommand end
+
+struct Foo <: ExamplesCommand
+    value::String
+end
+
+struct Bar <: ExamplesCommand end
+
+struct Baz <: ExamplesCommand
+    value::String
+end
+
+# TODO Operator syntax for transformation: transformC(tokenP, Foo) -> tokenP |> Foo
+
+const fooP = transformC(tokenP, Foo)
+
+const examplesP = fooP
+
+@testset "Parser Combinator Examples" begin
+
+@testset "Examples; Input is foo; Result is Foo(foo)" begin
+    # Arrange
+    input = ParserInput("foo")
+
+    # Act
+    (rest, result) = examplesP(input)
+
+    # Assert
+    @test result == Foo("foo")
+end
+
+end # Parser Combinator Examples
