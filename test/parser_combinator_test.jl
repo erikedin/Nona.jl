@@ -406,6 +406,18 @@ end
     @test result == ("abc", )
 end
 
+@testset "Two tokens; Input is abc def; Tokens are abc def" begin
+    # Arrange
+    input = ParserInput("abc def")
+    parser = sequenceC(tokenP, tokenP)
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == ("abc", "def")
+end
+
 end # tokenP
 
 @testset "Ignore" begin

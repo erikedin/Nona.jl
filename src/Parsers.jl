@@ -143,7 +143,6 @@ end
 
 notC(c::Char) = satisfyC(x -> x != c)
 
-# TODO Must handle trailing spaces.
 const tokenCharP = satisfyC(x -> x != ' ')
 const tokenCharsP = ignoreSuffixC(manyC(tokenCharP), manyC(spaceP))
 const tokenP = transformC(tokenCharsP, join)
