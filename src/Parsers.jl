@@ -87,8 +87,10 @@ function (p::satisfyC)(input::ParserInput)
 end
 
 charC(c::Char) = satisfyC(x -> x == c)
+notC(c::Char) = satisfyC(x -> x != c)
 
 const spaceP = satisfyC(x -> x == ' ')
+
 
 # The previous parser failed, returning a BadParse. Try the next parser in the list.
 choice((input, _badParse)::Tuple{ParserInput, BadParse}, parser::Parser{T}) where {T} = parser(input)
@@ -157,8 +159,6 @@ function manyC(p)
         (rest, value)
     end
 end
-
-notC(c::Char) = satisfyC(x -> x != c)
 
 #const tokenCharP = satisfyC(x -> x != ' ')
 #const tokenCharsP = ignoreSuffixC(manyC(tokenCharP), manyC(spaceP))

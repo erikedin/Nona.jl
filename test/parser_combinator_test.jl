@@ -298,33 +298,33 @@ end
 
 end # SequenceC
 
-# @testset "notC" begin
+@testset "notC" begin
 
-# @testset "notC b; Input is a; Result is a" begin
-#     # Arrange
-#     input = ParserInput("a")
-#     parser = notC('b')
+@testset "notC b; Input is a; Result is a" begin
+    # Arrange
+    input = ParserInput("a")
+    parser = notC('b')
 
-#     # Act
-#     (_rest, result) = parser(input)
+    # Act
+    (_rest, result) = parser(input)
 
-#     # Assert
-#     @test result == 'a'
-# end
+    # Assert
+    @test result == 'a'
+end
 
-# @testset "notC b; Input is b; Result is BadParse" begin
-#     # Arrange
-#     input = ParserInput("b")
-#     parser = notC('b')
+@testset "notC b; Input is b; Result is BadParse" begin
+    # Arrange
+    input = ParserInput("b")
+    parser = notC('b')
 
-#     # Act
-#     (_rest, result) = parser(input)
+    # Act
+    (_rest, result) = parser(input)
 
-#     # Assert
-#     @test typeof(result) == BadParse
-# end
+    # Assert
+    @test typeof(result) == BadParse
+end
 
-# end # notC
+end # notC
 
 # @testset "ManyC" begin
 
