@@ -40,6 +40,7 @@ export
     tokenP,
     ignoreC,
     ignoreSuffixC,
+    To,
     BadParse
 
 struct ParserInput
@@ -110,7 +111,22 @@ end
 
 _transform(result::Tuple{ParserInput, BadParse}, _f) = result
 _transform((rest, value)::Tuple{ParserInput, T}, f) where {T} = (rest, f(value))
-transformC(p, f) = input -> _transform(p(input), f)
+
+struct To{T}
+    f::Function
+end
+(to::To{T})(x...) where {T} = to.f(x...)
+
+struct transformC{S, T} <: Parser{T}
+    p::Parser{S}
+    f::To{T}
+end
+
+function (parser::transformC{S, T})(input::ParserInput) :: Tuple{ParserInput, T} where {S, T}
+    _transform(parser.p(input), parser.f)
+end
+
+Base.:|>(p::Parser{S}, f::To{T}) where {S, T} = transformC(p, f)
 
 # Sequences
 
@@ -148,16 +164,21 @@ end
 
 many(value, (rest, _)::Tuple{ParserInput, BadParse}) = (rest, value, false)
 many(value, (rest, nextvalue)) = (rest, (value..., nextvalue), true)
-function manyC(p)
-    input -> begin
-        value = ()
-        rest = input
-        successful = true
-        while successful
-            (rest, value, successful) = many(value, p(rest))
-        end
-        (rest, value)
+
+struct manyC{T} <: Parser{Vector{T}}
+    p::Parser{T}
+
+    manyC(p::Parser{T}) where {T} = new{T}(p)
+end
+
+function (parser::manyC{T})(input::ParserInput) :: Tuple{ParserInput, Vector{T}} where {T}
+    value = ()
+    rest = input
+    successful = true
+    while successful
+        (rest, value, successful) = many(value, parser.p(rest))
     end
+    (rest, collect(value))
 end
 
 #const tokenCharP = satisfyC(x -> x != ' ')

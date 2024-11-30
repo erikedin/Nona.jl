@@ -326,49 +326,49 @@ end
 
 end # notC
 
-# @testset "ManyC" begin
+@testset "ManyC" begin
 
-# @testset "Many of any; Input is a; Result is a" begin
-#     # Arrange
-#     input = ParserInput("a")
-#     parser = manyC(anyP)
+@testset "Many of any; Input is a; Result is a" begin
+    # Arrange
+    input = ParserInput("a")
+    parser = manyC(anyP)
 
-#     # Act
-#     (_rest, result) = parser(input)
+    # Act
+    (_rest, result) = parser(input)
 
-#     # Assert
-#     @test result == ('a', )
-# end
+    # Assert
+    @test result == ['a']
+end
 
-# @testset "Many of any; Input is abc; Result is abc" begin
-#     # Arrange
-#     input = ParserInput("abc")
-#     parser = manyC(anyP)
+@testset "Many of any; Input is abc; Result is abc" begin
+    # Arrange
+    input = ParserInput("abc")
+    parser = manyC(anyP)
 
-#     # Act
-#     (_rest, result) = parser(input)
+    # Act
+    (_rest, result) = parser(input)
 
-#     # Assert
-#     @test result == ('a', 'b', 'c')
-# end
+    # Assert
+    @test result == ['a', 'b', 'c']
+end
 
-# end # ManyC
+end # ManyC
 
-# @testset "Parser transform" begin
+@testset "Parser transform" begin
 
-# @testset "Many chars joined; Input is abc; Result is abc" begin
-#     # Arrange
-#     input = ParserInput("abc")
-#     parser = transformC(manyC(anyP), join)
+@testset "Many chars joined; Input is abc; Result is abc" begin
+    # Arrange
+    input = ParserInput("abc")
+    parser = manyC(anyP) |> To{String}(join)
 
-#     # Act
-#     (_rest, result) = parser(input)
+    # Act
+    (_rest, result) = parser(input)
 
-#     # Assert
-#     @test result == "abc"
-# end
+    # Assert
+    @test result == "abc"
+end
 
-# end # Parser transformation
+end # Parser transformation
 
 # @testset "tokenP" begin
 
