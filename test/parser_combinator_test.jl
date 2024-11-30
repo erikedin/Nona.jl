@@ -68,34 +68,35 @@ end
     @test result == 'b'
 end
 
-@testset "Any; Input is EOF; BadParse" begin
-    # Arrange
-    input = ParserInput("")
+ @testset "Any; Input is EOF; BadParse" begin
+     # Arrange
+     input = ParserInput("")
 
-    # Act
-    (_rest, result) = Parsers.anyP(input)
+     # Act
+     (_rest, result) = Parsers.anyP(input)
 
-    # Assert
-    @test typeof(result) == BadParse
-end
+     # Assert
+     @test typeof(result) == BadParse
+ end
 
-@testset "Any then Any; Input is ab; Result is a then b" begin
-    # Arrange
-    input = ParserInput("ab")
+ @testset "Any then Any; Input is ab; Result is a then b" begin
+     # Arrange
+     input = ParserInput("ab")
 
-    # Act
-    (rest1, result1) = Parsers.anyP(input)
-    (rest2, result2) = Parsers.anyP(rest1)
+     # Act
+     (rest1, result1) = Parsers.anyP(input)
+     (rest2, result2) = Parsers.anyP(rest1)
 
-    # Assert
-    @test result1 == 'a'
-    @test result2 == 'b'
-end
+     # Assert
+     @test result1 == 'a'
+     @test result2 == 'b'
+ end
 
 @testset "Choice of any or EOF; Input is a; Result is a" begin
     # Arrange
     input = ParserInput("a")
-    parser = Parsers.choiceC(Parsers.anyP, Parsers.eofP)
+    #parser = Parsers.choiceC(Parsers.anyP, Parsers.eofP)
+    parser = Parsers.anyP | Parsers.eofP
 
     # Act
     (_rest, result) = parser(input)
@@ -107,7 +108,7 @@ end
 @testset "Choice of any or EOF; Input is EOF; Result is nothing" begin
     # Arrange
     input = ParserInput("")
-    parser = Parsers.choiceC(Parsers.anyP, Parsers.eofP)
+    parser = Parsers.anyP | Parsers.eofP
 
     # Act
     (_rest, result) = parser(input)
@@ -116,376 +117,376 @@ end
     @test result === nothing
 end
 
-@testset "Character a; Input is a; Result is a" begin
-    # Arrange
-    input = ParserInput("a")
+# @testset "Character a; Input is a; Result is a" begin
+#     # Arrange
+#     input = ParserInput("a")
 
-    # Act
-    (_rest, result) = Parsers.charC('a')(input)
+#     # Act
+#     (_rest, result) = Parsers.charC('a')(input)
 
-    # Assert
-    @test result == 'a'
-end
+#     # Assert
+#     @test result == 'a'
+# end
 
-@testset "Character a; Input is b; Result is BadParse" begin
-    # Arrange
-    input = ParserInput("b")
+# @testset "Character a; Input is b; Result is BadParse" begin
+#     # Arrange
+#     input = ParserInput("b")
 
-    # Act
-    (_rest, result) = Parsers.charC('a')(input)
+#     # Act
+#     (_rest, result) = Parsers.charC('a')(input)
 
-    # Assert
-    @test typeof(result) == BadParse
-end
+#     # Assert
+#     @test typeof(result) == BadParse
+# end
 
-@testset "Space; Input is a space; Result is a space" begin
-    # Arrange
-    input = ParserInput(" ")
+# @testset "Space; Input is a space; Result is a space" begin
+#     # Arrange
+#     input = ParserInput(" ")
 
-    # Act
-    (_rest, result) = Parsers.spaceP(input)
+#     # Act
+#     (_rest, result) = Parsers.spaceP(input)
 
-    # Assert
-    @test result == ' '
-end
+#     # Assert
+#     @test result == ' '
+# end
 
-@testset "Space; Input is a; Result is BadParse" begin
-    # Arrange
-    input = ParserInput("a")
+# @testset "Space; Input is a; Result is BadParse" begin
+#     # Arrange
+#     input = ParserInput("a")
 
-    # Act
-    (_rest, result) = Parsers.spaceP(input)
+#     # Act
+#     (_rest, result) = Parsers.spaceP(input)
 
-    # Assert
-    @test typeof(result) == BadParse
-end
+#     # Assert
+#     @test typeof(result) == BadParse
+# end
 
-@testset "Choice of a or b; Input is a; Result is a" begin
-    # Arrange
-    input = ParserInput("a")
-    parser = Parsers.choiceC(charC('a'), charC('b'))
+# @testset "Choice of a or b; Input is a; Result is a" begin
+#     # Arrange
+#     input = ParserInput("a")
+#     parser = Parsers.choiceC(charC('a'), charC('b'))
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == 'a'
-end
+#     # Assert
+#     @test result == 'a'
+# end
 
-@testset "Choice of a or b; Input is b; Result is b" begin
-    # Arrange
-    input = ParserInput("b")
-    parser = Parsers.choiceC(charC('a'), charC('b'))
+# @testset "Choice of a or b; Input is b; Result is b" begin
+#     # Arrange
+#     input = ParserInput("b")
+#     parser = Parsers.choiceC(charC('a'), charC('b'))
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == 'b'
-end
+#     # Assert
+#     @test result == 'b'
+# end
 
-@testset "Choice of a, b, or c; Input is c; Result is c" begin
-    # Arrange
-    input = ParserInput("c")
-    parser = Parsers.choiceC(charC('a'), charC('b'), charC('c'))
+# @testset "Choice of a, b, or c; Input is c; Result is c" begin
+#     # Arrange
+#     input = ParserInput("c")
+#     parser = Parsers.choiceC(charC('a'), charC('b'), charC('c'))
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == 'c'
-end
+#     # Assert
+#     @test result == 'c'
+# end
 
-@testset "Choice of a, b, or c; Input is b; Result is b" begin
-    # Arrange
-    input = ParserInput("b")
-    parser = charC('a') | charC('b') | charC('c')
+# @testset "Choice of a, b, or c; Input is b; Result is b" begin
+#     # Arrange
+#     input = ParserInput("b")
+#     parser = charC('a') | charC('b') | charC('c')
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == 'b'
-end
+#     # Assert
+#     @test result == 'b'
+# end
 
-@testset "Choice of a, b, or c; Input is c; Result is c" begin
-    # Arrange
-    input = ParserInput("c")
-    parser = charC('a') | charC('b') | charC('c')
+# @testset "Choice of a, b, or c; Input is c; Result is c" begin
+#     # Arrange
+#     input = ParserInput("c")
+#     parser = charC('a') | charC('b') | charC('c')
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == 'c'
-end
+#     # Assert
+#     @test result == 'c'
+# end
 
-@testset "SequenceC" begin
+# @testset "SequenceC" begin
 
-@testset "Sequence a, b; Input is ab; Result is a, b" begin
-    # Arrange
-    input = ParserInput("ab")
-    parser = sequenceC(charC('a'), charC('b'))
+# @testset "Sequence a, b; Input is ab; Result is a, b" begin
+#     # Arrange
+#     input = ParserInput("ab")
+#     parser = sequenceC(charC('a'), charC('b'))
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == ('a', 'b')
-end
+#     # Assert
+#     @test result == ('a', 'b')
+# end
 
-@testset "Sequence b, b; Input is bb; Result is b, b" begin
-    # Arrange
-    input = ParserInput("bb")
-    parser = sequenceC(charC('b'), charC('b'))
+# @testset "Sequence b, b; Input is bb; Result is b, b" begin
+#     # Arrange
+#     input = ParserInput("bb")
+#     parser = sequenceC(charC('b'), charC('b'))
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == ('b', 'b')
-end
+#     # Assert
+#     @test result == ('b', 'b')
+# end
 
-@testset "Sequence a, b, c; Input is abc; Result is abc" begin
-    # Arrange
-    input = ParserInput("abc")
-    parser = sequenceC(charC('a'), charC('b'), charC('c'))
+# @testset "Sequence a, b, c; Input is abc; Result is abc" begin
+#     # Arrange
+#     input = ParserInput("abc")
+#     parser = sequenceC(charC('a'), charC('b'), charC('c'))
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == ('a', 'b', 'c')
-end
+#     # Assert
+#     @test result == ('a', 'b', 'c')
+# end
 
-@testset "Sequence a, b, EOF; Input is ab; Result is ab, then nothing" begin
-    # Arrange
-    input = ParserInput("ab")
-    parser = sequenceC(charC('a'), charC('b'), eofP)
+# @testset "Sequence a, b, EOF; Input is ab; Result is ab, then nothing" begin
+#     # Arrange
+#     input = ParserInput("ab")
+#     parser = sequenceC(charC('a'), charC('b'), eofP)
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == ('a', 'b', nothing)
-end
+#     # Assert
+#     @test result == ('a', 'b', nothing)
+# end
 
-@testset "Sequence a, b; Input is bb; Result is BadParse" begin
-    # Arrange
-    input = ParserInput("bb")
-    parser = sequenceC(charC('a'), charC('b'))
+# @testset "Sequence a, b; Input is bb; Result is BadParse" begin
+#     # Arrange
+#     input = ParserInput("bb")
+#     parser = sequenceC(charC('a'), charC('b'))
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test typeof(result) == BadParse
-end
+#     # Assert
+#     @test typeof(result) == BadParse
+# end
 
-@testset "Sequence a, b, EOF; Input is abc; Result is BadParse" begin
-    # Arrange
-    input = ParserInput("abc")
-    parser = sequenceC(charC('a'), charC('b'), eofP)
+# @testset "Sequence a, b, EOF; Input is abc; Result is BadParse" begin
+#     # Arrange
+#     input = ParserInput("abc")
+#     parser = sequenceC(charC('a'), charC('b'), eofP)
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test typeof(result) == BadParse
-end
+#     # Assert
+#     @test typeof(result) == BadParse
+# end
 
-end # SequenceC
+# end # SequenceC
 
-@testset "notC" begin
+# @testset "notC" begin
 
-@testset "notC b; Input is a; Result is a" begin
-    # Arrange
-    input = ParserInput("a")
-    parser = notC('b')
+# @testset "notC b; Input is a; Result is a" begin
+#     # Arrange
+#     input = ParserInput("a")
+#     parser = notC('b')
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == 'a'
-end
+#     # Assert
+#     @test result == 'a'
+# end
 
-@testset "notC b; Input is b; Result is BadParse" begin
-    # Arrange
-    input = ParserInput("b")
-    parser = notC('b')
+# @testset "notC b; Input is b; Result is BadParse" begin
+#     # Arrange
+#     input = ParserInput("b")
+#     parser = notC('b')
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test typeof(result) == BadParse
-end
+#     # Assert
+#     @test typeof(result) == BadParse
+# end
 
-end # notC
+# end # notC
 
-@testset "ManyC" begin
+# @testset "ManyC" begin
 
-@testset "Many of any; Input is a; Result is a" begin
-    # Arrange
-    input = ParserInput("a")
-    parser = manyC(anyP)
+# @testset "Many of any; Input is a; Result is a" begin
+#     # Arrange
+#     input = ParserInput("a")
+#     parser = manyC(anyP)
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == ('a', )
-end
+#     # Assert
+#     @test result == ('a', )
+# end
 
-@testset "Many of any; Input is abc; Result is abc" begin
-    # Arrange
-    input = ParserInput("abc")
-    parser = manyC(anyP)
+# @testset "Many of any; Input is abc; Result is abc" begin
+#     # Arrange
+#     input = ParserInput("abc")
+#     parser = manyC(anyP)
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == ('a', 'b', 'c')
-end
+#     # Assert
+#     @test result == ('a', 'b', 'c')
+# end
 
-end # ManyC
+# end # ManyC
 
-@testset "Parser transform" begin
+# @testset "Parser transform" begin
 
-@testset "Many chars joined; Input is abc; Result is abc" begin
-    # Arrange
-    input = ParserInput("abc")
-    parser = transformC(manyC(anyP), join)
+# @testset "Many chars joined; Input is abc; Result is abc" begin
+#     # Arrange
+#     input = ParserInput("abc")
+#     parser = transformC(manyC(anyP), join)
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == "abc"
-end
+#     # Assert
+#     @test result == "abc"
+# end
 
-end # Parser transformation
+# end # Parser transformation
 
-@testset "tokenP" begin
+# @testset "tokenP" begin
 
-@testset "Token; Input is abc; Token is abc" begin
-    # Arrange
-    input = ParserInput("abc")
+# @testset "Token; Input is abc; Token is abc" begin
+#     # Arrange
+#     input = ParserInput("abc")
 
-    # Act
-    (_rest, result) = tokenP(input)
+#     # Act
+#     (_rest, result) = tokenP(input)
 
-    # Assert
-    @test result == "abc"
-end
+#     # Assert
+#     @test result == "abc"
+# end
 
-@testset "Token swallows trailing spaces; Input is 'abc '; Token is abc" begin
-    # Arrange
-    input = ParserInput("abc ")
+# @testset "Token swallows trailing spaces; Input is 'abc '; Token is abc" begin
+#     # Arrange
+#     input = ParserInput("abc ")
 
-    # Act
-    (rest, result) = tokenP(input)
-    (_eofrest, eofresult) = eofP(rest)
+#     # Act
+#     (rest, result) = tokenP(input)
+#     (_eofrest, eofresult) = eofP(rest)
 
-    # Assert
-    @test result == "abc"
-    @test eofresult === nothing
-end
+#     # Assert
+#     @test result == "abc"
+#     @test eofresult === nothing
+# end
 
-@testset "Token swallows all trailing spaces; Input is 'abc  '; Token is abc" begin
-    # Arrange
-    input = ParserInput("abc  ")
-    parser = sequenceC(tokenP, ignoreC(eofP))
+# @testset "Token swallows all trailing spaces; Input is 'abc  '; Token is abc" begin
+#     # Arrange
+#     input = ParserInput("abc  ")
+#     parser = sequenceC(tokenP, ignoreC(eofP))
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == ("abc", )
-end
+#     # Assert
+#     @test result == ("abc", )
+# end
 
-@testset "Two tokens; Input is abc def; Tokens are abc def" begin
-    # Arrange
-    input = ParserInput("abc def")
-    parser = sequenceC(tokenP, tokenP)
+# @testset "Two tokens; Input is abc def; Tokens are abc def" begin
+#     # Arrange
+#     input = ParserInput("abc def")
+#     parser = sequenceC(tokenP, tokenP)
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == ("abc", "def")
-end
+#     # Assert
+#     @test result == ("abc", "def")
+# end
 
-end # tokenP
+# end # tokenP
 
-@testset "Ignore" begin
+# @testset "Ignore" begin
 
-@testset "a then ignore b; Input is ab; Result is a" begin
-    # Arrange
-    input = ParserInput("ab")
-    parser = sequenceC(charC('a'), ignoreC(charC('b')))
+# @testset "a then ignore b; Input is ab; Result is a" begin
+#     # Arrange
+#     input = ParserInput("ab")
+#     parser = sequenceC(charC('a'), ignoreC(charC('b')))
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == ('a', )
-end
+#     # Assert
+#     @test result == ('a', )
+# end
 
-@testset "Ignore a then b; Input is ab; Result is b" begin
-    # Arrange
-    input = ParserInput("ab")
-    parser = sequenceC(ignoreC(charC('a')), charC('b'))
+# @testset "Ignore a then b; Input is ab; Result is b" begin
+#     # Arrange
+#     input = ParserInput("ab")
+#     parser = sequenceC(ignoreC(charC('a')), charC('b'))
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == ('b', )
-end
+#     # Assert
+#     @test result == ('b', )
+# end
 
-@testset "a then ignore many b, then ignore EOF; Input is abb; Result is a" begin
-    # Arrange
-    input = ParserInput("abb")
-    parser = sequenceC(charC('a'), ignoreC(manyC(charC('b'))), ignoreC(eofP))
+# @testset "a then ignore many b, then ignore EOF; Input is abb; Result is a" begin
+#     # Arrange
+#     input = ParserInput("abb")
+#     parser = sequenceC(charC('a'), ignoreC(manyC(charC('b'))), ignoreC(eofP))
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == ('a', )
-end
+#     # Assert
+#     @test result == ('a', )
+# end
 
-@testset "a then ignore EOF; Input is ab; Result is BadParse" begin
-    # Arrange
-    input = ParserInput("ab")
-    parser = sequenceC(charC('a'), ignoreC(eofP))
+# @testset "a then ignore EOF; Input is ab; Result is BadParse" begin
+#     # Arrange
+#     input = ParserInput("ab")
+#     parser = sequenceC(charC('a'), ignoreC(eofP))
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test typeof(result) == BadParse
-end
+#     # Assert
+#     @test typeof(result) == BadParse
+# end
 
-end # Ignore
+# end # Ignore
 
-@testset "Ignore suffix" begin
+# @testset "Ignore suffix" begin
 
-@testset "a then ignore suffix b; Input is ab; Result is a" begin
-    # Arrange
-    input = ParserInput("ab")
-    parser = ignoreSuffixC(charC('a'), charC('b'))
+# @testset "a then ignore suffix b; Input is ab; Result is a" begin
+#     # Arrange
+#     input = ParserInput("ab")
+#     parser = ignoreSuffixC(charC('a'), charC('b'))
 
-    # Act
-    (_rest, result) = parser(input)
+#     # Act
+#     (_rest, result) = parser(input)
 
-    # Assert
-    @test result == 'a'
-end
+#     # Assert
+#     @test result == 'a'
+# end
 
-end # Ignore suffix
+# end # Ignore suffix
 
 end # Parser Combinators

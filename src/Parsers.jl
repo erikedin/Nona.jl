@@ -55,29 +55,34 @@ consume(input::ParserInput) = (ParserInput(input, 1), input.text[input.position]
 
 struct BadParse end
 
-
+abstract type Parser{T} end
 """
     eofP(input::ParserInput) :: Tuple{ParserInput, Union{BadParse, Nothing}}
 
 Parse EOF.
 """
-eofP(input::ParserInput) = (input, eof(input) ? nothing : BadParse())
+struct eofC <: Parser{Nothing} end
+(p::eofC)(input::ParserInput) = (input, eof(input) ? nothing : BadParse())
+const eofP = eofC()
 
 """
     anyP(input::ParserInput) :: Tuple{ParserInput, Union{BadParse, Char}}
 
 Parse any character. Fails on EOF.
 """
-anyP(input::ParserInput) = eof(input) ? (input, BadParse()) : consume(input)
+struct anyC <: Parser{Char} end
+(::anyC)(input::ParserInput) = eof(input) ? (input, BadParse()) : consume(input)
+const anyP = anyC()
 
-function satisfyC(predicate)
-    input -> begin
-        (rest, x) = anyP(input)
-        if predicate(x)
-            (rest, x)
-        else
-            (input, BadParse())
-        end
+struct satisfyC <: Parser{Char}
+    predicate::Function
+end
+function (p::satisfyC)(input::ParserInput)
+    (rest, x) = anyP(input)
+    if p.predicate(x)
+        (rest, x)
+    else
+        (input, BadParse())
     end
 end
 
@@ -86,20 +91,20 @@ charC(c::Char) = satisfyC(x -> x == c)
 const spaceP = satisfyC(x -> x == ' ')
 
 # The previous parser failed, returning a BadParse. Try the next parser in the list.
-choice((input, _badParse)::Tuple{ParserInput, BadParse}, parser) = parser(input)
+choice((input, _badParse)::Tuple{ParserInput, BadParse}, parser::Parser{T}) where {T} = parser(input)
 # A previous parser was successful. Return the successful result and skip this parser.
-choice(result::Tuple{ParserInput, T}, _parser) where {T} = result
-# The first parser takes two parsers, and forwards to one of the above choice methods.
-choice(p, q) = input -> choice(p(input), q)
+choice(result::Tuple{ParserInput, S}, _parser::Parser{T}) where {S, T} = result
 
-"""
-    choice(p, q)
+struct choiceC{S, T} <: Parser{Union{S, T}}
+    p::Parser{S}
+    q::Parser{T}
+end
 
-Create a parser that chooses between several other parsers.
-"""
-choiceC(parsers...) = foldl(choice, collect(parsers))
+(parser::choiceC{S, T})(input::ParserInput) where {S, T} = choice(parser.p(input), parser.q)
 
-Base.:|(p::Function, q::Function) = choiceC(p, q)
+function Base.:|(p::Parser{S}, q::Parser{T}) :: Parser{Union{S, T}} where {S, T}
+    choiceC(p, q)
+end
 
 _transform(result::Tuple{ParserInput, BadParse}, _f) = result
 _transform((rest, value)::Tuple{ParserInput, T}, f) where {T} = (rest, f(value))
