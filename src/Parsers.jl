@@ -141,32 +141,6 @@ end
 
 ignoreC(p) = transformC(p, To{Ignored}())
 
-# sequenceCombine(valuep::BadParse, _valueq) = valuep
-# sequenceCombine(_valuep, valueq::BadParse) = valueq
-# sequenceCombine(::Ignored, value) = value
-# sequenceCombine(valuep, ::Ignored) = valuep
-# sequenceCombine(valuep, valueq) = (valuep..., valueq)
-# sequence(result::Tuple{ParserInput, BadParse}, _q) = result
-# function sequence((restp, valuep)::Tuple{ParserInput, T}, q) where {T}
-#     (restq, valueq) = q(restp)
-#     (restq, sequenceCombine(valuep, valueq))
-# end
-#
-# struct sequenceC{T} <: Parser{T}
-#     parsers::Vector{Parser}
-#
-#     sequenceC(p::Parser{P}, q::Parser{Ignored}) where {P} = new{P}([p, q])
-#     sequenceC(p::Parser{P}, q::Parser{Q}) where {P, Q} = new{Tuple{P, Q}}([p, q])
-#     sequenceC(p::Parser{Tuple{S, U}}, q::Parser{Q}) where {S, U, Q} = new{Tuple{S, U, Q}}([p.parsers..., q])
-# end
-# function (parser::sequenceC{T})(input::ParserInput) where {T}
-#     foldl(sequence, parser.parsers; init = (input, ()))
-# end
-#
-# function Base.:>>(p::Parser{S}, q::Parser{T}) where {S, T}
-#     sequenceC(p, q)
-# end
-
 sequenceCombine(_v, result::BadParse) = result
 sequenceCombine(result::BadParse, _v) = result
 sequenceCombine(v, ::Ignored) = v
@@ -220,8 +194,8 @@ function (parser::manyC{T})(input::ParserInput) :: Tuple{ParserInput, Vector{T}}
     (rest, collect(value))
 end
 
-# const tokenCharP = satisfyC(x -> x != ' ')
-# const tokenCharsP = manyC(tokenCharP) >> ignoreC(manyC(spaceP))
-# const tokenP = transformC(tokenCharsP, To{String}(join))
+const tokenCharP = satisfyC(x -> x != ' ')
+const tokenCharsP = manyC(tokenCharP) >> ignoreC(manyC(spaceP))
+const tokenP = tokenCharsP |> To{String}(join)
 
 end # module Parsers

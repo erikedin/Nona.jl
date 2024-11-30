@@ -394,86 +394,138 @@ end
 
 end # Parser transformation
 
-# @testset "tokenP" begin
-#
-# @testset "Token; Input is abc; Token is abc" begin
-#     # Arrange
-#     input = ParserInput("abc")
-#
-#     # Act
-#     (_rest, result) = tokenP(input)
-#
-#     # Assert
-#     @test result == "abc"
-# end
-#
-# @testset "Token swallows trailing spaces; Input is 'abc '; Token is abc" begin
-#     # Arrange
-#     input = ParserInput("abc ")
-#     parser = tokenP
-#     println(tokenP)
-#     println(typeof(tokenP))
-#
-#     # Act
-#     (rest, result) = parser(input)
-#     (_eofrest, eofresult) = eofP(rest)
-#
-#     # Assert
-#     @test result == "abc"
-#     @test eofresult === nothing
-# end
-#
-# @testset "Token swallows all trailing spaces; Input is 'abc  '; Token is abc" begin
-#     # Arrange
-#     input = ParserInput("abc  ")
-#     parser = tokenP >> ignoreC(eofP)
-#
-#     # Act
-#     (_rest, result) = parser(input)
-#
-#     # Assert
-#     @test result == "abc"
-# end
-#
-# @testset "One token; Input is abc def; Rest is def" begin
-#     # Arrange
-#     input = ParserInput("abc def")
-#     parser = tokenP
-#
-#     # Act
-#     (rest, _result) = parser(input)
-#
-#     # Assert
-#     @test rest == ParserInput("abc def", 5)
-# end
-#
-# @testset "Two tokens; Input is abc def; Result is abc, def" begin
-#     # Arrange
-#     input = ParserInput("abc def")
-#     parser = tokenP
-#
-#     # Act
-#     (rest1, result1) = parser(input)
-#     (rest2, result2) = parser(rest1)
-#
-#     # Assert
-#     @test result1 == "abc"
-#     @test result2 == "def"
-# end
-#
-# @testset "Two tokens; Input is abc def; Tokens are abc def" begin
-#    # Arrange
-#    input = ParserInput("abc def")
-#    parser = tokenP >> tokenP
-#
-#    # Act
-#    (_rest, result) = parser(input)
-#
-#    # Assert
-#    @test result == ("abc", "def")
-# end
-#
-# end # tokenP
+@testset "tokenP" begin
+
+@testset "manyC(anyP) to string; Input is abc; Result is abc" begin
+    # Arrange
+    input = ParserInput("abc")
+    parser = manyC(anyP) |> To{String}(join)
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == "abc"
+end
+
+@testset "manyC(anyP) to string, spaces; Input is 'abc '; Result is 'abc '" begin
+    # Arrange
+    input = ParserInput("abc ")
+    notSpaceP = Parsers.satisfyC(x -> x != ' ')
+    charsP = manyC(notSpaceP)  |> To{String}(join)
+    parser = charsP >> spaceP
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == ("abc", ' ')
+end
+
+@testset "manyC(anyP) to string, ignore space; Input is 'abc '; Result is 'abc'" begin
+    # Arrange
+    input = ParserInput("abc ")
+    notSpaceP = Parsers.satisfyC(x -> x != ' ')
+    charsP = manyC(notSpaceP)  |> To{String}(join)
+    parser = charsP >> ignoreC(spaceP)
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == "abc"
+end
+
+@testset "manyC(anyP), ignore space to string; Input is 'abc '; Result is 'abc'" begin
+    # Arrange
+    input = ParserInput("abc ")
+    notSpaceP = Parsers.satisfyC(x -> x != ' ')
+    charsP = manyC(notSpaceP) >> ignoreC(spaceP)
+    parser = charsP |> To{String}(join)
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == "abc"
+end
+
+@testset "Token; Input is abc; Token is abc" begin
+    # Arrange
+    input = ParserInput("abc")
+
+    # Act
+    (_rest, result) = tokenP(input)
+
+    # Assert
+    @test result == "abc"
+end
+
+@testset "Token swallows trailing spaces; Input is 'abc '; Token is abc" begin
+    # Arrange
+    input = ParserInput("abc ")
+    parser = tokenP
+
+    # Act
+    (rest, result) = parser(input)
+    (_eofrest, eofresult) = eofP(rest)
+
+    # Assert
+    @test result == "abc"
+    @test eofresult === nothing
+end
+
+@testset "Token swallows all trailing spaces; Input is 'abc  '; Token is abc" begin
+    # Arrange
+    input = ParserInput("abc  ")
+    parser = tokenP >> ignoreC(eofP)
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == "abc"
+end
+
+@testset "One token; Input is abc def; Rest is def" begin
+    # Arrange
+    input = ParserInput("abc def")
+    parser = tokenP
+
+    # Act
+    (rest, _result) = parser(input)
+
+    # Assert
+    @test rest == ParserInput("abc def", 5)
+end
+
+@testset "Two tokens; Input is abc def; Result is abc, def" begin
+    # Arrange
+    input = ParserInput("abc def")
+    parser = tokenP
+
+    # Act
+    (rest1, result1) = parser(input)
+    (rest2, result2) = parser(rest1)
+
+    # Assert
+    @test result1 == "abc"
+    @test result2 == "def"
+end
+
+@testset "Two tokens; Input is abc def; Tokens are abc def" begin
+   # Arrange
+   input = ParserInput("abc def")
+   parser = tokenP >> tokenP
+
+   # Act
+   (_rest, result) = parser(input)
+
+   # Assert
+   @test result == ("abc", "def")
+end
+
+end # tokenP
 
 @testset "Ignore" begin
 
