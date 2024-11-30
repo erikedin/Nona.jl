@@ -370,57 +370,86 @@ end
 
 end # Parser transformation
 
-# @testset "tokenP" begin
+@testset "tokenP" begin
 
-# @testset "Token; Input is abc; Token is abc" begin
-#     # Arrange
-#     input = ParserInput("abc")
+@testset "Token; Input is abc; Token is abc" begin
+    # Arrange
+    input = ParserInput("abc")
 
-#     # Act
-#     (_rest, result) = tokenP(input)
+    # Act
+    (_rest, result) = tokenP(input)
 
-#     # Assert
-#     @test result == "abc"
-# end
+    # Assert
+    @test result == "abc"
+end
 
-# @testset "Token swallows trailing spaces; Input is 'abc '; Token is abc" begin
-#     # Arrange
-#     input = ParserInput("abc ")
+@testset "Token swallows trailing spaces; Input is 'abc '; Token is abc" begin
+    # Arrange
+    input = ParserInput("abc ")
 
-#     # Act
-#     (rest, result) = tokenP(input)
-#     (_eofrest, eofresult) = eofP(rest)
+    # Act
+    (rest, result) = tokenP(input)
+    (_eofrest, eofresult) = eofP(rest)
 
-#     # Assert
-#     @test result == "abc"
-#     @test eofresult === nothing
-# end
+    # Assert
+    @test result == "abc"
+    @test eofresult === nothing
+end
 
-# @testset "Token swallows all trailing spaces; Input is 'abc  '; Token is abc" begin
-#     # Arrange
-#     input = ParserInput("abc  ")
-#     parser = sequenceC(tokenP, ignoreC(eofP))
+@testset "Token swallows all trailing spaces; Input is 'abc  '; Token is abc" begin
+    # Arrange
+    input = ParserInput("abc  ")
+    parser = tokenP >> ignoreC(eofP)
 
-#     # Act
-#     (_rest, result) = parser(input)
+    # Act
+    (_rest, result) = parser(input)
 
-#     # Assert
-#     @test result == ("abc", )
-# end
+    # Assert
+    @test result == "abc"
+end
+
+@testset "One token; Input is abc def; Rest is def" begin
+    # Arrange
+    input = ParserInput("abc def")
+    parser = tokenP
+
+    # Act
+    (rest, _result) = parser(input)
+
+    # Assert
+    @test rest == ParserInput("abc def", 5)
+end
+
+@testset "Two tokens; Input is abc def; Result is abc, def" begin
+    # Arrange
+    input = ParserInput("abc def")
+    parser = tokenP
+
+    # Act
+    (rest1, result1) = parser(input)
+    (rest2, result2) = parser(rest1)
+
+    # Assert
+    @test result1 == "abc"
+    @test result2 == "def"
+end
 
 # @testset "Two tokens; Input is abc def; Tokens are abc def" begin
-#     # Arrange
-#     input = ParserInput("abc def")
-#     parser = sequenceC(tokenP, tokenP)
-
-#     # Act
-#     (_rest, result) = parser(input)
-
-#     # Assert
-#     @test result == ("abc", "def")
+#    # Arrange
+# #    println("#########")
+# #    println("## Test start")
+# #    println("#########")
+#    input = ParserInput("abc def")
+#    parser = tokenP >> tokenP
+#
+#    # Act
+#    (_rest, result) = parser(input)
+#
+#    # Assert
+#    @test result == ("abc", "def")
 # end
 
-# end # tokenP
+end # tokenP
 
 @testset "Ignore" begin
 
@@ -473,21 +502,5 @@ end
 end
 
 end # Ignore
-
-# @testset "Ignore suffix" begin
-
-# @testset "a then ignore suffix b; Input is ab; Result is a" begin
-#     # Arrange
-#     input = ParserInput("ab")
-#     parser = ignoreSuffixC(charC('a'), charC('b'))
-
-#     # Act
-#     (_rest, result) = parser(input)
-
-#     # Assert
-#     @test result == 'a'
-# end
-
-# end # Ignore suffix
 
 end # Parser Combinators
