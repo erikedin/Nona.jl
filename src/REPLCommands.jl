@@ -36,7 +36,6 @@ struct NewGameAction <: REPLCommand end
 struct NewGameTypeAction <: REPLCommand
     gametype::Type{<:Game}
 end
-struct BackToGameModeAction end
 struct ExitAction <: REPLCommand end
 
 end

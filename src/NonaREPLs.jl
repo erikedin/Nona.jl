@@ -124,7 +124,6 @@ struct ThisPlayer <: Player end
 
 
 const GameModeIndex = 1
-const CommandModeIndex = 2
 
 abstract type REPLMode end
 
@@ -155,32 +154,6 @@ function playerinput!(mode::GameMode, text::String, game::Game)
     playerinput!(mode, text, command, game)
 end
 
-struct CommandMode <: REPLMode
-    io::IO
-
-    CommandMode(io::IO) = new(io)
-end
-prompt(p::CommandMode, game::Game) = print(p.io, "$(gamename(game))# ")
-
-function playerinput!(mode::CommandMode, text::String, game::Game)
-    if text == "nian"
-        command = ShowCurrentPuzzle()
-        player = ThisPlayer()
-        gameaction!(game, player, command)
-
-        [BackToGameModeAction()]
-    elseif text == "ny Hamming"
-        [BackToGameModeAction(), NewGameTypeAction(HammingGame)]
-    elseif text == "ny"
-        [BackToGameModeAction(), NewGameAction()]
-    elseif text == "avsluta"
-        [ExitAction()]
-    else
-        println(mode.io, "Okänt kommando: $(text)")
-        []
-    end
-end
-
 #
 # NonaREPL is the REPL for the games (currently only Niancat)
 #
@@ -198,27 +171,25 @@ end
 mutable struct NonaREPL
     io::IO
     dictionary::Dictionary
-    modes::Tuple{GameMode, CommandMode}
+    modes::Tuple{GameMode, Nothing}
     game::Game
     currentmode::Int
 
     function NonaREPL(dictionary::Dictionary; io::IO = stdout)
         gamemode = GameMode(io)
-        commandmode = CommandMode(io)
 
         game = createnewgame(NiancatGame, dictionary, io)
 
-        new(io, dictionary, (gamemode, commandmode), game, GameModeIndex)
+        new(io, dictionary, (gamemode, nothing), game, GameModeIndex)
     end
 
     function NonaREPL(gamefactory::Function, dictionary::Dictionary; io::IO = stdout)
         gamemode = GameMode(io)
-        commandmode = CommandMode(io)
 
         # The gamefactory is a method (::IO) -> Game
         game = gamefactory(io)
 
-        new(io, dictionary, (gamemode, commandmode), game, GameModeIndex)
+        new(io, dictionary, (gamemode, nothing), game, GameModeIndex)
     end
 end
 
@@ -247,10 +218,6 @@ function start(nona::NonaREPL)
     prompt(nona)
 end
 
-function doaction(nona::NonaREPL, ::BackToGameModeAction)
-    nona.currentmode = GameModeIndex
-end
-
 function doaction(nona::NonaREPL, ::NewGameAction)
     showsolutions(nona)
     nona.game = createnewgame(typeof(nona.game), nona.dictionary, nona.io)
@@ -263,26 +230,21 @@ function doaction(nona::NonaREPL, newgame::NewGameTypeAction)
     showpuzzle(nona)
 end
 
-function doaction(nona::NonaREPL, ::ExitAction)
+function doaction(::NonaREPL, ::ExitAction)
     exit(0)
 end
 
 function playerinput!(nona::NonaREPL, text::String)
-    if text == "#"
-        nona.currentmode = CommandModeIndex
-        prompt(nona)
-    else
-        # The player input will result in possibly something published,
-        # but also some actions for NonaREPL to take.
-        # Examples: Go back to game mode. Start a new game.
-        actions = playerinput!(nona.modes[nona.currentmode], text, nona.game)
-        for action in actions
-            doaction(nona, action)
-        end
-
-        # Show a new prompt.
-        prompt(nona)
+    # The player input will result in possibly something published,
+    # but also some actions for NonaREPL to take.
+    # Examples: Go back to game mode. Start a new game.
+    actions = playerinput!(nona.modes[nona.currentmode], text, nona.game)
+    for action in actions
+        doaction(nona, action)
     end
+
+    # Show a new prompt.
+    prompt(nona)
 end
 
 #
