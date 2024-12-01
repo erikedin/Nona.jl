@@ -35,7 +35,7 @@ using Nona.Parsers
     @test result === nothing
 end
 
-@testset "EOF; Input is EOF; Result is nothing (OK)" begin
+@testset "EOF; Input is a; Result is BadParse" begin
     # Arrange
     input = ParserInput("a")
 
@@ -388,6 +388,42 @@ end
     @test result == ['a', 'b', 'c']
 end
 
+@testset "Many of a; Input is b; Result is empty" begin
+    # Arrange
+    input = ParserInput("b")
+    parser = manyC(charC('a'))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == []
+end
+
+@testset "Many of a, then b; Input is b; Result is empty list, then b" begin
+    # Arrange
+    input = ParserInput("b")
+    parser = manyC(charC('a')) >> charC('b')
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == ([], 'b')
+end
+
+@testset "Many of a, then b; Input is ab; Result is a, then b" begin
+    # Arrange
+    input = ParserInput("ab")
+    parser = manyC(charC('a')) >> charC('b')
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == (['a'], 'b')
+end
+
 end # ManyC
 
 @testset "Parser transform" begin
@@ -727,5 +763,83 @@ end
 end
 
 end # SymbolC
+
+@testset "BadParse behavior when combining parsers" begin
+
+@testset "EOF or a; Input is a; Result is a" begin
+    # Arrange
+    input = ParserInput("a")
+    parser = eofP | charC('a')
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == 'a'
+end
+
+@testset "Symbol ab or cd; Input is ab; Result is ab" begin
+    # Arrange
+    input = ParserInput("ab")
+    parser = symbolC("ab") | symbolC("cd")
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == "ab"
+end
+
+@testset "Symbol ab or cd; Input is cd; Result is cd" begin
+    # Arrange
+    input = ParserInput("cd")
+    parser = symbolC("ab") | symbolC("cd")
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == "cd"
+end
+
+@testset "Many a or b; Input is aa; Result is aa" begin
+    # Arrange
+    input = ParserInput("aa")
+    parser = manyC(charC('a')) | manyC(charC('b'))
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == ['a', 'a']
+end
+
+@testset "Many a or b; Input is bb; Result is empty" begin
+    # Arrange
+    input = ParserInput("bb")
+    parser = manyC(charC('a')) | manyC(charC('b'))
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == []
+end
+
+@testset "Many; Input is bb; Result is bb" begin
+    # Arrange
+    input = ParserInput("bb")
+    notB = satisfyC(x -> x != 'b')
+    firstPart = notB >> manyC(charC('a'))
+    parser = firstPart | manyC(charC('b'))
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == ['b', 'b']
+end
+
+end # BadParse behavior
 
 end # Parser Combinators

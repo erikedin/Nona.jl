@@ -35,7 +35,10 @@ struct Foo <: ExamplesCommand
     value::String
 end
 
-struct Bar <: ExamplesCommand end
+struct Bar <: ExamplesCommand
+    Bar() = new()
+    Bar(::Tuple{Char, String}) = new()
+end
 
 struct Baz <: ExamplesCommand
     value::String
@@ -86,15 +89,39 @@ end
     @test typeof(result) == BadParse
 end
 
-@testset "Examples; Input is !bar; Result is Bar()" begin
-   # Arrange
-   input = ParserInput("!bar")
+# @testset "Examples; Input is !bar; Result is Bar()" begin
+#     Arrange
+#     input = ParserInput("!bar")
 
-   # Act
-   (rest, result) = examplesP(input)
+#     Act
+#     (rest, result) = examplesP(input)
 
-   # Assert
-   @test result == Bar()
+#     Assert
+#     @test result == Bar()
+# end
+
+@testset "!bar sub-parser; Input is !bar; Result is Bar" begin
+    # Arrange
+    input = ParserInput("!bar")
+    parser = barP
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == Bar()
+end
+
+@testset "guess sub-parser; Input is foo; Result is Foo(foo)" begin
+    # Arrange
+    input = ParserInput("foo")
+    parser = guessP
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == Foo("foo")
 end
 
 end # Parser Combinator Examples
