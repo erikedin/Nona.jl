@@ -52,7 +52,10 @@ const commandMarkerP = charC('!')
 const barTokenP = commandMarkerP >> symbolC("bar")
 const barP = barTokenP |> To{Bar}()
 
-const examplesP = guessP | barP
+const bazTokenP = ignoreC(commandMarkerP) >> ignoreC(symbolC("baz")) >> ignoreC(spaceP) >> tokenP
+const bazP = bazTokenP |> To{Baz}()
+
+const examplesP = guessP | barP | bazP
 
 @testset "Parser Combinator Examples" begin
 
@@ -100,6 +103,17 @@ end
     @test result == Bar()
 end
 
+@testset "Examples; Input is !baz quux; Result is Baz(quux)" begin
+    # Arrange
+    input = ParserInput("!baz quux")
+
+    # Act
+    (rest, result) = examplesP(input)
+
+    # Assert
+    @test result == Baz("quux")
+end
+
 # These tests were created to reproduce an issue. They are not
 # helpful as examples.
 @testset "Regression tests" begin
@@ -128,5 +142,21 @@ end
 end
 
 end # Regression tests
+
+@testset "Parts of commands" begin
+
+@testset "bazP; Input is '!baz quux'; Result is Baz(quux)" begin
+    # Arrange
+    input = ParserInput("!baz quux")
+    parser = bazP
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == Baz("quux")
+end
+
+end # Parts of commands
 
 end # Parser Combinator Examples

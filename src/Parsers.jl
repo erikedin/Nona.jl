@@ -158,20 +158,24 @@ struct sequenceC{T} <: Parser{T}
     parsers::Vector{Parser}
 
     sequenceC(p::sequenceC{Tuple{S, U}}, q::Parser{Ignored}) where {S, U} = new{Tuple{S, U}}([p.parsers..., q])
+    sequenceC(p::sequenceC{Tuple{}}, q::Parser{Ignored}) = new{Tuple{}}([p.parsers..., q])
+    sequenceC(p::sequenceC{Tuple{}}, q::Parser{Q}) where {Q} = new{Tuple{Q}}([p.parsers..., q])
     sequenceC(p::sequenceC{Tuple{S, U}}, q::Parser{Q}) where {S, U, Q} = new{Tuple{S, U, Q}}([p.parsers..., q])
     sequenceC(p::sequenceC{Tuple{S, U, V}}, q::Parser{Q}) where {S, U, V, Q} = new{Tuple{S, U, V, Q}}([p.parsers..., q])
     sequenceC(p::sequenceC{Tuple{S, U, V, W}}, q::Parser{Q}) where {S, U, V, W, Q} = new{Tuple{S, U, V, W, Q}}([p.parsers..., q])
+    sequenceC(p::Parser{Ignored}, q::Parser{Ignored}) = new{Tuple{}}([p, q])
     sequenceC(p::Parser{Ignored}, q::Parser{Q}) where {Q} = new{Q}([p, q])
     sequenceC(p::Parser{P}, q::Parser{Ignored}) where {P} = new{P}([p, q])
     sequenceC(p::Parser{P}, q::Parser{Q}) where {P, Q} = new{Tuple{P, Q}}([p, q])
 end
 
-simplifySequenceResult(v::Tuple{T}) where {T} = first(v)
-simplifySequenceResult(v) = v
+simplifySequenceResult(originalinput::ParserInput, rest::ParserInput, v::BadParse) = (originalinput, v)
+simplifySequenceResult(originalinput::ParserInput, rest::ParserInput, v::Tuple{T}) where {T} = (rest, first(v))
+simplifySequenceResult(originalinput::ParserInput, rest::ParserInput, v) = (rest, v)
 
 function (p::sequenceC{T})(input::ParserInput) where {T}
     (rest, value) = foldl(sequence, p.parsers; init = (input, ()))
-    (rest, simplifySequenceResult(value))
+    simplifySequenceResult(input, rest, value)
 end
 
 function Base.:>>(p::Parser{P}, q::Parser{Q}) where {P, Q}

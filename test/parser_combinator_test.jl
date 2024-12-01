@@ -332,6 +332,43 @@ end
     @test typeof(result) == BadParse
 end
 
+@testset "Sequence ignore two chars, take third; Input is abc; Result is 'c'" begin
+    # Arrange
+    input = ParserInput("abc")
+    parser = ignoreC(charC('a')) >> ignoreC(charC('b')) >> charC('c')
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == 'c'
+end
+
+@testset "Sequence ignore three chars, take last; Input is abcd; Result is d" begin
+    # Arrange
+    input = ParserInput("abcd")
+    parser = ignoreC(charC('a')) >> ignoreC(charC('b')) >> ignoreC(charC('c')) >> charC('d')
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == 'd'
+end
+
+@testset "Sequence a, b, c; Input is abd; Result is BadParse and no input is consumed" begin
+    # Arrange
+    input = ParserInput("abd")
+    parser = charC('a') >> charC('b') >> charC('c')
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+    @test rest.position == 1
+end
+
 end # SequenceC
 
 @testset "notC" begin
