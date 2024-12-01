@@ -26,6 +26,7 @@ module NonaREPLs
 using Nona.Games
 using Nona.Games.Niancat
 using Nona.Games.Hamming
+using Nona.REPLCommands
 
 import Nona.Games.Niancat: publish!
 
@@ -118,13 +119,6 @@ struct ThisPlayer <: Player end
 # - Command mode: Start new games, run game specific commands
 #
 
-abstract type REPLCommand <: Command end
-struct NewGameAction <: REPLCommand end
-struct NewGameTypeAction
-    gametype::Type{<:Game}
-end
-struct BackToGameModeAction end
-struct ExitAction end
 
 const GameModeIndex = 1
 const CommandModeIndex = 2

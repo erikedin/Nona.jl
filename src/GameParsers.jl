@@ -25,6 +25,7 @@ module GameParsers
 
 using Nona.Parsers
 using Nona.Games
+using Nona.REPLCommands
 
 const commandChar = '!'
 const commandMarkerP = charC(commandChar)

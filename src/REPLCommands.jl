@@ -19,13 +19,23 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
-module Nona
+module REPLCommands
 
-include("Games/Games.jl")
-include("Parsers.jl")
-include("REPLCommands.jl")
-include("GameParsers.jl")
-include("NonaREPLs.jl")
+using Nona.Games
 
-end # module Nona
+export NewGameAction,
+       NewGameTypeAction,
+       ExitAction,
+       BackToGameModeAction
+
+abstract type REPLCommand <: Command end
+struct NewGameAction <: REPLCommand end
+struct NewGameTypeAction
+    gametype::Type{<:Game}
+end
+struct BackToGameModeAction end
+struct ExitAction end
+
+end
