@@ -25,17 +25,28 @@ module GameParsers
 
 using Nona.Parsers
 using Nona.Games
+using Nona.Games.Hamming
+using Nona.Games.Niancat
 using Nona.REPLCommands
+
+const spacesP = manyC(spaceP)
 
 const commandChar = '!'
 const commandMarkerP = charC(commandChar)
 const showCurrentPuzzleP = symbolC("visa") |> To{ShowCurrentPuzzle}(_ -> ShowCurrentPuzzle())
+const newGameP = symbolC("nytt") |> To{NewGameAction}(x -> NewGameAction())
+
+# TODO Do not hard code these game types.
+const games = Dict{String, Type{<:Game}}("Hamming" => HammingGame, "Niancat" => NiancatGame)
+const gametypeP = symbolC("Hamming") | symbolC("Niancat")
+
+const newGameTypeP = (ignoreC(symbolC("nytt")) >> ignoreC(spacesP) >> gametypeP) |> To{NewGameTypeAction}(gamename -> NewGameTypeAction(games[gamename]))
 
 const guessTokenP = (notC(commandChar) >> tokenP) |> To{String}(join)
 const guessP = guessTokenP |> To{Guess}()
 
-const gameCommandP = ignoreC(commandMarkerP) >> showCurrentPuzzleP
-const spacesP = manyC(spaceP)
+const gameCommandsP = showCurrentPuzzleP | newGameTypeP | newGameP
+const gameCommandP = ignoreC(commandMarkerP) >> gameCommandsP
 const afterP = spacesP >> eofP
 const beforeP = spacesP
 const commandP = ignoreC(beforeP) >> (gameCommandP | guessP) >> ignoreC(afterP)

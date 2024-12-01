@@ -23,13 +23,19 @@
 
 using Nona.Parsers
 using Nona.GameParsers
+using Nona.REPLCommands
 using Nona.Games
+using Nona.Games.Hamming
+using Nona.Games.Niancat
 
 const commandResults = [
     ("!visa", ShowCurrentPuzzle()),
     ("!visa ", ShowCurrentPuzzle()),
     (" !visa", ShowCurrentPuzzle()),
     ("PUSSGURKA", Guess("PUSSGURKA")),
+    ("!nytt", NewGameAction()),
+    ("!nytt Hamming", NewGameTypeAction(HammingGame)),
+    ("!nytt Niancat", NewGameTypeAction(NiancatGame)),
 ]
 
 const badCommandResults = [
