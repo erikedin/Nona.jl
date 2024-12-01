@@ -19,12 +19,17 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
-module Nona
+module GameParsers
 
-include("Games/Games.jl")
-include("Parsers.jl")
-include("GameParsers.jl")
-include("NonaREPLs.jl")
+using Nona.Parsers
+using Nona.Games
 
-end # module Nona
+const commandMarkerP = ignoreC(charC('!'))
+const showCurrentPuzzleP = symbolC("visa") |> To{ShowCurrentPuzzle}(_ -> ShowCurrentPuzzle())
+
+const gameCommandP = commandMarkerP >> showCurrentPuzzleP
+const commandP = gameCommandP
+
+end

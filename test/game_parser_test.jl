@@ -19,12 +19,32 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
-module Nona
+using Nona.Parsers
+using Nona.GameParsers
+using Nona.Games
 
-include("Games/Games.jl")
-include("Parsers.jl")
-include("GameParsers.jl")
-include("NonaREPLs.jl")
+const commandResults = [
+    ("!visa", ShowCurrentPuzzle()),
+]
 
-end # module Nona
+@testset "Game parsers" begin
+
+for (text, expected) in commandResults
+
+@testset "Game command parser: '$(text)': Expects $(expected)" begin
+    # Arrange
+    input = ParserInput(text)
+    parser = GameParsers.commandP
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == expected
+end
+
+end # for in commandResults
+
+end # Game parsers

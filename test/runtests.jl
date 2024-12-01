@@ -27,6 +27,7 @@ using Nona
 include("parser_combinator_test.jl")
 include("parser_combinator_example_test.jl")
 #include("command_parser_test.jl")
+include("game_parser_test.jl")
 include("regression/dictionary_test.jl")
 
 parseoptions = Behavior.Gherkin.ParseOptions(use_experimental=true)
