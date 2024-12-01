@@ -23,7 +23,7 @@
 
 using Nona.NonaREPLs
 
-@testset "FileDictionary" begin
+@testset "FileDictionary    " begin
 
 @testset "FileDictionary construction; Path is a SubString; Dictionary is OK" begin
     # Arrange

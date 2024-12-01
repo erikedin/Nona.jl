@@ -57,7 +57,7 @@ const bazP = bazTokenP |> To{Baz}()
 
 const examplesP = guessP | barP | bazP
 
-@testset "Parser Combinator Examples" begin
+@testset "Parser Examples   " begin
 
 @testset "Examples; Input is foo; Result is Foo(foo)" begin
     # Arrange
