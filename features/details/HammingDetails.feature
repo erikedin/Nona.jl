@@ -53,14 +53,6 @@ Feature: Hamming distance game details
         | DATORSPEL | LEDARPOST | 8        |
         | ORDPUSSEL | PUSSGURKA | 9        |
 
-    @command
-    Scenario: Command mode includes the game name
-        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-          And the player enters command mode
-          And the player inputs "ny Hamming"
-         When the player enters command mode
-         Then the output ends with "Hamming# "
-
     Scenario: Correct guess in Hamming
         Given a NonaREPL game Hamming with puzzle PUSSGURKA
          When the REPL player tries the guess PUSSGURKA

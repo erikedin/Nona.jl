@@ -135,20 +135,24 @@ struct GameMode <: REPLMode
 end
 prompt(p::GameMode, game::Game) = print(p.io, "$(gamename(game))> ")
 
-function playerinput!(::GameMode, command::GameCommand, game::Game)
+function playerinput!(mode::GameMode, text::String, ::BadParse, game::Game)
+    println(mode.io, "Okänt kommando: $(text)")
+    []
+end
+function playerinput!(::GameMode, ::String, command::GameCommand, game::Game)
     player = ThisPlayer()
     gameaction!(game, player, command)
     []
 end
 
-function playerinput!(::GameMode, command::REPLCommand, game::Game)
+function playerinput!(::GameMode, ::String, command::REPLCommand, game::Game)
     [command]
 end
 
 function playerinput!(mode::GameMode, text::String, game::Game)
     input = ParserInput(text)
     (_rest, command) = GameParsers.commandP(input)
-    playerinput!(mode, command, game)
+    playerinput!(mode, text, command, game)
 end
 
 struct CommandMode <: REPLMode
