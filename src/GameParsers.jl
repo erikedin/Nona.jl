@@ -26,10 +26,17 @@ module GameParsers
 using Nona.Parsers
 using Nona.Games
 
-const commandMarkerP = ignoreC(charC('!'))
+const commandChar = '!'
+const commandMarkerP = charC(commandChar)
 const showCurrentPuzzleP = symbolC("visa") |> To{ShowCurrentPuzzle}(_ -> ShowCurrentPuzzle())
 
-const gameCommandP = commandMarkerP >> showCurrentPuzzleP
-const commandP = gameCommandP
+const guessTokenP = (notC(commandChar) >> tokenP) |> To{String}(join)
+const guessP = guessTokenP |> To{Guess}()
+
+const gameCommandP = ignoreC(commandMarkerP) >> showCurrentPuzzleP
+const spacesP = manyC(spaceP)
+const afterP = spacesP >> eofP
+const beforeP = spacesP
+const commandP = ignoreC(beforeP) >> (gameCommandP | guessP) >> ignoreC(afterP)
 
 end

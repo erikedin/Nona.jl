@@ -27,9 +27,17 @@ using Nona.Games
 
 const commandResults = [
     ("!visa", ShowCurrentPuzzle()),
+    ("!visa ", ShowCurrentPuzzle()),
+    (" !visa", ShowCurrentPuzzle()),
+    ("PUSSGURKA", Guess("PUSSGURKA")),
 ]
 
-@testset "Game parsers" begin
+const badCommandResults = [
+    ("!visa extra", "Extra argument is not allowed"),
+    ("!nosuchcommand", "Unknown commands are failures")
+]
+
+@testset "Game parsers      " begin
 
 for (text, expected) in commandResults
 
@@ -43,6 +51,22 @@ for (text, expected) in commandResults
 
     # Assert
     @test result == expected
+end
+
+end # for in commandResults
+
+for (text, description) in badCommandResults
+
+@testset "Game command parser fails: '$(text)' because $(description)" begin
+    # Arrange
+    input = ParserInput(text)
+    parser = GameParsers.commandP
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
 end
 
 end # for in commandResults
