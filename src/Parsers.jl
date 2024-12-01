@@ -78,12 +78,16 @@ struct anyC <: Parser{Char} end
 (::anyC)(input::ParserInput) = eof(input) ? (input, BadParse()) : consume(input)
 const anyP = anyC()
 
-struct satisfyC <: Parser{Char}
+struct satisfyC{T} <: Parser{T}
+    p::Parser{T}
     predicate::Function
+
+    satisfyC(parser::Parser{T}, predicate::Function) where {T} = new{T}(parser, predicate)
+    satisfyC(predicate::Function) = new{Char}(anyP, predicate)
 end
-function (p::satisfyC)(input::ParserInput)
-    (rest, x) = anyP(input)
-    if p.predicate(x)
+function (parser::satisfyC{T})(input::ParserInput) where {T}
+    (rest, x) = parser.p(input)
+    if parser.predicate(x)
         (rest, x)
     else
         (input, BadParse())
@@ -222,16 +226,6 @@ end
 
 repeatAnyToStringC(n::Int) = repeatC(anyP, n) |> To{String}(join)
 
-struct symbolC <: Parser{String}
-    s::String
-end
-function (p::symbolC)(input::ParserInput)
-    (rest, value) = repeatAnyToStringC(length(p.s))(input)
-    if value == p.s
-        (rest, p.s)
-    else
-        (input, BadParse())
-    end
-end
+symbolC(s::String) = satisfyC(repeatAnyToStringC(length(s)), x -> x == s)
 
 end # module Parsers
