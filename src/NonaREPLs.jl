@@ -116,18 +116,7 @@ end
 # abstract type.
 struct ThisPlayer <: Player end
 
-#
-# The REPL has two modes:
-# - Game mode: Entering guesses
-# - Command mode: Start new games, run game specific commands
-#
-
-
-const GameModeIndex = 1
-
-abstract type REPLMode end
-
-struct GameMode <: REPLMode
+struct GameMode
     io::IO
 
     GameMode(io::IO) = new(io)
@@ -171,16 +160,15 @@ end
 mutable struct NonaREPL
     io::IO
     dictionary::Dictionary
-    modes::Tuple{GameMode, Nothing}
+    mode::GameMode
     game::Game
-    currentmode::Int
 
     function NonaREPL(dictionary::Dictionary; io::IO = stdout)
         gamemode = GameMode(io)
 
         game = createnewgame(NiancatGame, dictionary, io)
 
-        new(io, dictionary, (gamemode, nothing), game, GameModeIndex)
+        new(io, dictionary, gamemode, game)
     end
 
     function NonaREPL(gamefactory::Function, dictionary::Dictionary; io::IO = stdout)
@@ -189,12 +177,12 @@ mutable struct NonaREPL
         # The gamefactory is a method (::IO) -> Game
         game = gamefactory(io)
 
-        new(io, dictionary, (gamemode, nothing), game, GameModeIndex)
+        new(io, dictionary, gamemode, game)
     end
 end
 
 function prompt(game::NonaREPL)
-    prompt(game.modes[game.currentmode], game.game)
+    prompt(game.mode, game.game)
 end
 
 function showpuzzle(nona::NonaREPL)
@@ -238,7 +226,7 @@ function playerinput!(nona::NonaREPL, text::String)
     # The player input will result in possibly something published,
     # but also some actions for NonaREPL to take.
     # Examples: Go back to game mode. Start a new game.
-    actions = playerinput!(nona.modes[nona.currentmode], text, nona.game)
+    actions = playerinput!(nona.mode, text, nona.game)
     for action in actions
         doaction(nona, action)
     end
