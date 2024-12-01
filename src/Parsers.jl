@@ -143,12 +143,12 @@ end
 
 ignoreC(p) = transformC(p, To{Ignored}())
 
-sequenceCombine(result1::BadParse, ::BadParse) = result1
 sequenceCombine(_v, result::BadParse) = result
 sequenceCombine(result::BadParse, _v) = result
 sequenceCombine(v, ::Ignored) = v
 sequenceCombine(value, newvalue) = (value..., newvalue)
 
+sequence(result::Tuple{ParserInput, BadParse}, _p) = result
 function sequence((rest, value), p)
     (newrest, newvalue) = p(rest)
     (newrest, sequenceCombine(value, newvalue))

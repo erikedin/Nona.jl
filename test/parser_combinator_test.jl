@@ -840,6 +840,50 @@ end
     @test result == ['b', 'b']
 end
 
+@testset "Sequence; not ! and any, or ! and any; Result is !b" begin
+    # Arrange
+    input = ParserInput("!b")
+    notExclamation = satisfyC(x -> x != '!')
+    withoutExcl = notExclamation >> anyP
+    withExcl = charC('!') >> anyP
+    parser = withoutExcl | withExcl
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test result == ('!', 'b')
+end
+
+@testset "Sequence; not ! and any; Result is BadParse and no input consumed" begin
+    # Arrange
+    input = ParserInput("!b")
+    notExclamation = satisfyC(x -> x != '!')
+    withoutExcl = notExclamation >> anyP
+    parser = withoutExcl
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+    @test rest.position == 1
+end
+
+@testset "satisfyC not !; Input is !b; Result is BadParse and no input consumed" begin
+    # Arrange
+    input = ParserInput("!b")
+    notExclamation = satisfyC(x -> x != '!')
+    parser = notExclamation
+
+    # Act
+    (rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+    @test rest.position == 1
+end
+
 end # BadParse behavior
 
 end # Parser Combinators

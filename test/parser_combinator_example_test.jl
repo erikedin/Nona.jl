@@ -89,17 +89,20 @@ end
     @test typeof(result) == BadParse
 end
 
-# @testset "Examples; Input is !bar; Result is Bar()" begin
-#     Arrange
-#     input = ParserInput("!bar")
+@testset "Examples; Input is !bar; Result is Bar()" begin
+    # Arrange
+    input = ParserInput("!bar")
 
-#     Act
-#     (rest, result) = examplesP(input)
+    # Act
+    (rest, result) = examplesP(input)
 
-#     Assert
-#     @test result == Bar()
-# end
+    # Assert
+    @test result == Bar()
+end
 
+# These tests were created to reproduce an issue. They are not
+# helpful as examples.
+@testset "Regression tests" begin
 @testset "!bar sub-parser; Input is !bar; Result is Bar" begin
     # Arrange
     input = ParserInput("!bar")
@@ -123,5 +126,7 @@ end
     # Assert
     @test result == Foo("foo")
 end
+
+end # Regression tests
 
 end # Parser Combinator Examples
