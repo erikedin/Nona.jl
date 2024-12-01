@@ -27,6 +27,9 @@ using Nona.Games
 using Nona.Games.Niancat
 using Nona.Games.Hamming
 using Nona.REPLCommands
+using Nona.GameParsers
+using Nona.REPLCommands
+using Nona.Parsers
 
 import Nona.Games.Niancat: publish!
 
@@ -132,12 +135,20 @@ struct GameMode <: REPLMode
 end
 prompt(p::GameMode, game::Game) = print(p.io, "$(gamename(game))> ")
 
-function playerinput!(::GameMode, text::String, game::Game)
-    guess = Guess(Word(text))
+function playerinput!(::GameMode, command::GameCommand, game::Game)
     player = ThisPlayer()
-    gameaction!(game, player, guess)
+    gameaction!(game, player, command)
+    []
+end
 
-    [BackToGameModeAction()]
+function playerinput!(::GameMode, command::REPLCommand, game::Game)
+    [command]
+end
+
+function playerinput!(mode::GameMode, text::String, game::Game)
+    input = ParserInput(text)
+    (_rest, command) = GameParsers.commandP(input)
+    playerinput!(mode, command, game)
 end
 
 struct CommandMode <: REPLMode

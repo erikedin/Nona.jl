@@ -76,11 +76,9 @@ Feature: NonaREPL is a terminal based front-end for the games
          When the player presses "#"
          Then the output ends with "Niancat# "
 
-    @command
-    Scenario: Show the current puzzle using the "nian" command
+    Scenario: Show the current puzzle using the "!nian" command
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the player enters command mode
-          And the player inputs "nian"
+         When the player inputs "!visa"
          Then the REPL shows "PUSSGRUKA"
 
     @deprecated
@@ -109,22 +107,17 @@ Feature: NonaREPL is a terminal based front-end for the games
          When starting a NonaREPL game Niancat with puzzle DATORSPLE
          Then the REPL does not show "1"
 
-    @command
     Scenario: Start a new game
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the player enters command mode
-          And the player inputs "ny"
+         When the player inputs "!nytt"
          Then a puzzle is shown
           And that puzzle is an anagram of a word in the dictionary
 
-    @command
     Scenario: Starting a new game shows the solutions to the previous puzzle
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the player enters command mode
-          And the player inputs "ny"
+         When the player inputs "!nytt"
          Then the REPL shows "PUSSGURKA"
 
-    @command
     Scenario: Starting a new game shows all solutions to the previous puzzle
         Given a dictionary
             | DATORSPEL |
@@ -134,32 +127,27 @@ Feature: NonaREPL is a terminal based front-end for the games
             | PUSSGURKA |
             | ORDPUSSEL |
           And a NonaREPL game Niancat with puzzle DATORSPLE
-         When the player enters command mode
-          And the player inputs "ny"
+         When the player inputs "!nytt"
          Then the REPL shows "DATORSPEL"
           And the REPL shows "SPELDATOR"
           And the REPL shows "LEDARPOST"
           And the REPL shows "REPSOLDAT"
 
-    @command
     Scenario: Start another type of new game
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the player enters command mode
-          And the player inputs "ny Hamming"
+         When the player inputs "!nytt Hamming"
          Then the output ends with "Hamming> "
 
-    @wip @command
+    @wip
     Scenario: Switch to another type of new game
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the player enters command mode
-          And the player inputs "switch Hamming"
+         When the player inputs "!byt Hamming"
          Then the output ends with "Hamming> "
 
-    @wip @command
+    @wip
     Scenario: Switching back retains the same puzzle as before
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the player enters command mode
-          And the player inputs "switch Hamming"
-          And the player inputs "switch Niancat"
-          And the player inputs "nian"
+         When the player inputs "!byt Hamming"
+          And the player inputs "!byt Niancat"
+          And the player inputs "!visa"
          Then the REPL shows "PUSSGRUKA"

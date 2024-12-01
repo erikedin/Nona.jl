@@ -25,17 +25,18 @@ module REPLCommands
 
 using Nona.Games
 
-export NewGameAction,
+export REPLCommand,
+       NewGameAction,
        NewGameTypeAction,
        ExitAction,
        BackToGameModeAction
 
 abstract type REPLCommand <: Command end
 struct NewGameAction <: REPLCommand end
-struct NewGameTypeAction
+struct NewGameTypeAction <: REPLCommand
     gametype::Type{<:Game}
 end
 struct BackToGameModeAction end
-struct ExitAction end
+struct ExitAction <: REPLCommand end
 
 end
