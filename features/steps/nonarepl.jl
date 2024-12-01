@@ -92,22 +92,6 @@ end
     context[:game] = nona
 end
 
-@when("the player presses \"#\"") do context
-    game = context[:game]
-    playerinput!(game, "#")
-end
-
-@when("the player enters command mode") do context
-    # Clear the current output. The reason is that we would like to check
-    # that the puzzle has been printed some time after this, for instance.
-    # However, the puzzle is printed at the start for Niancat. So we need
-    # to clear it, so that we can check that it is really printed after this.
-    clearoutput(context)
-
-    game = context[:game]
-    playerinput!(game, "#")
-end
-
 @when("the player inputs \"{String}\"") do context, command
     clearoutput(context)
 

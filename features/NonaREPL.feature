@@ -70,23 +70,10 @@ Feature: NonaREPL is a terminal based front-end for the games
          When the REPL player tries the guess PUSSAGURK
          Then the output ends with "> "
 
-    @deprecated
-    Scenario: Entering command mode
-        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the player presses "#"
-         Then the output ends with "Niancat# "
-
     Scenario: Show the current puzzle using the "!nian" command
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
          When the player inputs "!visa"
          Then the REPL shows "PUSSGRUKA"
-
-    @deprecated
-    Scenario: Showing the puzzle changes the mode back to game mode
-        Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the player enters command mode
-          And the player inputs "nian"
-         Then the output ends with "Niancat> "
 
     Scenario: Nona shows the number of solutions when starting a new game
         Given a dictionary
