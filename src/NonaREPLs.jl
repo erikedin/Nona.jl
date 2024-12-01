@@ -116,33 +116,6 @@ end
 # abstract type.
 struct ThisPlayer <: Player end
 
-struct GameMode
-    io::IO
-
-    GameMode(io::IO) = new(io)
-end
-prompt(p::GameMode, game::Game) = print(p.io, "$(gamename(game))> ")
-
-function playerinput!(mode::GameMode, text::String, ::BadParse, game::Game)
-    println(mode.io, "Okänt kommando: $(text)")
-    []
-end
-function playerinput!(::GameMode, ::String, command::GameCommand, game::Game)
-    player = ThisPlayer()
-    gameaction!(game, player, command)
-    []
-end
-
-function playerinput!(::GameMode, ::String, command::REPLCommand, game::Game)
-    [command]
-end
-
-function playerinput!(mode::GameMode, text::String, game::Game)
-    input = ParserInput(text)
-    (_rest, command) = GameParsers.commandP(input)
-    playerinput!(mode, text, command, game)
-end
-
 #
 # NonaREPL is the REPL for the games (currently only Niancat)
 #
@@ -160,30 +133,23 @@ end
 mutable struct NonaREPL
     io::IO
     dictionary::Dictionary
-    mode::GameMode
     game::Game
 
     function NonaREPL(dictionary::Dictionary; io::IO = stdout)
-        gamemode = GameMode(io)
-
         game = createnewgame(NiancatGame, dictionary, io)
 
-        new(io, dictionary, gamemode, game)
+        new(io, dictionary, game)
     end
 
     function NonaREPL(gamefactory::Function, dictionary::Dictionary; io::IO = stdout)
-        gamemode = GameMode(io)
-
         # The gamefactory is a method (::IO) -> Game
         game = gamefactory(io)
 
-        new(io, dictionary, gamemode, game)
+        new(io, dictionary, game)
     end
 end
 
-function prompt(game::NonaREPL)
-    prompt(game.mode, game.game)
-end
+prompt(nona::NonaREPL) = print(nona.io, "$(gamename(nona.game))> ")
 
 function showpuzzle(nona::NonaREPL)
     player = ThisPlayer()
@@ -222,11 +188,32 @@ function doaction(::NonaREPL, ::ExitAction)
     exit(0)
 end
 
+function playerinput!(nona::NonaREPL, text::String, ::BadParse, game::Game)
+    println(nona.io, "Okänt kommando: $(text)")
+    []
+end
+function playerinput!(::NonaREPL, ::String, command::GameCommand, game::Game)
+    player = ThisPlayer()
+    gameaction!(game, player, command)
+    []
+end
+
+function playerinput!(::NonaREPL, ::String, command::REPLCommand, game::Game)
+    [command]
+end
+
+function playerinput!(nona::NonaREPL, text::String, game::Game)
+    input = ParserInput(text)
+    (_rest, command) = GameParsers.commandP(input)
+    playerinput!(nona, text, command, game)
+end
+
+
 function playerinput!(nona::NonaREPL, text::String)
     # The player input will result in possibly something published,
     # but also some actions for NonaREPL to take.
     # Examples: Go back to game mode. Start a new game.
-    actions = playerinput!(nona.mode, text, nona.game)
+    actions = playerinput!(nona, text, nona.game)
     for action in actions
         doaction(nona, action)
     end
