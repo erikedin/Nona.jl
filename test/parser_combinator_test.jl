@@ -923,4 +923,20 @@ end
 
 end # BadParse behavior
 
+@testset "UTF-8 behavior" begin
+
+@testset "Parse tokenP; Input is ÅÄÖ; Result is ÅÄÖ" begin
+    # Arrange
+    input = ParserInput("ÅÄÖ")
+    parser = tokenP
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == "ÅÄÖ"
+end
+
+end # UTF-8 behavior
+
 end # Parser Combinators

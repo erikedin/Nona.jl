@@ -37,3 +37,9 @@ Feature: Niancat puzzle requirements
             | PUSSEL    |
          When randomly generating a Niancat puzzle 30 times
          Then all randomly chosen puzzles have 9 letters
+
+    Scenario: The puzzle can have the Swedish letters ÅÄÖ
+        Given a dictionary
+            | ÅTERTRÄDA |
+         When randomly generating a Niancat puzzle
+         Then the puzzle has 9 letters

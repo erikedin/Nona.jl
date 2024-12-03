@@ -46,16 +46,17 @@ export
     To,
     BadParse
 
+struct Next end
 struct ParserInput
     text::String
     position::Int
 
     ParserInput(text::String, position::Int = 1) = new(text, position)
-    ParserInput(input::ParserInput, n::Int) = new(input.text, input.position + n)
+    ParserInput(input::ParserInput, ::Type{Next}) = new(input.text, nextind(input.text, input.position))
 end
 
-Base.eof(input::ParserInput) = input.position > length(input.text)
-consume(input::ParserInput) = (ParserInput(input, 1), input.text[input.position])
+Base.eof(input::ParserInput) = input.position > lastindex(input.text)
+consume(input::ParserInput) = (ParserInput(input, Next), input.text[input.position])
 
 struct BadParse end
 
