@@ -125,6 +125,11 @@ Feature: NonaREPL is a terminal based front-end for the games
          When the player inputs "!nytt Hamming"
          Then the output ends with "Hamming> "
 
+    Scenario: Starting a new Hamming game shows the solutions to the previous puzzle
+        Given a NonaREPL game Hamming with puzzle PUSSGURKA
+         When the player inputs "!nytt"
+         Then the REPL shows "PUSSGURKA"
+
     @wip
     Scenario: Switch to another type of new game
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA

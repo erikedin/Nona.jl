@@ -57,6 +57,11 @@ struct CurrentPuzzle <: Response
     puzzlelength::Int
 end
 
+struct RevealSolution <: Response
+    player::Player
+    word::Word
+end
+
 #
 # Game
 #
@@ -96,6 +101,10 @@ end
 
 function gameaction!(game::HammingGame, player::Player, ::ShowCurrentPuzzle)
     publish!(game.publisher, CurrentPuzzle(player, length(game.puzzle)))
+end
+
+function gameaction!(game::HammingGame, player::Player, ::ShowSolutions)
+    publish!(game.publisher, RevealSolution(player, game.puzzle))
 end
 
 end

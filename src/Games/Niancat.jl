@@ -165,12 +165,6 @@ end
 gamename(::NiancatGame) = "Niancat"
 
 #
-# Commands
-#
-
-struct ShowSolutions <: GameCommand end
-
-#
 # Responses
 #
 

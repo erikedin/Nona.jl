@@ -111,6 +111,10 @@ function publish!(p::HammingConsolePublisher, response::Hamming.CurrentPuzzle)
     println(p.io, "Pusslet är $(response.puzzlelength) tecken långt.")
 end
 
+function publish!(p::HammingConsolePublisher, response::Hamming.RevealSolution)
+    println(p.io, "$(response.word)")
+end
+
 # Since the REPL is a single-player game, there is no need to distinguish
 # between players. Thus, this is an empty implementation of the `Player`
 # abstract type.

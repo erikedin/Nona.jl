@@ -28,18 +28,18 @@ import Base: convert, hash, iterate, length, isless, show, sort
 export Player, Response, Dictionary, Publisher
 export Command, GameCommand, Game, gameaction!, gamename
 export Word
-export Guess, ShowCurrentPuzzle
+export Guess, ShowCurrentPuzzle, ShowSolutions
 
 abstract type Player end
 abstract type Dictionary end
 abstract type Response end
 abstract type Publisher end
-publish!(::Publisher, ::Response) = @error("Implement Publisher.publish!")
+publish!(publisher::Publisher, response::Response) = @error("Implement Publisher.publish! for publisher $(publisher) and response $(response)")
 
 abstract type Command end
 abstract type GameCommand <: Command end
 abstract type Game end
-gameaction!(::Game, ::Player, ::GameCommand) = @error("Implement gameaction!")
+gameaction!(game::Game, ::Player, command::GameCommand) = @error("Implement gameaction! for command $(command) in game $(game)")
 function gamename(::Game) :: String
     @error("Implement gamename(::Game)")
 end
@@ -82,6 +82,7 @@ struct Guess <: GameCommand
 end
 
 struct ShowCurrentPuzzle  <: GameCommand end
+struct ShowSolutions <: GameCommand end
 
 include("Niancat.jl")
 include("Hamming.jl")
