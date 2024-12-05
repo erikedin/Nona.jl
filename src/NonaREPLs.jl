@@ -57,7 +57,7 @@ isindictionary(fd::FileDictionary, word::Word) = word in fd.words
 
 
 # ConsolePublisher prints all game Niancat events to the console.
-struct ConsolePublisher <: NiancatPublisher
+struct ConsolePublisher <: Publisher{NiancatGame}
     io::IO
 end
 
@@ -92,7 +92,7 @@ function publish!(p::ConsolePublisher, response::Solutions)
     println(p.io, "")
 end
 
-struct HammingConsolePublisher <: Publisher
+struct HammingConsolePublisher <: Publisher{HammingGame}
     io::IO
 end
 

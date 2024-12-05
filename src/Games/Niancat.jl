@@ -26,7 +26,6 @@ module Niancat
 export NiancatGame
 export Response, Incorrect, Correct, CurrentPuzzle
 export ShowSolutions, Solutions
-export NiancatPublisher
 export publish!
 export generatepuzzle
 export Dictionary
@@ -115,17 +114,14 @@ function Base.:(-)(word1::Word, word2::Word) :: Word
     Word(join(missingletters))
 end
 
-abstract type NiancatPublisher <: Publisher end
-publish!(::NiancatPublisher, ::Response) = @error("Implement me")
-
 isanagram(a::Word, b::Word) = sort(a) == sort(b)
 
 struct NiancatGame <: Game
     puzzle::Word
-    publisher::NiancatPublisher
+    publisher::Publisher{NiancatGame}
     solutions::Vector{Word}
 
-    function NiancatGame(puzzle::Word, publisher::NiancatPublisher, dictionary::Dictionary)
+    function NiancatGame(puzzle::Word, publisher::Publisher{NiancatGame}, dictionary::Dictionary)
         # Find all solutions to the puzzle.
         solutions = Word[
             word
@@ -142,7 +138,7 @@ struct NiancatGame <: Game
         new(puzzle, publisher, sortedsolutions)
     end
 
-    function NiancatGame(publisher::NiancatPublisher, dictionary::Dictionary)
+    function NiancatGame(publisher::Publisher{NiancatGame}, dictionary::Dictionary)
         puzzle = generatepuzzle(dictionary)
 
         # Find all solutions to the puzzle.

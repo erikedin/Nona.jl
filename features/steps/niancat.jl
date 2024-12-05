@@ -34,7 +34,7 @@ struct NickPlayer <: Player
     nick::String
 end
 
-struct MockNiancatPublisher <: NiancatPublisher
+struct MockNiancatPublisher <: Publisher{NiancatGame}
     responses::Vector{<:Response}
 
     MockNiancatPublisher() = new(Response[])

@@ -26,7 +26,7 @@ using Nona.Games
 using Nona.Games.Hamming
 import Nona.Games: publish!
 
-struct MockHammingPublisher <: HammingPublisher
+struct MockHammingPublisher <: Publisher{HammingGame}
     responses::Vector{Response}
 
     MockHammingPublisher() = new(Response[])

@@ -34,8 +34,8 @@ export Guess, ShowCurrentPuzzle, ShowSolutions
 abstract type Player end
 abstract type Response end
 
-abstract type Publisher end
-publish!(publisher::Publisher, response::Response) = @error("Implement Publisher.publish! for publisher $(publisher) and response $(response)")
+abstract type Publisher{T} end
+publish!(publisher::Publisher{T}, response::Response) where {T} = @error("Implement Publisher.publish! for publisher $(publisher) and response $(response)")
 
 abstract type Command end
 abstract type GameCommand <: Command end

@@ -26,10 +26,7 @@ module Hamming
 using Nona.Games
 import Nona.Games: gameaction!, gamename, publish!
 
-export HammingPublisher
 export HammingGame
-
-abstract type HammingPublisher <: Publisher end
 
 #
 # Responses
@@ -76,12 +73,12 @@ function generatepuzzle(dictionary::Dictionary) :: Word
 end
 
 struct HammingGame <: Game
-    publisher::Publisher
+    publisher::Publisher{HammingGame}
     dictionary::Dictionary
     puzzle::Word
 
-    HammingGame(publisher::Publisher, dictionary::Dictionary, puzzle::Word) = new(publisher, dictionary, puzzle)
-    HammingGame(publisher::Publisher, dictionary::Dictionary) = new(publisher, dictionary, generatepuzzle(dictionary))
+    HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary, puzzle::Word) = new(publisher, dictionary, puzzle)
+    HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary) = new(publisher, dictionary, generatepuzzle(dictionary))
 end
 
 gamename(::HammingGame) = "Hamming"
