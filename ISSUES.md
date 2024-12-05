@@ -2,11 +2,8 @@ Issues
 ======
 
 - Documentation
-- Usage documentation
 - Replace "ny Hamming" with a switch command
 - Split NonaREPL.feature into smaller parts, because it's getting big
-- Creating a new Hamming game leads to `implement gameaction!`
-- ÅÄÖ does not work with the command parser
 
 # Fixed
 - FileDictionary should take an AbstractString
@@ -34,3 +31,7 @@ Issues
 - Rethink command mode, now that we know that # doesn't work as expected
 - More general command parser
 - Enable switch back to Niancat
+- Hamming guesses must be in the dictionary
+- ÅÄÖ does not work with the command parser
+- Creating a new Hamming game leads to `implement gameaction!`
+- Usage documentation

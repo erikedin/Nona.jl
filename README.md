@@ -55,7 +55,7 @@ Hamming>
 
 The objective is to guess the secret word. At start, it shows the length of the word.
 The only allowed guesses are words of that length, for instance 8 characters in the above example.
-The guesses must be words in the dictionary (NOTE: This limitation is currently not implemented).
+The guesses must be words in the dictionary.
 When a guess is entered, the game replies with the Hamming distance to the puzzle. That is, it shows
 how many characters do not match the corresponding character in the puzzle.
 
