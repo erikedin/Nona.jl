@@ -130,6 +130,11 @@ Feature: NonaREPL is a terminal based front-end for the games
          When the player inputs "!nytt"
          Then the REPL shows "PUSSGURKA"
 
+    Scenario: Hamming guesses must be in the dictionary
+        Given a NonaREPL game Hamming with puzzle PUSSGURKA
+         When the REPL player tries the guess PUSSGURAK
+         Then the REPL shows "Ordet PUSSGURAK finns inte i ordlistan."
+
     @wip
     Scenario: Switch to another type of new game
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA

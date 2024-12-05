@@ -25,14 +25,15 @@ module Games
 
 import Base: convert, hash, iterate, length, isless, show, sort
 
-export Player, Response, Dictionary, Publisher
+export Player, Response, Publisher
+export Dictionary, isindictionary
 export Command, GameCommand, Game, gameaction!, gamename
 export Word
 export Guess, ShowCurrentPuzzle, ShowSolutions
 
 abstract type Player end
-abstract type Dictionary end
 abstract type Response end
+
 abstract type Publisher end
 publish!(publisher::Publisher, response::Response) = @error("Implement Publisher.publish! for publisher $(publisher) and response $(response)")
 
@@ -75,6 +76,9 @@ function sort(
 end
 Base.getindex(w::Word, index) = getindex(w.letters, index)
 Base.lastindex(w::Word) = lastindex(w.letters)
+
+abstract type Dictionary end
+isindictionary(dictionary::Dictionary, word::Word) = @error("Implement isindictionary(::$(typeof(dictionary)), $(typeof(word)))")
 
 # Guess is a command game command to guess a word.
 struct Guess <: GameCommand

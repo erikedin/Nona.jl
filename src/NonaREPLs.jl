@@ -31,7 +31,7 @@ using Nona.GameParsers
 using Nona.REPLCommands
 using Nona.Parsers
 
-import Nona.Games.Niancat: publish!
+import Nona.Games.Niancat: publish!, isindictionary
 
 export FileDictionary
 export NiancatREPL
@@ -53,6 +53,7 @@ end
 Base.iterate(fd::FileDictionary) = iterate(fd.words)
 Base.iterate(fd::FileDictionary, state) = iterate(fd.words, state)
 Base.length(fd::FileDictionary) = length(fd.words)
+isindictionary(fd::FileDictionary, word::Word) = word in fd.words
 
 
 # ConsolePublisher prints all game Niancat events to the console.
@@ -105,6 +106,10 @@ end
 
 function publish!(p::HammingConsolePublisher, response::Hamming.IncorrectLength)
     println(p.io, "Ordet måste vara $(response.wordlength) tecken långt.")
+end
+
+function publish!(p::HammingConsolePublisher, response::Hamming.NotInDictionary)
+    println(p.io, "Ordet $(response.word) finns inte i ordlistan.")
 end
 
 function publish!(p::HammingConsolePublisher, response::Hamming.CurrentPuzzle)

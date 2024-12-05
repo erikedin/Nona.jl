@@ -30,6 +30,7 @@ Feature: Hamming distance game details
             | DATORSPEL |
             | LEDARPOST |
             | PUSSGURKA |
+            | PUSSGURAK |
             | ORDPUSSEL |
             | LEKA      |
             | KAKA      |

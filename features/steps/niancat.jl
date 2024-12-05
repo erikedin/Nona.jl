@@ -26,7 +26,7 @@ using Nona.Games
 using Nona.Games.Niancat
 using Nona.Games.Niancat: isanagram
 
-import Nona.Games: publish!
+import Nona.Games: publish!, isindictionary
 
 # This is the most basic type of player, where the player is identified by a single
 # string, which is also the display name.
@@ -72,6 +72,8 @@ end
 Base.iterate(sd::SetDictionary) = iterate(sd.words)
 Base.iterate(sd::SetDictionary, state) = iterate(sd.words, state)
 Base.length(sd::SetDictionary) = length(sd.words)
+isindictionary(sd::SetDictionary, word::Word) = word in sd.words
+
 
 const AnyLetterCorrection = LetterCorrection("", "")
 

@@ -28,6 +28,7 @@ Feature: Hamming distance game
     Background: A dictionary
         Given a dictionary
             | DATORSPEL |
+            | DATORSPEX |
             | LEDARPOST |
             | PUSSGURKA |
             | ORDPUSSEL |
@@ -59,6 +60,11 @@ Feature: Hamming distance game
         Given a Hamming puzzle DATORSPEL
          When Alice guesses DATORSPE
          Then the response is that the word length must be 9 letters
+
+    Scenario: Guesses must be words
+        Given a Hamming puzzle DATORSPEL
+         When Alice guesses DATORSPLE
+         Then the response is that the word "DATORSPLE" is not in the dictionary
 
     @wip
     Scenario: Start a Hamming game with a provided length of the puzzle

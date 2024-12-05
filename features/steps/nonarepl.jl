@@ -58,7 +58,7 @@ end
     io = IOBuffer()
     context[:io] = io
 
-    gamefactory = io -> HammingGame(NonaREPLs.HammingConsolePublisher(io), Word(puzzle))
+    gamefactory = io -> HammingGame(NonaREPLs.HammingConsolePublisher(io), dictionary, Word(puzzle))
 
     nona = NonaREPL(gamefactory, dictionary; io=io)
     start(nona)

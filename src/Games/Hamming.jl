@@ -52,6 +52,11 @@ struct IncorrectLength <: Response
     wordlength::Int
 end
 
+struct NotInDictionary <: Response
+    player::Player
+    word::Word
+end
+
 struct CurrentPuzzle <: Response
     player::Player
     puzzlelength::Int
@@ -72,10 +77,11 @@ end
 
 struct HammingGame <: Game
     publisher::Publisher
+    dictionary::Dictionary
     puzzle::Word
 
-    HammingGame(publisher::Publisher, puzzle::Word) = new(publisher, puzzle)
-    HammingGame(publisher::Publisher, dictionary::Dictionary) = new(publisher, generatepuzzle(dictionary))
+    HammingGame(publisher::Publisher, dictionary::Dictionary, puzzle::Word) = new(publisher, dictionary, puzzle)
+    HammingGame(publisher::Publisher, dictionary::Dictionary) = new(publisher, dictionary, generatepuzzle(dictionary))
 end
 
 gamename(::HammingGame) = "Hamming"
@@ -92,6 +98,8 @@ function gameaction!(game::HammingGame, player::Player, guess::Guess)
         Correct(player, guess)
     elseif length(guess.word) != length(game.puzzle)
         IncorrectLength(player, guess, length(game.puzzle))
+    elseif !isindictionary(game.dictionary, guess.word)
+        NotInDictionary(player, guess.word)
     else
         d = hammingdistance(game.puzzle, guess.word)
         Incorrect(player, guess, d)

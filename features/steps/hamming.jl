@@ -45,7 +45,8 @@ end
     context[:io] = io
 
     publisher = MockHammingPublisher()
-    game = HammingGame(publisher, Word(puzzle))
+    dictionary = context[:dictionary]
+    game = HammingGame(publisher, dictionary, Word(puzzle))
 
     context[:publisher] = publisher
     context[:game] = game
@@ -85,4 +86,12 @@ end
 
     response = getonlyresponse(publisher)
     @expect response.wordlength == n
+end
+
+@then("the response is that the word \"{String}\" is not in the dictionary") do context, word
+    publisher = context[:publisher]
+
+    response = getonlyresponse(publisher)
+    @expect response.word == Word(word)
+    @expect typeof(response) == Hamming.NotInDictionary
 end

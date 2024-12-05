@@ -22,6 +22,7 @@
 #
 
 using Nona.NonaREPLs
+using Nona.Games
 
 @testset "FileDictionary    " begin
 
@@ -34,6 +35,24 @@ using Nona.NonaREPLs
     # Act and Assert
     dictionary = FileDictionary(path)
     # This throws an exception if FileDictionary(::String) is the only constructor.
+end
+
+@testset "FileDictionary; Is DATORSPEL in the dictionary; True" begin
+    # Arrange
+    path = strip(pkgdir(Nona, "test", "assets", "test_dictionary.txt"))
+    dictionary = FileDictionary(path)
+
+    # Act and Assert
+    @test isindictionary(dictionary, Word("DATORSPEL"))
+end
+
+@testset "FileDictionary; Is DATORSPLE in the dictionary; False" begin
+    # Arrange
+    path = strip(pkgdir(Nona, "test", "assets", "test_dictionary.txt"))
+    dictionary = FileDictionary(path)
+
+    # Act and Assert
+    @test !isindictionary(dictionary, Word("DATORSPLE"))
 end
 
 end # FileDictionary
