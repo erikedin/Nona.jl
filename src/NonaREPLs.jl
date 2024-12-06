@@ -56,7 +56,10 @@ Base.length(fd::FileDictionary) = length(fd.words)
 isindictionary(fd::FileDictionary, word::Word) = word in fd.words
 
 
+#
 # ConsolePublisher prints all game Niancat events to the console.
+#
+
 struct ConsolePublisher <: Publisher{NiancatGame}
     io::IO
 end
@@ -92,6 +95,10 @@ function publish!(p::ConsolePublisher, response::Solutions)
     println(p.io, "")
 end
 
+#
+# HammingConsolePublisher prints HammingGame events to the console.
+#
+
 struct HammingConsolePublisher <: Publisher{HammingGame}
     io::IO
 end
@@ -126,7 +133,7 @@ end
 struct ThisPlayer <: Player end
 
 #
-# NonaREPL is the REPL for the games (currently only Niancat)
+# NonaREPL is the REPL for the games.
 #
 
 function createnewgame(::Type{NiancatGame}, dictionary::Dictionary, io::IO)
@@ -139,17 +146,24 @@ function createnewgame(::Type{HammingGame}, dictionary::Dictionary, io::IO)
     HammingGame(publisher, dictionary)
 end
 
+# NonaREPL holds the game, and responds to player input by sending the game actions.
 mutable struct NonaREPL
     io::IO
     dictionary::Dictionary
     game::Game
 
+    """
+        NonaREPL(dictionary::Dictionary; io::IO = stdout)
+
+    Create the default game, currently NiancatGame.
+    """
     function NonaREPL(dictionary::Dictionary; io::IO = stdout)
         game = createnewgame(NiancatGame, dictionary, io)
 
         new(io, dictionary, game)
     end
 
+    # Mainly for testing purposes, to provide an already constructed game.
     function NonaREPL(gamefactory::Function, dictionary::Dictionary; io::IO = stdout)
         # The gamefactory is a method (::IO) -> Game
         game = gamefactory(io)
@@ -160,33 +174,46 @@ end
 
 prompt(nona::NonaREPL) = print(nona.io, "$(gamename(nona.game))> ")
 
+"""
+    showpuzzle(nona::NonaREPL)
+
+Sends the game a command to show the current puzzle to the user.
+"""
 function showpuzzle(nona::NonaREPL)
     player = ThisPlayer()
     command = ShowCurrentPuzzle()
     gameaction!(nona.game, player, command)
 end
 
+"""
+    showsolutions(nona::NonaREPL)
+
+Asks the game to show the solutions to the current game.
+This is useful when a new game is started, and the solutions to the old
+game should be revealed.
+"""
 function showsolutions(nona::NonaREPL)
     player = ThisPlayer()
     command = ShowSolutions()
     gameaction!(nona.game, player, command)
 end
 
-function start(nona::NonaREPL)
-    # Show the puzzle at game start
-    showpuzzle(nona)
+"""
+    doaction(nona::NonaREPL, ::NewGameAction)
 
-    # Start off by showing the prompt, where
-    # the player will input new commands.
-    prompt(nona)
-end
-
+Start a new game of the same type as the current game.
+"""
 function doaction(nona::NonaREPL, ::NewGameAction)
     showsolutions(nona)
     nona.game = createnewgame(typeof(nona.game), nona.dictionary, nona.io)
     showpuzzle(nona)
 end
 
+"""
+    doaction(nona::NonaREPL, newgame::NewGameTypeAction)
+
+Start a new game of the given type.
+"""
 function doaction(nona::NonaREPL, newgame::NewGameTypeAction)
     showsolutions(nona)
     nona.game = createnewgame(newgame.gametype, nona.dictionary, nona.io)
@@ -197,27 +224,61 @@ function doaction(::NonaREPL, ::ExitAction)
     exit(0)
 end
 
+"""
+    playerinput!(nona::NonaREPL, text::String, ::BadParse, game::Game)
+
+Called when the command parser fails to parse a command successfully.
+"""
 function playerinput!(nona::NonaREPL, text::String, ::BadParse, game::Game)
     println(nona.io, "Okänt kommando: $(text)")
     []
 end
+
+"""
+    playerinput!(::NonaREPL, ::String, command::GameCommand, game::Game)
+
+Called when a GameCommand is parsed. That is a command that goes to the game,
+as opposed to being handled by the REPL here.
+"""
 function playerinput!(::NonaREPL, ::String, command::GameCommand, game::Game)
     player = ThisPlayer()
     gameaction!(game, player, command)
     []
 end
 
+"""
+    playerinput!(::NonaREPL, ::String, command::REPLCommand, game::Game)
+
+Called when a REPLCOmmand is parsed. These commands are handled here, and not
+by the specific game.
+Returns a list with that single command, as the REPL command is handled by the
+caller of this function.
+"""
 function playerinput!(::NonaREPL, ::String, command::REPLCommand, game::Game)
     [command]
 end
 
+"""
+    playerinput!(nona::NonaREPL, text::String, game::Game)
+
+Parse a line of input as a command.
+The parser will create a
+- Guess, or
+- Game command, to be sent to the specific game being played, or
+- REPL command, a command handled by the REPL itself (such as starting a new game)
+"""
 function playerinput!(nona::NonaREPL, text::String, game::Game)
     input = ParserInput(text)
     (_rest, command) = GameParsers.commandP(input)
     playerinput!(nona, text, command, game)
 end
 
+"""
+    playerinput!(nona::NonaREPL, text::String)
 
+Handle player input. This results in a list of REPL actions to perform, such as
+starting a new game or exiting.
+"""
 function playerinput!(nona::NonaREPL, text::String)
     # The player input will result in possibly something published,
     # but also some actions for NonaREPL to take.
@@ -236,14 +297,28 @@ end
 #
 
 """
+    start(nona::NonaREPL)
+
+Start the game right after NonaREPL has been created.
+"""
+function start(nona::NonaREPL)
+    # Show the puzzle at game start
+    showpuzzle(nona)
+
+    # Start off by showing the prompt, where
+    # the player will input new commands.
+    prompt(nona)
+end
+
+"""
     newgame(dictionary::Dictionary; io::IO = stdout)
 
 Create a new NonaREPL game with a randomly generated puzzle.
 """
 function newgame(dictionary::Dictionary; io::IO = stdout)
-    game = NonaREPL(dictionary; io=io)
-    start(game)
-    game
+    nona = NonaREPL(dictionary; io=io)
+    start(nona)
+    nona
 end
 
 """
@@ -252,14 +327,14 @@ end
 Run a REPL in a loop until the player exits.
 """
 function run(dictionary::Dictionary, io::IO = stdout)
-    game = newgame(dictionary; io=io)
+    nona = newgame(dictionary; io=io)
 
     while true
         text = readline(io)
         if !isreadable(io)
             exit(0)
         end
-        playerinput!(game, text)
+        playerinput!(nona, text)
     end
 end
 

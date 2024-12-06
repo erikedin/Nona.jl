@@ -4,6 +4,7 @@ Issues
 - Documentation
 - Replace "ny Hamming" with a switch command
 - Split NonaREPL.feature into smaller parts, because it's getting big
+- Hamming can keep track of the best words currently known
 
 # Fixed
 - FileDictionary should take an AbstractString
