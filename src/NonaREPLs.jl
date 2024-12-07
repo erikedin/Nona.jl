@@ -31,7 +31,7 @@ using Nona.GameParsers
 using Nona.REPLCommands
 using Nona.Parsers
 
-import Nona.Games.Niancat: publish!, isindictionary
+import Nona.Games.Niancat: publish!
 
 export FileDictionary
 export NiancatREPL
@@ -53,7 +53,7 @@ end
 Base.iterate(fd::FileDictionary) = iterate(fd.words)
 Base.iterate(fd::FileDictionary, state) = iterate(fd.words, state)
 Base.length(fd::FileDictionary) = length(fd.words)
-isindictionary(fd::FileDictionary, word::Word) = word in fd.words
+Base.in(word::Word, fd::FileDictionary) = word in fd.words
 
 
 #

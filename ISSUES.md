@@ -4,8 +4,6 @@ Issues
 - Code comments
 - Replace "ny Hamming" with a switch command
 - Hamming can keep track of the best words currently known
-- Replace `isindictionary` with just `in`
-- Replace one NiancatGame constructor with a call to the other
 
 # Fixed
 - FileDictionary should take an AbstractString
@@ -37,3 +35,5 @@ Issues
 - ÅÄÖ does not work with the command parser
 - Creating a new Hamming game leads to `implement gameaction!`
 - Usage documentation
+- Replace `isindictionary` with just `in`
+- Replace one NiancatGame constructor with a call to the other

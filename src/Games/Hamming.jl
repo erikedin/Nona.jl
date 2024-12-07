@@ -95,7 +95,7 @@ function gameaction!(game::HammingGame, player::Player, guess::Guess)
         Correct(player, guess)
     elseif length(guess.word) != length(game.puzzle)
         IncorrectLength(player, guess, length(game.puzzle))
-    elseif !isindictionary(game.dictionary, guess.word)
+    elseif !(guess.word in game.dictionary)
         NotInDictionary(player, guess.word)
     else
         d = hammingdistance(game.puzzle, guess.word)

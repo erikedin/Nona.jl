@@ -43,7 +43,7 @@ end
     dictionary = FileDictionary(path)
 
     # Act and Assert
-    @test isindictionary(dictionary, Word("DATORSPEL"))
+    @test Word("DATORSPEL") in dictionary
 end
 
 @testset "FileDictionary; Is DATORSPLE in the dictionary; False" begin
@@ -52,7 +52,7 @@ end
     dictionary = FileDictionary(path)
 
     # Act and Assert
-    @test !isindictionary(dictionary, Word("DATORSPLE"))
+    @test !(Word("DATORSPLE") in dictionary)
 end
 
 end # FileDictionary

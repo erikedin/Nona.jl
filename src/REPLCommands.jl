@@ -28,9 +28,10 @@ using Nona.Games
 export REPLCommand,
        NewGameAction,
        NewGameTypeAction,
-       ExitAction,
-       BackToGameModeAction
+       ExitAction
 
+# REPLCommand is the abstract type for commands that aren't specific to the games,
+# but the text REPL instead.
 abstract type REPLCommand <: Command end
 struct NewGameAction <: REPLCommand end
 struct NewGameTypeAction <: REPLCommand

@@ -26,7 +26,7 @@ module Games
 import Base: convert, hash, iterate, length, isless, show, sort
 
 export Player, Response, Publisher
-export Dictionary, isindictionary
+export Dictionary
 export Command, GameCommand, Game, gameaction!, gamename
 export Word
 export Guess, ShowCurrentPuzzle, ShowSolutions
@@ -104,7 +104,7 @@ Base.lastindex(w::Word) = lastindex(w.letters)
 #
 
 abstract type Dictionary end
-isindictionary(dictionary::Dictionary, word::Word) = @error("Implement isindictionary(::$(typeof(dictionary)), $(typeof(word)))")
+Base.in(word::Word, dictionary::Dictionary) = @error("Implement Base.in(::WOrd, ::$(typeof(dictionary)))")
 
 #
 # Universal commands

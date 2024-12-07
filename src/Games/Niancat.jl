@@ -150,21 +150,7 @@ struct NiancatGame <: Game
     """
     function NiancatGame(publisher::Publisher{NiancatGame}, dictionary::Dictionary)
         puzzle = generatepuzzle(dictionary)
-
-        # Find all solutions to the puzzle.
-        solutions = Word[
-            word
-            for word in dictionary
-            if isanagram(puzzle, word)
-        ]
-
-        # The solutions are sorted so that in the case of multiple solutions,
-        # we know that word 1 is the first alphabetically. This actually gives
-        # information to the player, but we keep forgetting how the current Niancat
-        # sorts the words, if it does. So this is mostly so we'll stop asking.
-        sortedsolutions = sort(solutions)
-
-        new(puzzle, publisher, sortedsolutions)
+        NiancatGame(puzzle, publisher, dictionary)
     end
 end
 
