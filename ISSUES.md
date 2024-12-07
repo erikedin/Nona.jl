@@ -37,3 +37,4 @@ Issues
 - Usage documentation
 - Replace `isindictionary` with just `in`
 - Replace one NiancatGame constructor with a call to the other
+- Hamming words are 9 characters or less

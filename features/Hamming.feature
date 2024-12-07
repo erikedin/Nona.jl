@@ -66,6 +66,15 @@ Feature: Hamming distance game
          When Alice guesses DATORSPLE
          Then the response is that the word "DATORSPLE" is not in the dictionary
 
+    Scenario: Puzzles are no longer than 9 letters
+        Given a dictionary
+            | MEDELINKOMST |
+            | RELATIVITET  |
+            | DATORSPEL    |
+            | PUSSEL       |
+         When a Hamming game is created with a randomly generated puzzle
+         Then the puzzle length is <= 9
+
     @wip
     Scenario: Start a Hamming game with a provided length of the puzzle
         Given a Hamming game with puzzle length 5

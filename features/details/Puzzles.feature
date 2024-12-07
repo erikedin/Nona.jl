@@ -21,7 +21,7 @@
 # SOFTWARE.
 #
 
-Feature: Niancat puzzle requirements
+Feature: Puzzle requirements
 
     Scenario: The puzzle is a 9 letter word
         This is intended as a more stringent test than the similar scenario
@@ -43,3 +43,12 @@ Feature: Niancat puzzle requirements
             | ÅTERTRÄDA |
          When randomly generating a Niancat puzzle
          Then the puzzle has 9 letters
+
+    Scenario: Hamming puzzles are no more than 9 characters
+        Given a dictionary
+            | MEDELINKOMST |
+            | RELATIVITET  |
+            | DATORSPEL    |
+            | PUSSEL       |
+         When randomly generating a Hamming puzzle 30 times
+         Then all randomly chosen puzzles have lengths <= 9

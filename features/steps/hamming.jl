@@ -58,6 +58,46 @@ end
     context[:defaultplayer] = alice
 end
 
+@when("a Hamming game is created with a randomly generated puzzle") do context
+    io = IOBuffer()
+    context[:io] = io
+
+    publisher = MockHammingPublisher()
+    dictionary = context[:dictionary]
+    game = HammingGame(publisher, dictionary)
+
+    context[:publisher] = publisher
+    context[:game] = game
+
+    # The default player is Alice, unless otherwise stated.
+    # Other players are stored in the :players map.
+    alice = NickPlayer("Alice")
+    context[:players] = Dict{String, Player}(["Alice" => alice])
+    context[:defaultplayer] = alice
+end
+
+@when("randomly generating a Hamming puzzle {Int} times") do context, n
+    io = IOBuffer()
+    context[:io] = io
+
+    # The default player is Alice, unless otherwise stated.
+    # Other players are stored in the :players map.
+    alice = NickPlayer("Alice")
+    context[:players] = Dict{String, Player}(["Alice" => alice])
+    context[:defaultplayer] = alice
+
+    dictionary = context[:dictionary]
+
+    generategame = () -> begin
+        publisher = MockHammingPublisher()
+        game = HammingGame(publisher, dictionary)
+        (game, publisher)
+    end
+    games = [generategame() for i = 1:n]
+
+    context[:games] = games
+end
+
 @then("the Hamming response is that {String} is correct") do context, guess
     publisher = context[:publisher]
     player = context[:defaultplayer]
@@ -94,4 +134,27 @@ end
     response = getonlyresponse(publisher)
     @expect response.word == Word(word)
     @expect typeof(response) == Hamming.NotInDictionary
+end
+
+@then("the puzzle length is <= {Int}") do context, n
+    game = context[:game]
+    player = context[:defaultplayer]
+    publisher = context[:publisher]
+
+    gameaction!(game, player, ShowCurrentPuzzle())
+
+    response = getonlyresponse(publisher)
+    @test response.puzzlelength <= n
+end
+
+@then("all randomly chosen puzzles have lengths <= {Int}") do context, n
+    player = context[:defaultplayer]
+    games = context[:games]
+
+    for (game, publisher) in games
+        gameaction!(game, player, ShowCurrentPuzzle())
+
+        response = getonlyresponse(publisher)
+        @test response.puzzlelength <= n
+    end
 end

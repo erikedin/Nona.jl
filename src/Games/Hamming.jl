@@ -69,7 +69,9 @@ end
 #
 
 function generatepuzzle(dictionary::Dictionary) :: Word
-    rand(collect(dictionary))
+    shortword = x -> length(x) <= 9
+    reasonablyshortwords = collect(dictionary) |> filter(shortword)
+    rand(reasonablyshortwords)
 end
 
 struct HammingGame <: Game
