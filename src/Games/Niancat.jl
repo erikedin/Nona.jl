@@ -121,6 +121,11 @@ struct NiancatGame <: Game
     publisher::Publisher{NiancatGame}
     solutions::Vector{Word}
 
+    """
+        NiancatGame(puzzle::Word, publisher::Publisher{NiancatGame}, dictionary::Dictionary)
+
+    A NiancatGame with a given puzzle.
+    """
     function NiancatGame(puzzle::Word, publisher::Publisher{NiancatGame}, dictionary::Dictionary)
         # Find all solutions to the puzzle.
         solutions = Word[
@@ -138,6 +143,11 @@ struct NiancatGame <: Game
         new(puzzle, publisher, sortedsolutions)
     end
 
+    """
+        NiancatGame(puzzle::Word, publisher::Publisher{NiancatGame}, dictionary::Dictionary)
+
+    A NiancatGame, and generate a random puzzle.
+    """
     function NiancatGame(publisher::Publisher{NiancatGame}, dictionary::Dictionary)
         puzzle = generatepuzzle(dictionary)
 
@@ -190,7 +200,7 @@ struct MultipleSolutionIndex <: SolutionIndex
 end
 
 # SingleSolutionIndex represents the case when there is a single solution,
-# so it's not necessary to print which word it was.
+# so it's not necessary to print which index the solution was.
 struct SingleSolutionIndex <: SolutionIndex end
 
 # Correct is a response to the player that the guess was correct.
@@ -219,19 +229,28 @@ end
 #
 
 """
+    findsolutionindex(game::NiancatGame, guess::Guess) :: SolutionIndex
+
+The players will want to know which solution was just found, in the case of
+multiple solutions.
+"""
+function findsolutionindex(game::NiancatGame, guess::Guess) :: SolutionIndex
+    if length(game.solutions) == 1
+        SingleSolutionIndex()
+    else
+        index = findfirst(item -> item == guess.word, game.solutions)
+        MultipleSolutionIndex(index)
+    end
+end
+
+"""
     gameaction!(game::NiancatGame, player::Player, guess::Guess)
 
 Guess a word. The game will reply with correct or incorrect.
 """
 function gameaction!(game::NiancatGame, player::Player, guess::Guess)
     response = if guess.word in game.solutions
-        solutionindex = if length(game.solutions) == 1
-            SingleSolutionIndex()
-        else
-            index = findfirst(item -> item == guess.word, game.solutions)
-            MultipleSolutionIndex(index)
-        end
-
+        solutionindex = findsolutionindex(game, guess)
         Correct(player, guess, solutionindex)
     else
         missings = game.puzzle - guess.word

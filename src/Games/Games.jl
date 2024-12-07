@@ -32,18 +32,40 @@ export Word
 export Guess, ShowCurrentPuzzle, ShowSolutions
 
 abstract type Player end
+# Response is an abstract type for all messages sent to the players from the game.
 abstract type Response end
 
-abstract type Publisher{T} end
-publish!(publisher::Publisher{T}, response::Response) where {T} = @error("Implement Publisher.publish! for publisher $(publisher) and response $(response)")
-
+# Command is an abstract type for all commands entered by the players.
+# This is either a command for the specific word game, or a command to the game wrapper,
+# to switch game types for instance.
 abstract type Command end
+
+# GameCommands are commands sent to the specific games, as opposed to commands handled
+# by the REPL in the case of NonaREPL.
 abstract type GameCommand <: Command end
+
+# Game is the abstract type for all specific word games, such as NiancatGame or HammingGame.
 abstract type Game end
 gameaction!(game::Game, ::Player, command::GameCommand) = @error("Implement gameaction! for command $(command) in game $(game)")
+
+"""
+    gamename(::Game) :: String
+
+The name of the game. Implemented by each game type.
+Example: Niancat, Hamming
+"""
 function gamename(::Game) :: String
     @error("Implement gamename(::Game)")
 end
+
+# Publisher{G} is for publishing responses to the players, from game G.
+abstract type Publisher{G <: Game} end
+publish!(publisher::Publisher{G}, response::Response) where {G <: Game} = @error("Implement Publisher.publish! for publisher $(publisher) and response $(response)")
+
+
+#
+# Word
+#
 
 # Word is a normalized string that is case-insensitive, and
 # ignores some diacritics, in a Swedish-specific manner.
@@ -77,16 +99,28 @@ end
 Base.getindex(w::Word, index) = getindex(w.letters, index)
 Base.lastindex(w::Word) = lastindex(w.letters)
 
+#
+# Dictionary
+#
+
 abstract type Dictionary end
 isindictionary(dictionary::Dictionary, word::Word) = @error("Implement isindictionary(::$(typeof(dictionary)), $(typeof(word)))")
 
-# Guess is a command game command to guess a word.
+#
+# Universal commands
+# These commands should work for every game type.
+#
+
 struct Guess <: GameCommand
     word::Word
 end
 
 struct ShowCurrentPuzzle  <: GameCommand end
 struct ShowSolutions <: GameCommand end
+
+#
+# Game modules
+#
 
 include("Niancat.jl")
 include("Hamming.jl")

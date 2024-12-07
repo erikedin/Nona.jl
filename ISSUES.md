@@ -1,10 +1,11 @@
 Issues
 ======
 
-- Documentation
+- Code comments
 - Replace "ny Hamming" with a switch command
-- Split NonaREPL.feature into smaller parts, because it's getting big
 - Hamming can keep track of the best words currently known
+- Replace `isindictionary` with just `in`
+- Replace one NiancatGame constructor with a call to the other
 
 # Fixed
 - FileDictionary should take an AbstractString
