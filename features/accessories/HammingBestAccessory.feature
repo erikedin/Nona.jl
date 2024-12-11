@@ -21,7 +21,6 @@
 # SOFTWARE.
 #
 
-@wip
 Feature: Keeping track of the current best guesses in Hamming
     In order to help the player keep track of good guesses
     a Hamming accessory will listen to guesses and show them.
@@ -36,15 +35,18 @@ Feature: Keeping track of the current best guesses in Hamming
     # TODO: Insert the accesory somewhere
     Scenario: No guesses made yet
         Given a Hamming puzzle ABCDEF
+          And a Hamming accessory for the best guesses
          When Alice requests the best guesses
-         Then there are not best guesses
+         Then there are no best guesses
 
+    @wip
     Scenario: A single best guess
         Given a Hamming puzzle ABCDEF
          When Alice guesses AVWXYZ
           And Alice requests the best guesses
          Then the best guesses are distance 5
 
+    @wip
     Scenario: Two best guesses
         Given a Hamming puzzle ABCDEF
          When Alice guesses AXXXXX
@@ -54,6 +56,7 @@ Feature: Keeping track of the current best guesses in Hamming
             | AXXXXX |
             | XBXXXX |
 
+    @wip
     Scenario: A new better guess clears the older worse guesses
         Given a Hamming puzzle ABCDEF
          When Alice guesses AXXXXX

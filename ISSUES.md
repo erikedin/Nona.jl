@@ -4,6 +4,9 @@ Issues
 - Code comments
 - Replace "ny Hamming" with a switch command
 - Hamming can keep track of the best words currently known
+- Niancat: Problems with guesses with ÅÄÖ letters
+- Keep state of current game, so it can be continued
+- State should be base64-encoded to avoid accidental reveals
 
 # Fixed
 - FileDictionary should take an AbstractString

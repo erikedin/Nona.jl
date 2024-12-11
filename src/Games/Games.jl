@@ -25,11 +25,12 @@ module Games
 
 import Base: convert, hash, iterate, length, isless, show, sort
 
-export Player, Response, Publisher
+export Player, Response, Publisher, DelegationPublisher, register!
 export Dictionary
 export Command, GameCommand, Game, gameaction!, gamename
 export Word
 export Guess, ShowCurrentPuzzle, ShowSolutions
+export Accessory
 
 abstract type Player end
 # Response is an abstract type for all messages sent to the players from the game.
@@ -48,6 +49,9 @@ abstract type GameCommand <: Command end
 abstract type Game end
 gameaction!(game::Game, ::Player, command::GameCommand) = @error("Implement gameaction! for command $(command) in game $(game)")
 
+# Accessory is an abstract type for keeping track of game related data.
+abstract type Accessory{G <: Game} end
+
 """
     gamename(::Game) :: String
 
@@ -62,6 +66,20 @@ end
 abstract type Publisher{G <: Game} end
 publish!(publisher::Publisher{G}, response::Response) where {G <: Game} = @error("Implement Publisher.publish! for publisher $(publisher) and response $(response)")
 
+#
+# DelegationPublisher sends events to accessories as well as the final publisher.
+#
+
+struct DelegationPublisher{G} <: Publisher{G}
+    publisher::Publisher{G}
+end
+
+function publish!(delegation::DelegationPublisher{G}, response::Response) where {G}
+    publish!(delegation.publisher, response)
+end
+
+function register!(delegation::DelegationPublisher{G}, accessory::Accessory{G}) where {G}
+end
 
 #
 # Word
@@ -124,5 +142,6 @@ struct ShowSolutions <: GameCommand end
 
 include("Niancat.jl")
 include("Hamming.jl")
+include("HammingAccessories.jl")
 
 end # module Games

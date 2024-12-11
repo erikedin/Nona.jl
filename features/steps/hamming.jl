@@ -24,6 +24,7 @@
 using Behavior
 using Nona.Games
 using Nona.Games.Hamming
+using Nona.Games.HammingAccessories
 import Nona.Games: publish!
 
 struct MockHammingPublisher <: Publisher{HammingGame}
@@ -45,10 +46,13 @@ end
     context[:io] = io
 
     publisher = MockHammingPublisher()
+    delegationpublisher = DelegationPublisher(publisher)
+
     dictionary = context[:dictionary]
-    game = HammingGame(publisher, dictionary, Word(puzzle))
+    game = HammingGame(delegationpublisher, dictionary, Word(puzzle))
 
     context[:publisher] = publisher
+    context[:delegationpublisher] = delegationpublisher
     context[:game] = game
 
     # The default player is Alice, unless otherwise stated.
@@ -56,6 +60,19 @@ end
     alice = NickPlayer("Alice")
     context[:players] = Dict{String, Player}(["Alice" => alice])
     context[:defaultplayer] = alice
+end
+
+@given("a Hamming accessory for the best guesses") do context
+    # publisher is the mock publisher where events can be queried by the tests.
+    publisher = context[:publisher]
+    # delegationpublisher is a publisher that sends events to any accessories
+    # as well as to the publisher
+    delegationpublisher = context[:delegationpublisher]
+
+    accessory = BestHammingGuess(publisher)
+    register!(delegationpublisher, accessory)
+
+    context[:bestguessaccessory] = accessory
 end
 
 @when("a Hamming game is created with a randomly generated puzzle") do context
@@ -96,6 +113,13 @@ end
     games = [generategame() for i = 1:n]
 
     context[:games] = games
+end
+
+@when("Alice requests the best guesses") do context
+    accessory = context[:bestguessaccessory]
+    alice = context[:defaultplayer]
+
+    gameaction!(accessory, alice, ShowBestGuesses())
 end
 
 @then("the Hamming response is that {String} is correct") do context, guess
@@ -157,4 +181,11 @@ end
         response = getonlyresponse(publisher)
         @test response.puzzlelength <= n
     end
+end
+
+@then("there are no best guesses") do context
+    publisher = context[:publisher]
+
+    response = getonlyresponse(publisher)
+    @expect typeof(response) == HammingAccessories.NoBestGuesses
 end
