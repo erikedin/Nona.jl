@@ -24,9 +24,9 @@
 module HammingAccessories
 
 using Nona.Games
-using Nona.Games: publish!
 using Nona.Games.Hamming
-import Nona.Games: gameaction!
+using Nona.Games.Hamming: Incorrect
+import Nona.Games: gameaction!, publish!
 
 export
     BestHammingGuess,
@@ -35,6 +35,9 @@ export
 
 struct BestHammingGuess <: Accessory{HammingGame}
     publisher::Publisher{HammingGame}
+    words::Vector{Word}
+
+    BestHammingGuess(publisher::Publisher{HammingGame}) = new(publisher, Word[])
 end
 
 struct ShowBestGuesses <: GameCommand end
@@ -43,8 +46,23 @@ struct NoBestGuesses <: Response
     player::Player
 end
 
-function gameaction!(best::BestHammingGuess, player::Player, ::ShowBestGuesses)
-    publish!(best.publisher, NoBestGuesses(player))
+struct BestGuesses <: Response
+    player::Player
+    distance::Int
+    words::Vector{Word}
 end
+
+function gameaction!(best::BestHammingGuess, player::Player, ::ShowBestGuesses)
+    if isempty(best.words)
+        publish!(best.publisher, NoBestGuesses(player))
+    else
+        publish!(best.publisher, BestGuesses(player, 5, best.words))
+    end
+end
+
+function publish!(best::BestHammingGuess, incorrect::Incorrect)
+    push!(best.words, incorrect.guess.word)
+end
+publish!(::BestHammingGuess, ::Response) = nothing
 
 end # module HammingAccessories

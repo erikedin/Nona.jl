@@ -32,19 +32,18 @@ Feature: Keeping track of the current best guesses in Hamming
             | XBXXXX |
             | ABXXXX |
 
-    # TODO: Insert the accesory somewhere
     Scenario: No guesses made yet
         Given a Hamming puzzle ABCDEF
           And a Hamming accessory for the best guesses
          When Alice requests the best guesses
          Then there are no best guesses
 
-    @wip
     Scenario: A single best guess
         Given a Hamming puzzle ABCDEF
-         When Alice guesses AVWXYZ
+          And a Hamming accessory for the best guesses
+         When Alice guesses AXXXXX
           And Alice requests the best guesses
-         Then the best guesses are distance 5
+         Then the best guess AXXXXX is distance 5
 
     @wip
     Scenario: Two best guesses

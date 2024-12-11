@@ -72,13 +72,19 @@ publish!(publisher::Publisher{G}, response::Response) where {G <: Game} = @error
 
 struct DelegationPublisher{G} <: Publisher{G}
     publisher::Publisher{G}
+    accessories::Vector{<:Accessory{G}}
+
+    DelegationPublisher(publisher::Publisher{G}) where {G} = new{G}(publisher, Accessory{G}[])
 end
 
 function publish!(delegation::DelegationPublisher{G}, response::Response) where {G}
     publish!(delegation.publisher, response)
+
+    foreach(a -> publish!(a, response), delegation.accessories)
 end
 
 function register!(delegation::DelegationPublisher{G}, accessory::Accessory{G}) where {G}
+    push!(delegation.accessories, accessory)
 end
 
 #

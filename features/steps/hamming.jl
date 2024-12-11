@@ -41,6 +41,13 @@ function getonlyresponse(publisher::MockHammingPublisher) :: Response
     only(publisher.responses)
 end
 
+function getonlyresponse(::Type{T}, publisher::MockHammingPublisher) :: Response where {T}
+    responses = [resp
+                 for resp in publisher.responses
+                 if typeof(resp) == T]
+    only(responses)
+end
+
 @given("a Hamming puzzle {String}") do context, puzzle
     io = IOBuffer()
     context[:io] = io
@@ -188,4 +195,12 @@ end
 
     response = getonlyresponse(publisher)
     @expect typeof(response) == HammingAccessories.NoBestGuesses
+end
+
+@then("the best guess {String} is distance {Int}") do context, word, n
+    publisher = context[:publisher]
+
+    response = getonlyresponse(HammingAccessories.BestGuesses, publisher)
+    @expect only(response.words) == Word(word)
+    @expect response.distance == n
 end
