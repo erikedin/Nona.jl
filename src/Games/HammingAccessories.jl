@@ -33,11 +33,12 @@ export
     ShowBestGuesses,
     NoBestGuesses
 
-struct BestHammingGuess <: Accessory{HammingGame}
+mutable struct BestHammingGuess <: Accessory{HammingGame}
     publisher::Publisher{HammingGame}
     words::Vector{Word}
+    distance::Int
 
-    BestHammingGuess(publisher::Publisher{HammingGame}) = new(publisher, Word[])
+    BestHammingGuess(publisher::Publisher{HammingGame}) = new(publisher, Word[], typemax(Int))
 end
 
 struct ShowBestGuesses <: GameCommand end
@@ -56,12 +57,20 @@ function gameaction!(best::BestHammingGuess, player::Player, ::ShowBestGuesses)
     if isempty(best.words)
         publish!(best.publisher, NoBestGuesses(player))
     else
-        publish!(best.publisher, BestGuesses(player, 5, best.words))
+        publish!(best.publisher, BestGuesses(player, best.distance, best.words))
     end
 end
 
 function publish!(best::BestHammingGuess, incorrect::Incorrect)
-    push!(best.words, incorrect.guess.word)
+    isbetter = incorrect.hammingdistance < best.distance
+    issame = incorrect.hammingdistance == best.distance
+    if isbetter
+        best.distance = incorrect.hammingdistance
+        empty!(best.words)
+        push!(best.words, incorrect.guess.word)
+    elseif issame
+        push!(best.words, incorrect.guess.word)
+    end
 end
 publish!(::BestHammingGuess, ::Response) = nothing
 

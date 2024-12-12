@@ -204,3 +204,13 @@ end
     @expect only(response.words) == Word(word)
     @expect response.distance == n
 end
+
+@then("the best guess is distance {Int} with words") do context, n
+    publisher = context[:publisher]
+
+    expectedwords = [Word(w[1]) for w in context.datatable]
+
+    response = getonlyresponse(HammingAccessories.BestGuesses, publisher)
+    @expect sort(response.words) == sort(expectedwords)
+    @expect response.distance == n
+end

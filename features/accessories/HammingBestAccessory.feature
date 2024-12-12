@@ -45,21 +45,21 @@ Feature: Keeping track of the current best guesses in Hamming
           And Alice requests the best guesses
          Then the best guess AXXXXX is distance 5
 
-    @wip
     Scenario: Two best guesses
         Given a Hamming puzzle ABCDEF
+          And a Hamming accessory for the best guesses
          When Alice guesses AXXXXX
           And Alice guesses XBXXXX
           And Alice requests the best guesses
-         Then the best guesses are distance 5
+         Then the best guess is distance 5 with words
             | AXXXXX |
             | XBXXXX |
 
-    @wip
     Scenario: A new better guess clears the older worse guesses
         Given a Hamming puzzle ABCDEF
+          And a Hamming accessory for the best guesses
          When Alice guesses AXXXXX
           And Alice guesses ABXXXX
           And Alice requests the best guesses
-         Then the best guesses are distance 4
+         Then the best guess is distance 4 with words
             | ABXXXX |
