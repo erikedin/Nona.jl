@@ -27,7 +27,7 @@ import Base: convert, hash, iterate, length, isless, show, sort
 
 export Player, Response, Publisher, DelegationPublisher, register!
 export Dictionary
-export Command, GameCommand, Game, gameaction!, gamename
+export Command, GameCommand, Game, gameaction!, gamename, gametype
 export Word
 export Guess, ShowCurrentPuzzle, ShowSolutions
 export Accessory, GameWithAccessories, AccessoryCommand
@@ -46,7 +46,7 @@ abstract type Command end
 abstract type GameCommand <: Command end
 
 # AccessoryCommands are directed to objects that aren't the game itself, but supports it.
-abstract type AccessoryCommand <: Command end
+abstract type AccessoryCommand <: GameCommand end
 
 # Game is the abstract type for all specific word games, such as NiancatGame or HammingGame.
 abstract type Game end
@@ -65,6 +65,8 @@ function gamename(::Game) :: String
     @error("Implement gamename(::Game)")
 end
 
+gametype(::G) where {G <: Game} = G
+
 # Publisher{G} is for publishing responses to the players, from game G.
 abstract type Publisher{G <: Game} end
 publish!(publisher::Publisher{G}, response::Response) where {G <: Game} = @error("Implement Publisher.publish! for publisher $(publisher) and response $(response)")
@@ -78,6 +80,7 @@ struct DelegationPublisher{G} <: Publisher{G}
     accessories::Vector{<:Accessory{G}}
 
     DelegationPublisher(publisher::Publisher{G}) where {G} = new{G}(publisher, Accessory{G}[])
+    DelegationPublisher(publisher::Publisher{G}, accessory::Accessory{G}) where {G} = new{G}(publisher, Accessory{G}[accessory])
 end
 
 function publish!(delegation::DelegationPublisher{G}, response::Response) where {G}
@@ -101,6 +104,8 @@ end
 
 gameaction!(game::GameWithAccessories{G}, player::Player, command::GameCommand) where {G} = gameaction!(game.game, player, command)
 gameaction!(game::GameWithAccessories{G}, player::Player, command::AccessoryCommand) where {G} = gameaction!(game.accessory, player, command)
+gamename(game::GameWithAccessories{G}) where {G} = gamename(game.game)
+gametype(game::GameWithAccessories{G}) where {G} = gametype(game.game)
 
 #
 # Word

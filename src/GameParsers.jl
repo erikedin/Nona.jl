@@ -26,6 +26,7 @@ module GameParsers
 using Nona.Parsers
 using Nona.Games
 using Nona.Games.Hamming
+using Nona.Games.HammingAccessories
 using Nona.Games.Niancat
 using Nona.REPLCommands
 
@@ -47,8 +48,13 @@ const guessP = guessTokenP |> To{Guess}()
 
 const gameCommandsP = showCurrentPuzzleP | newGameTypeP | newGameP
 const gameCommandP = ignoreC(commandMarkerP) >> gameCommandsP
+
+const showBestGuessP = symbolC("bäst") |> To{ShowBestGuesses}(x -> ShowBestGuesses())
+const accessoryCommandsP = showBestGuessP
+const accessoryCommandP = ignoreC(commandMarkerP) >> accessoryCommandsP
+
 const afterP = spacesP >> eofP
 const beforeP = spacesP
-const commandP = ignoreC(beforeP) >> (gameCommandP | guessP) >> ignoreC(afterP)
+const commandP = ignoreC(beforeP) >> (gameCommandP | accessoryCommandP | guessP) >> ignoreC(afterP)
 
 end

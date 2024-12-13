@@ -58,7 +58,13 @@ end
     io = IOBuffer()
     context[:io] = io
 
-    gamefactory = io -> HammingGame(NonaREPLs.HammingConsolePublisher(io), dictionary, Word(puzzle))
+    gamefactory = io -> begin
+        publisher = NonaREPLs.HammingConsolePublisher(io)
+        accessory = BestHammingGuess(publisher)
+        delegation = DelegationPublisher(publisher, accessory)
+        game = HammingGame(delegation, dictionary, Word(puzzle))
+        GameWithAccessories(game, accessory)
+    end
 
     nona = NonaREPL(gamefactory, dictionary; io=io)
     start(nona)

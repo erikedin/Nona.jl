@@ -26,6 +26,7 @@ module NonaREPLs
 using Nona.Games
 using Nona.Games.Niancat
 using Nona.Games.Hamming
+using Nona.Games.HammingAccessories
 using Nona.REPLCommands
 using Nona.GameParsers
 using Nona.REPLCommands
@@ -127,6 +128,20 @@ function publish!(p::HammingConsolePublisher, response::Hamming.RevealSolution)
     println(p.io, "$(response.word)")
 end
 
+function publish!(p::HammingConsolePublisher, response::HammingAccessories.NoBestGuesses)
+    println(p.io, "Inga gissningar än.")
+end
+
+function publish!(p::HammingConsolePublisher, response::HammingAccessories.BestGuesses)
+    println(p.io, "$(response.distance)")
+    guesses = ["  $(word)"
+                 for word in response.words]
+    for word in guesses
+        println(p.io, word)
+    end
+    println(p.io, "")
+end
+
 # Since the REPL is a single-player game, there is no need to distinguish
 # between players. Thus, this is an empty implementation of the `Player`
 # abstract type.
@@ -143,7 +158,10 @@ end
 
 function createnewgame(::Type{HammingGame}, dictionary::Dictionary, io::IO)
     publisher = HammingConsolePublisher(io)
-    HammingGame(publisher, dictionary)
+    accessory = BestHammingGuess(publisher)
+    delegation = DelegationPublisher(publisher, accessory)
+    game = HammingGame(delegation, dictionary)
+    GameWithAccessories(game, accessory)
 end
 
 # NonaREPL holds the game, and responds to player input by sending the game actions.
@@ -205,7 +223,7 @@ Start a new game of the same type as the current game.
 """
 function doaction(nona::NonaREPL, ::NewGameAction)
     showsolutions(nona)
-    nona.game = createnewgame(typeof(nona.game), nona.dictionary, nona.io)
+    nona.game = createnewgame(gametype(nona.game), nona.dictionary, nona.io)
     showpuzzle(nona)
 end
 
