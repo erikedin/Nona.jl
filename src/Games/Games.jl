@@ -30,7 +30,7 @@ export Dictionary
 export Command, GameCommand, Game, gameaction!, gamename
 export Word
 export Guess, ShowCurrentPuzzle, ShowSolutions
-export Accessory
+export Accessory, GameWithAccessories, AccessoryCommand
 
 abstract type Player end
 # Response is an abstract type for all messages sent to the players from the game.
@@ -44,6 +44,9 @@ abstract type Command end
 # GameCommands are commands sent to the specific games, as opposed to commands handled
 # by the REPL in the case of NonaREPL.
 abstract type GameCommand <: Command end
+
+# AccessoryCommands are directed to objects that aren't the game itself, but supports it.
+abstract type AccessoryCommand <: Command end
 
 # Game is the abstract type for all specific word games, such as NiancatGame or HammingGame.
 abstract type Game end
@@ -86,6 +89,18 @@ end
 function register!(delegation::DelegationPublisher{G}, accessory::Accessory{G}) where {G}
     push!(delegation.accessories, accessory)
 end
+
+#
+# GameWithAccessories
+# Exposes a unified interface for sending commands to games or accessories.
+
+struct GameWithAccessories{G <: Game} <: Game
+    game::G
+    accessory::Accessory{G}
+end
+
+gameaction!(game::GameWithAccessories{G}, player::Player, command::GameCommand) where {G} = gameaction!(game.game, player, command)
+gameaction!(game::GameWithAccessories{G}, player::Player, command::AccessoryCommand) where {G} = gameaction!(game.accessory, player, command)
 
 #
 # Word

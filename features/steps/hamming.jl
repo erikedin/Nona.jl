@@ -79,7 +79,8 @@ end
     accessory = BestHammingGuess(publisher)
     register!(delegationpublisher, accessory)
 
-    context[:bestguessaccessory] = accessory
+    game = context[:game]
+    context[:game] = GameWithAccessories(game, accessory)
 end
 
 @when("a Hamming game is created with a randomly generated puzzle") do context
@@ -123,10 +124,10 @@ end
 end
 
 @when("Alice requests the best guesses") do context
-    accessory = context[:bestguessaccessory]
+    game = context[:game]
     alice = context[:defaultplayer]
 
-    gameaction!(accessory, alice, ShowBestGuesses())
+    gameaction!(game, alice, ShowBestGuesses())
 end
 
 @then("the Hamming response is that {String} is correct") do context, guess

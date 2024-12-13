@@ -41,7 +41,7 @@ mutable struct BestHammingGuess <: Accessory{HammingGame}
     BestHammingGuess(publisher::Publisher{HammingGame}) = new(publisher, Word[], typemax(Int))
 end
 
-struct ShowBestGuesses <: GameCommand end
+struct ShowBestGuesses <: AccessoryCommand end
 
 struct NoBestGuesses <: Response
     player::Player
@@ -66,8 +66,7 @@ function publish!(best::BestHammingGuess, incorrect::Incorrect)
     issame = incorrect.hammingdistance == best.distance
     if isbetter
         best.distance = incorrect.hammingdistance
-        empty!(best.words)
-        push!(best.words, incorrect.guess.word)
+        best.words = Word[incorrect.guess.word]
     elseif issame
         push!(best.words, incorrect.guess.word)
     end
