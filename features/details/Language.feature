@@ -55,3 +55,7 @@ Feature: Language behavior
             | ABCD   | ABC   | D       | -     |
             | ABCD   | ABCE  | D       | E     |
             | AAAB   | AB    | AA      | -     |
+            | ABA    | ABÖ   | A       | Ö     |
+            | ABÖ    | ABA   | Ö       | A     |
+            | ABÖ    | AB    | Ö       | -     |
+            | AB     | ABÖ   | -       | Ö     |
