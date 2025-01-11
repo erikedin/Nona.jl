@@ -60,7 +60,7 @@ end
 
     gamefactory = io -> begin
         publisher = NonaREPLs.HammingConsolePublisher(io)
-        accessory = BestHammingGuess(publisher)
+        accessory = HammingGuess(publisher)
         delegation = DelegationPublisher(publisher, accessory)
         game = HammingGame(delegation, dictionary, Word(puzzle))
         GameWithAccessories(game, accessory)

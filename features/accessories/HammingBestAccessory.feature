@@ -21,7 +21,7 @@
 # SOFTWARE.
 #
 
-Feature: Keeping track of the current best guesses in Hamming
+Feature: Keeping track of the current guesses in Hamming
     In order to help the player keep track of good guesses
     a Hamming accessory will listen to guesses and show them.
 
@@ -34,32 +34,34 @@ Feature: Keeping track of the current best guesses in Hamming
 
     Scenario: No guesses made yet
         Given a Hamming puzzle ABCDEF
-          And a Hamming accessory for the best guesses
-         When Alice requests the best guesses
-         Then there are no best guesses
+          And a Hamming accessory for guesses
+         When Alice requests all guesses
+         Then there are no guesses
 
     Scenario: A single best guess
         Given a Hamming puzzle ABCDEF
-          And a Hamming accessory for the best guesses
+          And a Hamming accessory for guesses
          When Alice guesses AXXXXX
-          And Alice requests the best guesses
+          And Alice requests all guesses
          Then the best guess AXXXXX is distance 5
 
     Scenario: Two best guesses
         Given a Hamming puzzle ABCDEF
-          And a Hamming accessory for the best guesses
+          And a Hamming accessory for guesses
          When Alice guesses AXXXXX
           And Alice guesses XBXXXX
-          And Alice requests the best guesses
-         Then the best guess is distance 5 with words
+          And Alice requests all guesses
+         Then a guess is distance 5 with words
             | AXXXXX |
             | XBXXXX |
 
-    Scenario: A new better guess clears the older worse guesses
+    Scenario: A new better guess does not invalidate worse guesses
         Given a Hamming puzzle ABCDEF
-          And a Hamming accessory for the best guesses
+          And a Hamming accessory for guesses
          When Alice guesses AXXXXX
           And Alice guesses ABXXXX
-          And Alice requests the best guesses
-         Then the best guess is distance 4 with words
+          And Alice requests all guesses
+         Then a guess is distance 4 with words
             | ABXXXX |
+          And a guess is distance 5 with words
+            | AXXXXX |

@@ -49,8 +49,8 @@ const guessP = guessTokenP |> To{Guess}()
 const gameCommandsP = showCurrentPuzzleP | newGameTypeP | newGameP
 const gameCommandP = ignoreC(commandMarkerP) >> gameCommandsP
 
-const showBestGuessP = symbolC("bäst") |> To{ShowBestGuesses}(x -> ShowBestGuesses())
-const accessoryCommandsP = showBestGuessP
+const showGuessP = symbolC("bäst") |> To{ShowGuesses}(x -> ShowGuesses())
+const accessoryCommandsP = showGuessP
 const accessoryCommandP = ignoreC(commandMarkerP) >> accessoryCommandsP
 
 const afterP = spacesP >> eofP

@@ -128,11 +128,11 @@ function publish!(p::HammingConsolePublisher, response::Hamming.RevealSolution)
     println(p.io, "$(response.word)")
 end
 
-function publish!(p::HammingConsolePublisher, response::HammingAccessories.NoBestGuesses)
+function publish!(p::HammingConsolePublisher, response::HammingAccessories.NoGuesses)
     println(p.io, "Inga gissningar än.")
 end
 
-function publish!(p::HammingConsolePublisher, response::HammingAccessories.BestGuesses)
+function publish!(p::HammingConsolePublisher, response::HammingAccessories.Guesses)
     println(p.io, "$(response.distance)")
     guesses = ["  $(word)"
                  for word in response.words]
@@ -158,7 +158,7 @@ end
 
 function createnewgame(::Type{HammingGame}, dictionary::Dictionary, io::IO)
     publisher = HammingConsolePublisher(io)
-    accessory = BestHammingGuess(publisher)
+    accessory = HammingGuess(publisher)
     delegation = DelegationPublisher(publisher, accessory)
     game = HammingGame(delegation, dictionary)
     GameWithAccessories(game, accessory)

@@ -69,14 +69,14 @@ end
     context[:defaultplayer] = alice
 end
 
-@given("a Hamming accessory for the best guesses") do context
+@given("a Hamming accessory for guesses") do context
     # publisher is the mock publisher where events can be queried by the tests.
     publisher = context[:publisher]
     # delegationpublisher is a publisher that sends events to any accessories
     # as well as to the publisher
     delegationpublisher = context[:delegationpublisher]
 
-    accessory = BestHammingGuess(publisher)
+    accessory = HammingGuess(publisher)
     register!(delegationpublisher, accessory)
 
     game = context[:game]
@@ -123,11 +123,11 @@ end
     context[:games] = games
 end
 
-@when("Alice requests the best guesses") do context
+@when("Alice requests all guesses") do context
     game = context[:game]
     alice = context[:defaultplayer]
 
-    gameaction!(game, alice, ShowBestGuesses())
+    gameaction!(game, alice, ShowGuesses())
 end
 
 @then("the Hamming response is that {String} is correct") do context, guess
@@ -191,27 +191,27 @@ end
     end
 end
 
-@then("there are no best guesses") do context
+@then("there are no guesses") do context
     publisher = context[:publisher]
 
     response = getonlyresponse(publisher)
-    @expect typeof(response) == HammingAccessories.NoBestGuesses
+    @expect typeof(response) == HammingAccessories.NoGuesses
 end
 
 @then("the best guess {String} is distance {Int}") do context, word, n
     publisher = context[:publisher]
 
-    response = getonlyresponse(HammingAccessories.BestGuesses, publisher)
+    response = getonlyresponse(HammingAccessories.Guesses, publisher)
     @expect only(response.words) == Word(word)
     @expect response.distance == n
 end
 
-@then("the best guess is distance {Int} with words") do context, n
+@then("a guess is distance {Int} with words") do context, n
     publisher = context[:publisher]
 
     expectedwords = [Word(w[1]) for w in context.datatable]
 
-    response = getonlyresponse(HammingAccessories.BestGuesses, publisher)
+    response = getonlyresponse(HammingAccessories.Guesses, publisher)
     @expect sort(response.words) == sort(expectedwords)
     @expect response.distance == n
 end

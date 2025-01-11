@@ -29,39 +29,39 @@ using Nona.Games.Hamming: Incorrect
 import Nona.Games: gameaction!, publish!
 
 export
-    BestHammingGuess,
-    ShowBestGuesses,
-    NoBestGuesses
+    HammingGuess,
+    ShowGuesses,
+    NoGuesses
 
-mutable struct BestHammingGuess <: Accessory{HammingGame}
+mutable struct HammingGuess <: Accessory{HammingGame}
     publisher::Publisher{HammingGame}
     words::Vector{Word}
     distance::Int
 
-    BestHammingGuess(publisher::Publisher{HammingGame}) = new(publisher, Word[], typemax(Int))
+    HammingGuess(publisher::Publisher{HammingGame}) = new(publisher, Word[], typemax(Int))
 end
 
-struct ShowBestGuesses <: AccessoryCommand end
+struct ShowGuesses <: AccessoryCommand end
 
-struct NoBestGuesses <: Response
+struct NoGuesses <: Response
     player::Player
 end
 
-struct BestGuesses <: Response
+struct Guesses <: Response
     player::Player
     distance::Int
     words::Vector{Word}
 end
 
-function gameaction!(best::BestHammingGuess, player::Player, ::ShowBestGuesses)
+function gameaction!(best::HammingGuess, player::Player, ::ShowGuesses)
     if isempty(best.words)
-        publish!(best.publisher, NoBestGuesses(player))
+        publish!(best.publisher, NoGuesses(player))
     else
-        publish!(best.publisher, BestGuesses(player, best.distance, best.words))
+        publish!(best.publisher, Guesses(player, best.distance, best.words))
     end
 end
 
-function publish!(best::BestHammingGuess, incorrect::Incorrect)
+function publish!(best::HammingGuess, incorrect::Incorrect)
     isbetter = incorrect.hammingdistance < best.distance
     issame = incorrect.hammingdistance == best.distance
     if isbetter
@@ -71,6 +71,6 @@ function publish!(best::BestHammingGuess, incorrect::Incorrect)
         push!(best.words, incorrect.guess.word)
     end
 end
-publish!(::BestHammingGuess, ::Response) = nothing
+publish!(::HammingGuess, ::Response) = nothing
 
 end # module HammingAccessories
