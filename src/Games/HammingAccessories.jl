@@ -33,12 +33,35 @@ export
     ShowGuesses,
     NoGuesses
 
-mutable struct HammingGuess <: Accessory{HammingGame}
-    publisher::Publisher{HammingGame}
-    words::Vector{Word}
+struct DistanceGuess
     distance::Int
+    words::Vector{Word}
 
-    HammingGuess(publisher::Publisher{HammingGame}) = new(publisher, Word[], typemax(Int))
+    DistanceGuess(n::Int) = new(n, Word[])
+end
+
+struct AllGuesses
+    guesses::Dict{Int, DistanceGuess}
+
+    AllGuesses() = new(Dict{Int, Vector{Word}}())
+end
+
+function newguess!(g::AllGuesses, incorrect::Incorrect)
+    distanceguess = get!(g.guesses, incorrect.hammingdistance, DistanceGuess(incorrect.hammingdistance))
+    push!(distanceguess.words, incorrect.guess.word)
+end
+
+function guesses(g::AllGuesses) :: Vector{DistanceGuess}
+    collect(values(g.guesses))
+end
+
+hasguesses(g::AllGuesses) = !isempty(g.guesses)
+
+struct HammingGuess <: Accessory{HammingGame}
+    publisher::Publisher{HammingGame}
+    guesses::AllGuesses
+
+    HammingGuess(publisher::Publisher{HammingGame}) = new(publisher, AllGuesses())
 end
 
 struct ShowGuesses <: AccessoryCommand end
@@ -49,28 +72,18 @@ end
 
 struct Guesses <: Response
     player::Player
-    distance::Int
-    words::Vector{Word}
+    guesses::Vector{DistanceGuess}
 end
 
 function gameaction!(best::HammingGuess, player::Player, ::ShowGuesses)
-    if isempty(best.words)
-        publish!(best.publisher, NoGuesses(player))
+    if hasguesses(best.guesses)
+        publish!(best.publisher, Guesses(player, guesses(best.guesses)))
     else
-        publish!(best.publisher, Guesses(player, best.distance, best.words))
+        publish!(best.publisher, NoGuesses(player))
     end
 end
 
-function publish!(best::HammingGuess, incorrect::Incorrect)
-    isbetter = incorrect.hammingdistance < best.distance
-    issame = incorrect.hammingdistance == best.distance
-    if isbetter
-        best.distance = incorrect.hammingdistance
-        best.words = Word[incorrect.guess.word]
-    elseif issame
-        push!(best.words, incorrect.guess.word)
-    end
-end
+publish!(best::HammingGuess, incorrect::Incorrect) = newguess!(best.guesses, incorrect)
 publish!(::HammingGuess, ::Response) = nothing
 
 end # module HammingAccessories

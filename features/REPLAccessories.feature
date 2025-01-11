@@ -30,24 +30,24 @@ Feature: REPL interface for accessories
             | XBXXXX |
             | ABXXXX |
 
-    Scenario: Showing best guesses includes the distance
+    Scenario: Showing guesses includes the distance
         Given a NonaREPL game Hamming with puzzle ABCDEF
           And the REPL player tries the guess AXXXXX
-         When the player inputs "!bäst"
+         When the player inputs "!gissningar"
          Then the REPL shows "5"
 
-    Scenario: Showing best guesses includes all current best guesses
+    Scenario: Showing guesses includes all current best guesses
         Given a NonaREPL game Hamming with puzzle ABCDEF
           And the REPL player tries the guess AXXXXX
           And the REPL player tries the guess XBXXXX
-         When the player inputs "!bäst"
+         When the player inputs "!gissningar"
          Then the REPL shows "AXXXXX"
           And the REPL shows "XBXXXX"
 
-    Scenario: When making a better guess, the old ones are not shown
+    Scenario: When making a better guess, the old ones are still shown
         Given a NonaREPL game Hamming with puzzle ABCDEF
           And the REPL player tries the guess AXXXXX
           And the REPL player tries the guess ABXXXX
-         When the player inputs "!bäst"
+         When the player inputs "!gissningar"
          Then the REPL shows "ABXXXX"
-          And the REPL does not show "AXXXXX"
+          And the REPL shows "AXXXXX"

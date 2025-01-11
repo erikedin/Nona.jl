@@ -133,13 +133,15 @@ function publish!(p::HammingConsolePublisher, response::HammingAccessories.NoGue
 end
 
 function publish!(p::HammingConsolePublisher, response::HammingAccessories.Guesses)
-    println(p.io, "$(response.distance)")
-    guesses = ["  $(word)"
-                 for word in response.words]
-    for word in guesses
-        println(p.io, word)
+    for guess in response.guesses
+        println(p.io, "$(guess.distance)")
+        guesses = ["  $(word)"
+                    for word in guess.words]
+        for word in guesses
+            println(p.io, word)
+        end
+        println(p.io, "")
     end
-    println(p.io, "")
 end
 
 # Since the REPL is a single-player game, there is no need to distinguish

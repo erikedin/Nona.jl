@@ -198,20 +198,14 @@ end
     @expect typeof(response) == HammingAccessories.NoGuesses
 end
 
-@then("the best guess {String} is distance {Int}") do context, word, n
-    publisher = context[:publisher]
-
-    response = getonlyresponse(HammingAccessories.Guesses, publisher)
-    @expect only(response.words) == Word(word)
-    @expect response.distance == n
-end
-
 @then("a guess is distance {Int} with words") do context, n
     publisher = context[:publisher]
 
     expectedwords = [Word(w[1]) for w in context.datatable]
 
     response = getonlyresponse(HammingAccessories.Guesses, publisher)
-    @expect sort(response.words) == sort(expectedwords)
-    @expect response.distance == n
+    nguesses = [guesses.words for guesses in response.guesses if guesses.distance == n]
+    @expect length(nguesses) == 1
+    actualwords = nguesses[1]
+    @expect sort(actualwords) == sort(expectedwords)
 end

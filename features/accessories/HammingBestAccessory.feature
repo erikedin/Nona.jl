@@ -43,7 +43,8 @@ Feature: Keeping track of the current guesses in Hamming
           And a Hamming accessory for guesses
          When Alice guesses AXXXXX
           And Alice requests all guesses
-         Then the best guess AXXXXX is distance 5
+         Then a guess is distance 5 with words
+            | AXXXXX |
 
     Scenario: Two best guesses
         Given a Hamming puzzle ABCDEF
