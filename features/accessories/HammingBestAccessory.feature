@@ -31,6 +31,8 @@ Feature: Keeping track of the current guesses in Hamming
             | AXXXXX |
             | XBXXXX |
             | ABXXXX |
+            | ABCXXX |
+            | ABCDXX |
 
     Scenario: No guesses made yet
         Given a Hamming puzzle ABCDEF
@@ -66,3 +68,16 @@ Feature: Keeping track of the current guesses in Hamming
             | ABXXXX |
           And a guess is distance 5 with words
             | AXXXXX |
+
+    Scenario: The best guesses are last in the list
+        Given a Hamming puzzle ABCDEF
+          And a Hamming accessory for guesses
+         When Alice guesses AXXXXX
+          And Alice guesses XBXXXX
+          And Alice guesses ABXXXX
+          And Alice guesses ABCXXX
+          And Alice guesses ABCDXX
+          And Alice requests all guesses
+         Then guesses with distance 5 come before distance 4 guesses
+          And guesses with distance 4 come before distance 3 guesses
+          And guesses with distance 3 come before distance 2 guesses

@@ -52,7 +52,9 @@ function newguess!(g::AllGuesses, incorrect::Incorrect)
 end
 
 function guesses(g::AllGuesses) :: Vector{DistanceGuess}
-    collect(values(g.guesses))
+    distanceguesses = collect(values(g.guesses))
+    guesscomparison = (x, y) -> x.distance > y.distance
+    sort(distanceguesses; lt = guesscomparison)
 end
 
 hasguesses(g::AllGuesses) = !isempty(g.guesses)

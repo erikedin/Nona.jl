@@ -209,3 +209,13 @@ end
     actualwords = nguesses[1]
     @expect sort(actualwords) == sort(expectedwords)
 end
+
+@then("guesses with distance {Int} come before distance {Int} guesses") do context, k, l
+    publisher = context[:publisher]
+    response = getonlyresponse(HammingAccessories.Guesses, publisher)
+
+    indexk = findfirst(x -> x.distance == k, response.guesses)
+    indexl = findfirst(x -> x.distance == l, response.guesses)
+
+    @test indexk < indexl
+end
