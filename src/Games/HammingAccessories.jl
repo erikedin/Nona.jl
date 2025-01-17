@@ -38,7 +38,10 @@ struct DistanceGuess
     words::Vector{Word}
 
     DistanceGuess(n::Int) = new(n, Word[])
+    DistanceGuess(n::Int, words::Vector{Word}) = new(n, words)
 end
+
+sortguesses(dg::DistanceGuess) = DistanceGuess(dg.distance, sort(dg.words))
 
 struct AllGuesses
     guesses::Dict{Int, DistanceGuess}
@@ -53,8 +56,15 @@ end
 
 function guesses(g::AllGuesses) :: Vector{DistanceGuess}
     distanceguesses = collect(values(g.guesses))
+
+    # Sort all words in alphabetical order in each DistanceGuess.
+    alphabeticalguesses = [sortguesses(dg) for dg in distanceguesses]
+
+    # Sort all DistanceGuesses in distance order, descending.
+    # This ensures that the best guesses are at the bottom, where they
+    # are most easily read.
     guesscomparison = (x, y) -> x.distance > y.distance
-    sort(distanceguesses; lt = guesscomparison)
+    sort(alphabeticalguesses; lt = guesscomparison)
 end
 
 hasguesses(g::AllGuesses) = !isempty(g.guesses)

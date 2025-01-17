@@ -217,5 +217,19 @@ end
     indexk = findfirst(x -> x.distance == k, response.guesses)
     indexl = findfirst(x -> x.distance == l, response.guesses)
 
-    @test indexk < indexl
+    @expect indexk < indexl
+end
+
+@then("the guess {String} comes before {String}") do context, word1, word2
+    publisher = context[:publisher]
+    response = getonlyresponse(HammingAccessories.Guesses, publisher)
+
+    distanceguess = only(response.guesses)
+    words = distanceguess.words
+    indexk = findfirst(x -> x == Word(word1), words)
+    indexl = findfirst(x -> x == Word(word2), words)
+
+    @expect indexk !== nothing
+    @expect indexl !== nothing
+    @expect indexk < indexl
 end

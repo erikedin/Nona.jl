@@ -81,3 +81,11 @@ Feature: Keeping track of the current guesses in Hamming
          Then guesses with distance 5 come before distance 4 guesses
           And guesses with distance 4 come before distance 3 guesses
           And guesses with distance 3 come before distance 2 guesses
+
+    Scenario: Guesses are in alphabetical order
+        Given a Hamming puzzle ABCDEF
+          And a Hamming accessory for guesses
+         When Alice guesses XBXXXX
+          And Alice guesses AXXXXX
+          And Alice requests all guesses
+         Then the guess AXXXXX comes before XBXXXX
