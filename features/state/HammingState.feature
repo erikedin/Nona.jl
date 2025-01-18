@@ -21,7 +21,6 @@
 # SOFTWARE.
 #
 
-@wip
 Feature: Store the state of a Hamming game
     As a user that plays sporadically
     I want the game to save the state
@@ -29,11 +28,27 @@ Feature: Store the state of a Hamming game
 
     Background: State is stored in a temporary directory for testing
         Given a temporary directory for the state
+          And a dictionary
+            | DATORSPEL |
+            | DATORSPEX |
+            | LEDARPOST |
+            | PUSSGURKA |
+            | ORDPUSSEL |
+            | LEKA      |
+            | DATOR     |
+            | PUSSEL    |
+
+    # TODO: Creating a new game, which stores the state. Then continuing the game with a loaded state has the same puzzle.
+
+    Scenario: Create a game with state from a previous game
+        Given a Hamming puzzle PUSSGURKA
+          And with the games state saved to disk
+          And a Hamming game started with an existing state
+         When Alice guesses PUSSGURKA
+         Then the Hamming response is that PUSSGURKA is correct
 
     # TODO: When reading the state file, the puzzle should not be visible. Base64 encode the state.
     # TODO: The guesses are stored as well
-    # TODO: Creating a new game, which stores the state. Then continuing the game with a loaded state has the same puzzle.
-    # TODO: Create a game, store the state. Read the state back, but with a different dictionary. Check that the solution
-    #       exists.
+    # TODO: State is stored per dictionary. Change the dictionary in any way -> new state.
     # TODO: If the environment variable XDG_STATE_HOME is not set, it defaults to $HOME/.local/state
     #       We need to inspect the path without actually writing the state. Or make a chroot or something.

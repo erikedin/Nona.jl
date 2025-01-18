@@ -163,6 +163,12 @@ struct ShowCurrentPuzzle  <: GameCommand end
 struct ShowSolutions <: GameCommand end
 
 #
+# State code common for all games
+#
+
+include("States.jl")
+
+#
 # Game modules
 #
 

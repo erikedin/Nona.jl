@@ -23,6 +23,7 @@
 
 using Behavior
 using Nona.Games
+using Nona.Games.States
 using Nona.Games.Hamming
 using Nona.Games.HammingAccessories
 import Nona.Games: publish!
@@ -69,6 +70,15 @@ end
     context[:defaultplayer] = alice
 end
 
+@given("with the games state saved to disk") do context
+    statepath = context[:statepath]
+    game = context[:game]
+
+    state = withenv("XDG_STATE_HOME" => statepath) do
+        savestate(gamestate(game))
+    end
+end
+
 @given("a Hamming accessory for guesses") do context
     # publisher is the mock publisher where events can be queried by the tests.
     publisher = context[:publisher]
@@ -81,6 +91,20 @@ end
 
     game = context[:game]
     context[:game] = GameWithAccessories(game, accessory)
+end
+
+@given("a Hamming game started with an existing state") do context
+    publisher = context[:publisher]
+    dictionary = context[:dictionary]
+    statepath = context[:statepath]
+
+    state = withenv("XDG_STATE_HOME" => statepath) do
+        loadstate(Hamming.HammingGameState)
+    end
+
+    game = HammingGame(publisher, dictionary, state)
+
+    context[:game] = game
 end
 
 @when("a Hamming game is created with a randomly generated puzzle") do context

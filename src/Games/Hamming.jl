@@ -25,6 +25,7 @@ module Hamming
 
 using Nona.Games
 import Nona.Games: gameaction!, gamename, publish!
+import Nona.Games.States: statename, gamestate
 
 export HammingGame
 
@@ -74,12 +75,17 @@ function generatepuzzle(dictionary::Dictionary) :: Word
     rand(reasonablyshortwords)
 end
 
+struct HammingGameState
+    puzzle::Word
+end
+
 struct HammingGame <: Game
     publisher::Publisher{HammingGame}
     dictionary::Dictionary
     puzzle::Word
 
     HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary, puzzle::Word) = new(publisher, dictionary, puzzle)
+    HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary, state::HammingGameState) = new(publisher, dictionary, state.puzzle)
     HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary) = new(publisher, dictionary, generatepuzzle(dictionary))
 end
 
@@ -113,5 +119,20 @@ end
 function gameaction!(game::HammingGame, player::Player, ::ShowSolutions)
     publish!(game.publisher, RevealSolution(player, game.puzzle))
 end
+
+#
+# Code for reading/writing state.
+#
+
+# statename is used in the filename for the state when saved to disk.
+statename(::Type{HammingGameState}) = "Hamming"
+
+# HammingGameState constructor. The data has been read from disk.
+HammingGameState(statedata::String) = HammingGameState(Word(statedata))
+
+gamestate(game::HammingGame) = HammingGameState(game.puzzle)
+
+# Convert the state to a string, to be saved to disk.
+Base.convert(::Type{String}, state::HammingGameState) = string(state.puzzle)
 
 end
