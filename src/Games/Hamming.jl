@@ -83,11 +83,11 @@ end
 struct HammingGame <: Game
     publisher::Publisher{HammingGame}
     dictionary::Dictionary
-    puzzle::Word
+    state::HammingGameState
 
-    HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary, puzzle::Word) = new(publisher, dictionary, puzzle)
-    HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary, state::HammingGameState) = new(publisher, dictionary, state.puzzle)
-    HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary) = new(publisher, dictionary, generatepuzzle(dictionary))
+    HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary, puzzle::Word) = new(publisher, dictionary, HammingGameState(puzzle))
+    HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary, state::HammingGameState) = new(publisher, dictionary, state)
+    HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary) = new(publisher, dictionary, HammingGameState(generatepuzzle(dictionary)))
 end
 
 gamename(::HammingGame) = "Hamming"
@@ -100,25 +100,25 @@ function hammingdistance(a::Word, b::Word) :: Int
 end
 
 function gameaction!(game::HammingGame, player::Player, guess::Guess)
-    response = if guess.word == game.puzzle
+    response = if guess.word == game.state.puzzle
         Correct(player, guess)
-    elseif length(guess.word) != length(game.puzzle)
-        IncorrectLength(player, guess, length(game.puzzle))
+    elseif length(guess.word) != length(game.state.puzzle)
+        IncorrectLength(player, guess, length(game.state.puzzle))
     elseif !(guess.word in game.dictionary)
         NotInDictionary(player, guess.word)
     else
-        d = hammingdistance(game.puzzle, guess.word)
+        d = hammingdistance(game.state.puzzle, guess.word)
         Incorrect(player, guess, d)
     end
     publish!(game.publisher, response)
 end
 
 function gameaction!(game::HammingGame, player::Player, ::ShowCurrentPuzzle)
-    publish!(game.publisher, CurrentPuzzle(player, length(game.puzzle)))
+    publish!(game.publisher, CurrentPuzzle(player, length(game.state.puzzle)))
 end
 
 function gameaction!(game::HammingGame, player::Player, ::ShowSolutions)
-    publish!(game.publisher, RevealSolution(player, game.puzzle))
+    publish!(game.publisher, RevealSolution(player, game.state.puzzle))
 end
 
 #
@@ -128,7 +128,7 @@ end
 # statename is used in the filename for the state when saved to disk.
 statename(::Type{HammingGameState}) = "Hamming"
 
-gamestate(game::HammingGame) = HammingGameState(game.puzzle)
+gamestate(game::HammingGame) = game.state
 
 # HammingGameState constructor. The data has been read from disk.
 # The data is Base64 encoded (see Base.convert below), so it needs to be
