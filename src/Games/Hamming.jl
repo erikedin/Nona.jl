@@ -26,6 +26,7 @@ module Hamming
 using Nona.Games
 import Nona.Games: gameaction!, gamename, publish!
 import Nona.Games.States: statename, gamestate
+using Base64
 
 export HammingGame
 
@@ -127,12 +128,21 @@ end
 # statename is used in the filename for the state when saved to disk.
 statename(::Type{HammingGameState}) = "Hamming"
 
-# HammingGameState constructor. The data has been read from disk.
-HammingGameState(statedata::String) = HammingGameState(Word(statedata))
-
 gamestate(game::HammingGame) = HammingGameState(game.puzzle)
 
+# HammingGameState constructor. The data has been read from disk.
+# The data is Base64 encoded (see Base.convert below), so it needs to be
+# decoded here.
+function HammingGameState(statedata::String)
+    puzzle = String(Base64.base64decode(statedata))
+    HammingGameState(Word(puzzle))
+end
+
 # Convert the state to a string, to be saved to disk.
-Base.convert(::Type{String}, state::HammingGameState) = string(state.puzzle)
+# This is base64 encoded to prevent any user from accidentally revealing the puzzle
+# by looking in the state file.
+function Base.convert(::Type{String}, state::HammingGameState)
+    Base64.base64encode(string(state.puzzle))
+end
 
 end

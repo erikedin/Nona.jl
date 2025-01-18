@@ -38,8 +38,6 @@ Feature: Store the state of a Hamming game
             | DATOR     |
             | PUSSEL    |
 
-    # TODO: Creating a new game, which stores the state. Then continuing the game with a loaded state has the same puzzle.
-
     Scenario: Create a game with state from a previous game
         Given a Hamming puzzle PUSSGURKA
           And with the games state saved to disk
@@ -47,7 +45,12 @@ Feature: Store the state of a Hamming game
          When Alice guesses PUSSGURKA
          Then the Hamming response is that PUSSGURKA is correct
 
-    # TODO: When reading the state file, the puzzle should not be visible. Base64 encode the state.
+    Scenario: The puzzle should be encoded to prevent accidental reveal
+        Given a Hamming puzzle PUSSGURKA
+          And with the games state saved to disk
+         When the state is read from disk
+         Then the text PUSSGURKA is not visible
+
     # TODO: The guesses are stored as well
     # TODO: State is stored per dictionary. Change the dictionary in any way -> new state.
     # TODO: If the environment variable XDG_STATE_HOME is not set, it defaults to $HOME/.local/state

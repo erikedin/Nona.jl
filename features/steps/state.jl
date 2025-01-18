@@ -23,7 +23,29 @@
 
 using Behavior
 using Base.Filesystem
+using Nona.Games.States
 
 @given("a temporary directory for the state") do context
     context[:statepath] = mktempdir(; prefix="nonadev_jl_")
+end
+
+@when("the state is read from disk") do context
+    game = context[:game]
+    gamestatetype = typeof(gamestate(game))
+    statepath = context[:statepath]
+
+    # This method isn't exported because it's an implement detail,
+    # but the exported functions decode the state data, and we want
+    # to read the actual string stored on disk.
+    statetext = withenv("XDG_STATE_HOME" => statepath) do
+        States.readstatedata(gamestatetype)
+    end
+
+    context[:statetext] = statetext
+end
+
+@then("the text {String} is not visible") do context, s
+    statetext = context[:statetext]
+
+    @expect !contains(statetext, s)
 end

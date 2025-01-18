@@ -36,11 +36,15 @@ function makestatepath(::Type{T}) where {T}
     joinpath(statedirpath, "$(statename(T)).state")
 end
 
-function loadstate(::Type{T}) :: T where {T}
+function readstatedata(::Type{T}) :: String where {T}
     statepath = makestatepath(T)
-    statedata = open(statepath, "r") do io
+    open(statepath, "r") do io
         read(io, String)
     end
+end
+
+function loadstate(::Type{T}) :: T where {T}
+    statedata = readstatedata(T)
     T(statedata)
 end
 
