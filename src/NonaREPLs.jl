@@ -154,33 +154,8 @@ struct ThisPlayer <: Player end
 # NonaREPL is the REPL for the games.
 #
 
-function createnewgame(::Type{NiancatGame}, dictionary::Dictionary, io::IO)
-    publisher = ConsolePublisher(io)
-    NiancatGame(publisher, dictionary)
-end
-
-function switchgame(::Type{NiancatGame}, dictionary::Dictionary, io::IO)
-    publisher = ConsolePublisher(io)
-    # TODO: Implement state for NiancatGame.
-    NiancatGame(publisher, dictionary)
-end
-
-function createnewgame(::Type{HammingGame}, dictionary::Dictionary, io::IO; providedstate = nothing)
-    publisher = HammingConsolePublisher(io)
-    accessory = HammingGuess(publisher)
-    delegation = DelegationPublisher(publisher, accessory)
-
-    # This allows tests to create games with specific puzzles.
-    state = if providedstate === nothing
-        HammingGameState(dictionary)
-    else
-        providedstate
-    end
-    game = HammingGame(delegation, dictionary, state)
-    savestate(gamestate(game))
-    GameWithAccessories(game, accessory)
-end
-
+# loadorcreatestate tries to load state from disk, and if the state can't be found,
+# then a new state is created.
 function loadorcreatestate(::Type{T}, dictionary::Dictionary) where {T}
     try
         loadstate(T)
@@ -196,14 +171,43 @@ function loadorcreatestate(::Type{T}, dictionary::Dictionary) where {T}
     end
 end
 
-function switchgame(::Type{HammingGame}, dictionary::Dictionary, io::IO)
+
+function createnewgame(::Type{NiancatGame}, dictionary::Dictionary, io::IO)
+    publisher = ConsolePublisher(io)
+    NiancatGame(publisher, dictionary)
+end
+
+function switchgame(::Type{NiancatGame}, dictionary::Dictionary, io::IO)
+    publisher = ConsolePublisher(io)
+    # TODO: Implement state for NiancatGame.
+    NiancatGame(publisher, dictionary)
+end
+
+# creategame creates a HammingGame with a given state.
+# This is called from createnewgame with a newly created state (or supplied from tests).
+# It's called from switchgame with state that is either read from disk or newly created.
+function creategame(::Type{HammingGame}, dictionary::Dictionary, io::IO, state::HammingGameState)
     publisher = HammingConsolePublisher(io)
-    # TODO: Implement state for acccessories, too.
     accessory = HammingGuess(publisher)
     delegation = DelegationPublisher(publisher, accessory)
-    state = loadorcreatestate(Hamming.HammingGameState, dictionary)
     game = HammingGame(delegation, dictionary, state)
+    savestate(gamestate(game))
     GameWithAccessories(game, accessory)
+end
+
+function createnewgame(::Type{HammingGame}, dictionary::Dictionary, io::IO; providedstate = nothing)
+    # This allows tests to create games with specific puzzles.
+    state = if providedstate === nothing
+        HammingGameState(dictionary)
+    else
+        providedstate
+    end
+    creategame(HammingGame, dictionary, io, state)
+end
+
+function switchgame(::Type{HammingGame}, dictionary::Dictionary, io::IO)
+    state = loadorcreatestate(Hamming.HammingGameState, dictionary)
+    creategame(HammingGame, dictionary, io, state)
 end
 
 # NonaREPL holds the game, and responds to player input by sending the game actions.

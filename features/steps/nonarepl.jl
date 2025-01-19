@@ -60,7 +60,7 @@ end
     context[:io] = io
 
     state = HammingGameState(Word(puzzle))
-    gamefactory = io -> NonaREPLs.createnewgame(HammingGame, dictionary, io; providedstate = state)
+    gamefactory = io -> NonaREPLs.creategame(HammingGame, dictionary, io, state)
 
     nona = NonaREPL(gamefactory, dictionary; io=io)
     start(nona)
