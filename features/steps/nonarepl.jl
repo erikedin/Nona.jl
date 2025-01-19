@@ -23,6 +23,7 @@
 
 using Behavior
 using Nona.Games.Niancat
+using Nona.Games.States
 using Nona.NonaREPLs
 
 function clearoutput(context)
@@ -58,13 +59,8 @@ end
     io = IOBuffer()
     context[:io] = io
 
-    gamefactory = io -> begin
-        publisher = NonaREPLs.HammingConsolePublisher(io)
-        accessory = HammingGuess(publisher)
-        delegation = DelegationPublisher(publisher, accessory)
-        game = HammingGame(delegation, dictionary, Word(puzzle))
-        GameWithAccessories(game, accessory)
-    end
+    state = HammingGameState(Word(puzzle))
+    gamefactory = io -> NonaREPLs.createnewgame(HammingGame, dictionary, io; providedstate = state)
 
     nona = NonaREPL(gamefactory, dictionary; io=io)
     start(nona)
@@ -103,4 +99,30 @@ end
 
     game = context[:game]
     playerinput!(game, command)
+end
+
+@given("the game state is recorded") do context
+    game = context[:game]
+
+    state = gamestate(game.game)
+
+    context[:gamestate] = state
+end
+
+@then("the game state is unchanged") do context
+    game = context[:game]
+    oldstate = context[:gamestate]
+
+    newstate = gamestate(game.game)
+
+    @expect newstate == oldstate
+end
+
+@then("the game state is changed") do context
+    game = context[:game]
+    oldstate = context[:gamestate]
+
+    newstate = gamestate(game.game)
+
+    @expect newstate != oldstate
 end

@@ -135,16 +135,32 @@ Feature: NonaREPL is a terminal based front-end for the games
          When the REPL player tries the guess PUSSGURAK
          Then the REPL shows "Ordet PUSSGURAK finns inte i ordlistan."
 
-    @wip
     Scenario: Switch to another type of new game
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the player inputs "!byt Hamming"
+         When the player inputs "!spel Hamming"
          Then the output ends with "Hamming> "
 
-    @wip
     Scenario: Switching back retains the same puzzle as before
+        Given a NonaREPL game Hamming with puzzle PUSSGRUKA
+          And the game state is recorded
+         When the player inputs "!spel Niancat"
+          And the player inputs "!spel Hamming"
+         Then the game state is unchanged
+
+    Scenario: Starting a new game resets the state
+        Given a NonaREPL game Hamming with puzzle PUSSGRUKA
+          And the game state is recorded
+         When the player inputs "!spel Niancat"
+          And the player inputs "!nytt Hamming"
+         Then the game state is changed
+
+    Scenario: Switching to a game with no previous state, saves the state
+        This checks that the state is saved when a new game is created
+        using the switching mechanic.
+
         Given a NonaREPL game Niancat with puzzle PUSSGRUKA
-         When the player inputs "!byt Hamming"
-          And the player inputs "!byt Niancat"
-          And the player inputs "!visa"
-         Then the REPL shows "PUSSGRUKA"
+         When the player inputs "!spel Hamming"
+          And the game state is recorded
+          And the player inputs "!spel Niancat"
+          And the player inputs "!spel Hamming"
+         Then the game state is unchanged

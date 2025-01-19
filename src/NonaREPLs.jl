@@ -24,6 +24,7 @@
 module NonaREPLs
 
 using Nona.Games
+using Nona.Games.States
 using Nona.Games.Niancat
 using Nona.Games.Hamming
 using Nona.Games.HammingAccessories
@@ -158,11 +159,50 @@ function createnewgame(::Type{NiancatGame}, dictionary::Dictionary, io::IO)
     NiancatGame(publisher, dictionary)
 end
 
-function createnewgame(::Type{HammingGame}, dictionary::Dictionary, io::IO)
+function switchgame(::Type{NiancatGame}, dictionary::Dictionary, io::IO)
+    publisher = ConsolePublisher(io)
+    # TODO: Implement state for NiancatGame.
+    NiancatGame(publisher, dictionary)
+end
+
+function createnewgame(::Type{HammingGame}, dictionary::Dictionary, io::IO; providedstate = nothing)
     publisher = HammingConsolePublisher(io)
     accessory = HammingGuess(publisher)
     delegation = DelegationPublisher(publisher, accessory)
-    game = HammingGame(delegation, dictionary)
+
+    # This allows tests to create games with specific puzzles.
+    state = if providedstate === nothing
+        HammingGameState(dictionary)
+    else
+        providedstate
+    end
+    game = HammingGame(delegation, dictionary, state)
+    savestate(gamestate(game))
+    GameWithAccessories(game, accessory)
+end
+
+function loadorcreatestate(::Type{T}, dictionary::Dictionary) where {T}
+    try
+        loadstate(T)
+    catch ex
+        # SystemError is thrown if the file could not be read.
+        # Create a new state, because this means a previous game has not been started.
+        if typeof(ex) != SystemError
+            rethrow()
+        end
+        newstate = T(dictionary)
+        savestate(newstate)
+        newstate
+    end
+end
+
+function switchgame(::Type{HammingGame}, dictionary::Dictionary, io::IO)
+    publisher = HammingConsolePublisher(io)
+    # TODO: Implement state for acccessories, too.
+    accessory = HammingGuess(publisher)
+    delegation = DelegationPublisher(publisher, accessory)
+    state = loadorcreatestate(Hamming.HammingGameState, dictionary)
+    game = HammingGame(delegation, dictionary, state)
     GameWithAccessories(game, accessory)
 end
 
@@ -237,6 +277,17 @@ Start a new game of the given type.
 function doaction(nona::NonaREPL, newgame::NewGameTypeAction)
     showsolutions(nona)
     nona.game = createnewgame(newgame.gametype, nona.dictionary, nona.io)
+    showpuzzle(nona)
+end
+
+"""
+    doaction(nona::NonaREPL, switchgame::SwitchGameAction)
+
+Continue an existing game, or start a new game of the given type.
+"""
+function doaction(nona::NonaREPL, action::SwitchGameAction)
+    showsolutions(nona)
+    nona.game = switchgame(action.gametype, nona.dictionary, nona.io)
     showpuzzle(nona)
 end
 

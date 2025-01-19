@@ -66,4 +66,13 @@ gamestate(g::Game) = error("Implement gamestate($(typeof(g)))")
 # statename returns the name of a state.
 statename(t::Type{T}) where {T} = error("Implement statename($(t))")
 
+#
+# TODO: GameWithAccessories is defined in Nona.Games. It has a method defined here because we can't
+# define it in Nona.Games without a circular dependency. This implies that GameWithAccessories should
+# be moved to another module.
+# Also, this method uses the `game` field in GameWithAccessories, which isn't exactly public.
+#
+
+gamestate(g::GameWithAccessories) = gamestate(g.game)
+
 end

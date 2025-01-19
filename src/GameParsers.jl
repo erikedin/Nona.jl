@@ -42,11 +42,12 @@ const games = Dict{String, Type{<:Game}}("Hamming" => HammingGame, "Niancat" => 
 const gametypeP = symbolC("Hamming") | symbolC("Niancat")
 
 const newGameTypeP = (ignoreC(symbolC("nytt")) >> ignoreC(spacesP) >> gametypeP) |> To{NewGameTypeAction}(gamename -> NewGameTypeAction(games[gamename]))
+const switchGameP = (ignoreC(symbolC("spel")) >> ignoreC(spacesP) >> gametypeP) |> To{SwitchGameAction}(gamename -> SwitchGameAction(games[gamename]))
 
 const guessTokenP = (notC(commandChar) >> tokenP) |> To{String}(join)
 const guessP = guessTokenP |> To{Guess}()
 
-const gameCommandsP = showCurrentPuzzleP | newGameTypeP | newGameP
+const gameCommandsP = showCurrentPuzzleP | switchGameP | newGameTypeP | newGameP
 const gameCommandP = ignoreC(commandMarkerP) >> gameCommandsP
 
 const showGuessP = symbolC("gissningar") |> To{ShowGuesses}(x -> ShowGuesses())

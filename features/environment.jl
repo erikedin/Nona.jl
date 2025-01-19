@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2024 Erik Edin
+# Copyright (c) 2025 Erik Edin
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,26 +21,10 @@
 # SOFTWARE.
 #
 
-module REPLCommands
+using Behavior
 
-using Nona.Games
-
-export REPLCommand,
-       NewGameAction,
-       NewGameTypeAction,
-       SwitchGameAction,
-       ExitAction
-
-# REPLCommand is the abstract type for commands that aren't specific to the games,
-# but the text REPL instead.
-abstract type REPLCommand <: Command end
-struct NewGameAction <: REPLCommand end
-struct NewGameTypeAction <: REPLCommand
-    gametype::Type{<:Game}
+@beforescenario() do context, scenario
+    statepath = mktempdir(; prefix="nonadev_jl_")
+    ENV["XDG_STATE_HOME"] = statepath
 end
-struct SwitchGameAction <: REPLCommand
-    gametype::Type{<:Game}
-end
-struct ExitAction <: REPLCommand end
 
-end

@@ -28,7 +28,7 @@ import Nona.Games: gameaction!, gamename, publish!
 import Nona.Games.States: statename, gamestate
 using Base64
 
-export HammingGame
+export HammingGame, HammingGameState
 
 #
 # Responses
@@ -87,6 +87,7 @@ struct HammingGame <: Game
 
     HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary, puzzle::Word) = new(publisher, dictionary, HammingGameState(puzzle))
     HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary, state::HammingGameState) = new(publisher, dictionary, state)
+    # TODO: This constructor could be removed now that Nona can send in a state object every time.
     HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary) = new(publisher, dictionary, HammingGameState(generatepuzzle(dictionary)))
 end
 
@@ -136,6 +137,11 @@ gamestate(game::HammingGame) = game.state
 function HammingGameState(statedata::String)
     puzzle = String(Base64.base64decode(statedata))
     HammingGameState(Word(puzzle))
+end
+
+# HammingGameState constructor. This is a request to create a brand new state.
+function HammingGameState(dictionary::Dictionary)
+    HammingGameState(generatepuzzle(dictionary))
 end
 
 # Convert the state to a string, to be saved to disk.
