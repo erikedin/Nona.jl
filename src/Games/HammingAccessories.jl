@@ -141,7 +141,7 @@ isparseok(::Any) = true
 function HammingGuessState(s::String)
     distanceP = tokenP |> To{Int}(x -> parse(Int, x))
     wordP = tokenP |> To{Word}(x -> Word(x))
-    guessParserC = distanceP >> wordP
+    guessParserC = distanceP >> wordP >> ignoreC(eofP)
 
     io = IOBuffer(s)
 
