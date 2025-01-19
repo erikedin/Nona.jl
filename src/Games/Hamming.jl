@@ -85,10 +85,7 @@ struct HammingGame <: Game
     dictionary::Dictionary
     state::HammingGameState
 
-    HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary, puzzle::Word) = new(publisher, dictionary, HammingGameState(puzzle))
     HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary, state::HammingGameState) = new(publisher, dictionary, state)
-    # TODO: This constructor could be removed now that Nona can send in a state object every time.
-    HammingGame(publisher::Publisher{HammingGame}, dictionary::Dictionary) = new(publisher, dictionary, HammingGameState(generatepuzzle(dictionary)))
 end
 
 gamename(::HammingGame) = "Hamming"

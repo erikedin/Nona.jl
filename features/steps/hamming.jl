@@ -57,7 +57,7 @@ end
     delegationpublisher = DelegationPublisher(publisher)
 
     dictionary = context[:dictionary]
-    game = HammingGame(delegationpublisher, dictionary, Word(puzzle))
+    game = HammingGame(delegationpublisher, dictionary, HammingGameState(Word(puzzle)))
 
     context[:publisher] = publisher
     context[:delegationpublisher] = delegationpublisher
@@ -113,7 +113,7 @@ end
 
     publisher = MockHammingPublisher()
     dictionary = context[:dictionary]
-    game = HammingGame(publisher, dictionary)
+    game = HammingGame(publisher, dictionary, HammingGameState(dictionary))
 
     context[:publisher] = publisher
     context[:game] = game
@@ -139,7 +139,7 @@ end
 
     generategame = () -> begin
         publisher = MockHammingPublisher()
-        game = HammingGame(publisher, dictionary)
+        game = HammingGame(publisher, dictionary, HammingGameState(dictionary))
         (game, publisher)
     end
     games = [generategame() for i = 1:n]
