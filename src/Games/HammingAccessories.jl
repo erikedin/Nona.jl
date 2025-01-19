@@ -51,9 +51,13 @@ struct HammingGuessState
     HammingGuessState() = new(Dict{Int, Vector{Word}}())
 end
 
+function newguess!(g::HammingGuessState, distance::Int, word::Word)
+    distanceguess = get!(g.guesses, distance, DistanceGuess(distance))
+    push!(distanceguess.words, word)
+end
+
 function newguess!(g::HammingGuessState, incorrect::Incorrect)
-    distanceguess = get!(g.guesses, incorrect.hammingdistance, DistanceGuess(incorrect.hammingdistance))
-    push!(distanceguess.words, incorrect.guess.word)
+    newguess!(g, incorrect.hammingdistance, incorrect.guess.word)
 end
 
 function guesses(g::HammingGuessState) :: Vector{DistanceGuess}
@@ -76,6 +80,7 @@ struct HammingGuess <: Accessory{HammingGame}
     guesses::HammingGuessState
 
     HammingGuess(publisher::Publisher{HammingGame}) = new(publisher, HammingGuessState())
+    HammingGuess(publisher::Publisher{HammingGame}, state::HammingGuessState) = new(publisher, state)
 end
 
 struct ShowGuesses <: AccessoryCommand end
@@ -124,14 +129,37 @@ function Base.convert(::Type{String}, state::HammingGuessState)
         end
     end
 
+    seekstart(io)
     read(io, String)
 end
+
+isparseok(::BadParse) = false
+isparseok(::Any) = true
 
 # The state is received from disk as a string.
 # This parses the serialized state into a HammingGuessState.
 function HammingGuessState(s::String)
-    distanceP = tokenP() |> To{Int}(x -> parse(Int, x))
-    wordP = tokenP()
+    distanceP = tokenP |> To{Int}(x -> parse(Int, x))
+    wordP = tokenP |> To{Word}(x -> Word(x))
+    guessParserC = distanceP >> wordP
+
+    io = IOBuffer(s)
+
+    state = HammingGuessState()
+
+    while !eof(io)
+        line = readline(io)
+        input = ParserInput(line)
+        (_rest, result) = guessParserC(input)
+        if isparseok(result)
+            (distance, word) = result
+            newguess!(state, distance, word)
+        else
+            throw(ErrorException("HammingGuessState: Line '$(line)' is invalid"))
+        end
+    end
+
+    state
 end
 
 end # module HammingAccessories

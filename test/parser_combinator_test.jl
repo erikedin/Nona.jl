@@ -665,7 +665,7 @@ end
     @test result == 'b'
 end
 
-@testset "a, b, then ignore EOF; Input is ab; Result is b" begin
+@testset "a, b, then ignore EOF; Input is ab; Result is (a, b)" begin
     # Arrange
     input = ParserInput("ab")
     parser = charC('a') >> charC('b') >> ignoreC(eofP)

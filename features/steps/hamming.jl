@@ -168,7 +168,7 @@ end
     accessory = HammingGuess(publisher, accessorystate)
     delegationpublisher = DelegationPublisher(publisher, accessory)
     hamminggame = HammingGame(delegationpublisher, dictionary, state)
-    game = GameWithAccessories(game, accessory)
+    game = GameWithAccessories(hamminggame, accessory)
 
     context[:game] = game
 end
