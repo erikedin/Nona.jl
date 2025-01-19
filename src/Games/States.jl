@@ -33,7 +33,7 @@ export
 
 function makestatepath(::Type{T}) where {T}
     statedirpath = get(ENV, "XDG_STATE_HOME", expanduser("~/.local/state"))
-    joinpath(statedirpath, "$(statename(T)).state")
+    joinpath(statedirpath, "Nona", "$(statename(T)).state")
 end
 
 function readstatedata(::Type{T}) :: String where {T}

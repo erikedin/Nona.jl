@@ -59,5 +59,3 @@ Feature: Store the state of a Hamming game
          Then there is a guess ORDPUSSEL
 
     # TODO: State is stored per dictionary. Change the dictionary in any way -> new state.
-    # TODO: If the environment variable XDG_STATE_HOME is not set, it defaults to $HOME/.local/state
-    #       We need to inspect the path without actually writing the state. Or make a chroot or something.
