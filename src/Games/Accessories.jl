@@ -21,53 +21,29 @@
 # SOFTWARE.
 #
 
-module States
+module Accessories
+
+export GameWithAccessories
 
 using Nona.Games
-
-export
-    loadstate,
-    savestate,
-    gamestate,
-    statename
-
-function makestatepath(::Type{T}) where {T}
-    statedirpath = get(ENV, "XDG_STATE_HOME", expanduser("~/.local/state"))
-    joinpath(statedirpath, "$(statename(T)).state")
-end
-
-function readstatedata(::Type{T}) :: String where {T}
-    statepath = makestatepath(T)
-    open(statepath, "r") do io
-        read(io, String)
-    end
-end
-
-function loadstate(::Type{T}) :: T where {T}
-    statedata = readstatedata(T)
-    T(statedata)
-end
-
-function savestate(state::T) where {T}
-    statepath = makestatepath(T)
-
-    # Ensure that the state directory exists.
-    mkpath(dirname(statepath))
-
-    open(statepath, "w") do io
-        write(io, convert(String, state))
-    end
-end
+import Nona.Games: gameaction!, gamename, gametype
+import Nona.Games.States: gamestate
 
 #
-# Interface to the games.
-# Games are expected to implement these functions.
+# GameWithAccessories
+# Exposes a unified interface for sending commands to games or accessories.
 #
 
-# gamestate is an accessor that returns the game state for a given game object
-gamestate(g::Game) = error("Implement gamestate($(typeof(g)))")
+struct GameWithAccessories{G <: Game} <: Game
+    game::G
+    accessory::Accessory{G}
+end
 
-# statename returns the name of a state.
-statename(t::Type{T}) where {T} = error("Implement statename($(t))")
+gameaction!(game::GameWithAccessories{G}, player::Player, command::GameCommand) where {G} = gameaction!(game.game, player, command)
+gameaction!(game::GameWithAccessories{G}, player::Player, command::AccessoryCommand) where {G} = gameaction!(game.accessory, player, command)
+gamename(game::GameWithAccessories{G}) where {G} = gamename(game.game)
+gametype(game::GameWithAccessories{G}) where {G} = gametype(game.game)
+
+gamestate(g::GameWithAccessories) = gamestate(g.game)
 
 end

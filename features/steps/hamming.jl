@@ -23,6 +23,7 @@
 
 using Behavior
 using Nona.Games
+using Nona.Games.Accessories
 using Nona.Games.States
 using Nona.Games.Hamming
 using Nona.Games.HammingAccessories

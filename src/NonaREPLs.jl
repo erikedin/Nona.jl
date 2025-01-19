@@ -24,6 +24,7 @@
 module NonaREPLs
 
 using Nona.Games
+using Nona.Games.Accessories
 using Nona.Games.States
 using Nona.Games.Niancat
 using Nona.Games.Hamming

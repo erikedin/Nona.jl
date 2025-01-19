@@ -30,7 +30,7 @@ export Dictionary
 export Command, GameCommand, Game, gameaction!, gamename, gametype
 export Word
 export Guess, ShowCurrentPuzzle, ShowSolutions
-export Accessory, GameWithAccessories, AccessoryCommand
+export Accessory, AccessoryCommand
 
 abstract type Player end
 # Response is an abstract type for all messages sent to the players from the game.
@@ -94,20 +94,6 @@ function register!(delegation::DelegationPublisher{G}, accessory::Accessory{G}) 
 end
 
 #
-# GameWithAccessories
-# Exposes a unified interface for sending commands to games or accessories.
-
-struct GameWithAccessories{G <: Game} <: Game
-    game::G
-    accessory::Accessory{G}
-end
-
-gameaction!(game::GameWithAccessories{G}, player::Player, command::GameCommand) where {G} = gameaction!(game.game, player, command)
-gameaction!(game::GameWithAccessories{G}, player::Player, command::AccessoryCommand) where {G} = gameaction!(game.accessory, player, command)
-gamename(game::GameWithAccessories{G}) where {G} = gamename(game.game)
-gametype(game::GameWithAccessories{G}) where {G} = gametype(game.game)
-
-#
 # Word
 #
 
@@ -162,11 +148,10 @@ end
 struct ShowCurrentPuzzle  <: GameCommand end
 struct ShowSolutions <: GameCommand end
 
-#
 # State code common for all games
-#
-
 include("States.jl")
+
+include("Accessories.jl")
 
 #
 # Game modules
