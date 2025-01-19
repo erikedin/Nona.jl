@@ -24,6 +24,7 @@
 using Behavior
 using Nona.Games.Niancat
 using Nona.Games.States
+using Nona.Games.HammingAccessories
 using Nona.NonaREPLs
 
 function clearoutput(context)
@@ -60,7 +61,20 @@ end
     context[:io] = io
 
     state = HammingGameState(Word(puzzle))
-    gamefactory = io -> NonaREPLs.creategame(HammingGame, dictionary, io, state)
+    gamefactory = io -> NonaREPLs.creategame(HammingGame, dictionary, io, state, HammingGuessState())
+
+    nona = NonaREPL(gamefactory, dictionary; io=io)
+    start(nona)
+
+    context[:game] = nona
+end
+
+@when("a NonaREPL game Hamming is continued") do context
+    dictionary = context[:dictionary]
+    io = IOBuffer()
+    context[:io] = io
+
+    gamefactory = io -> NonaREPLs.switchgame(HammingGame, dictionary, io)
 
     nona = NonaREPL(gamefactory, dictionary; io=io)
     start(nona)

@@ -187,9 +187,9 @@ end
 # creategame creates a HammingGame with a given state.
 # This is called from createnewgame with a newly created state (or supplied from tests).
 # It's called from switchgame with state that is either read from disk or newly created.
-function creategame(::Type{HammingGame}, dictionary::Dictionary, io::IO, state::HammingGameState)
+function creategame(::Type{HammingGame}, dictionary::Dictionary, io::IO, state::HammingGameState, accessorystate::HammingGuessState)
     publisher = HammingConsolePublisher(io)
-    accessory = HammingGuess(publisher)
+    accessory = HammingGuess(publisher, accessorystate)
     delegation = DelegationPublisher(publisher, accessory)
     game = HammingGame(delegation, dictionary, state)
     savestate(gamestate(game))
@@ -203,12 +203,13 @@ function createnewgame(::Type{HammingGame}, dictionary::Dictionary, io::IO; prov
     else
         providedstate
     end
-    creategame(HammingGame, dictionary, io, state)
+    creategame(HammingGame, dictionary, io, state, HammingGuessState())
 end
 
 function switchgame(::Type{HammingGame}, dictionary::Dictionary, io::IO)
     state = loadorcreatestate(Hamming.HammingGameState, dictionary)
-    creategame(HammingGame, dictionary, io, state)
+    guessstate = loadorcreatestate(HammingGuessState, dictionary)
+    creategame(HammingGame, dictionary, io, state, guessstate)
 end
 
 # NonaREPL holds the game, and responds to player input by sending the game actions.
@@ -316,9 +317,10 @@ end
 Called when a GameCommand is parsed. That is a command that goes to the game,
 as opposed to being handled by the REPL here.
 """
-function playerinput!(::NonaREPL, ::String, command::GameCommand, game::Game)
+function playerinput!(nona::NonaREPL, ::String, command::GameCommand, game::Game)
     player = ThisPlayer()
     gameaction!(game, player, command)
+    savestate(nona.game)
     []
 end
 

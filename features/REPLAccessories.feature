@@ -51,3 +51,12 @@ Feature: REPL interface for accessories
          When the player inputs "!gissningar"
          Then the REPL shows "ABXXXX"
           And the REPL shows "AXXXXX"
+
+    Scenario: Guesses are saved in state
+        Given a NonaREPL game Hamming with puzzle ABCDEF
+          And the REPL player tries the guess AXXXXX
+          And the REPL player tries the guess XBXXXX
+         When a NonaREPL game Hamming is continued
+          And the player inputs "!gissningar"
+         Then the REPL shows "AXXXXX"
+          And the REPL shows "XBXXXX"

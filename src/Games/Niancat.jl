@@ -34,6 +34,7 @@ export LetterCorrection
 
 using Nona.Games
 import Nona.Games: gameaction!, gamename, publish!
+import Nona.Games.States: savestate
 
 
 """
@@ -275,5 +276,13 @@ function generatepuzzle(dictionary::Dictionary) :: Word
 
     puzzle
 end
+
+#
+# State
+#
+
+# savestate is not currently implemented for Niancat.
+# It is implemented here as a no-op until it is implemented.
+savestate(g::NiancatGame) = nothing
 
 end # module Niancat

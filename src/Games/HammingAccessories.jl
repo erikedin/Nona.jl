@@ -32,6 +32,7 @@ import Nona.Games.States: statename, gamestate
 
 export
     HammingGuess,
+    HammingGuessState,
     ShowGuesses,
     NoGuesses
 
@@ -160,5 +161,11 @@ function HammingGuessState(s::String)
 
     state
 end
+
+# HammingGuessState constructor for creating a new state.
+# The dictionary is provided because it's used by game states, and the same
+# code calls it here. This is a problem with the API and should be addressed
+# at some point.
+HammingGuessState(::Dictionary) = HammingGuessState();
 
 end # module HammingAccessories
