@@ -635,6 +635,55 @@ end
    @test result == ("abc", "def")
 end
 
+@testset "Token as Int; Input is 123; Token is the int 123" begin
+    # Arrange
+    input = ParserInput("123")
+    parser = tokenP |> To{Int}(x -> parse(Int, x))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == 123
+end
+
+@testset "Token as Int; Input is abc; BadParse" begin
+    # Arrange
+    input = ParserInput("abc")
+    parser = tokenP |> To{Int}(x -> parse(Int, x))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+end
+
+@testset "Token as Int; Input is EOF; BadParse" begin
+    # Arrange
+    input = ParserInput("")
+    parser = tokenP |> To{Int}(x -> parse(Int, x))
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test typeof(result) == BadParse
+end
+
+@testset "Transform exception doesn't swallow input; Input is abc; Symbol is abc" begin
+    # Arrange
+    input = ParserInput("abc")
+    intparser = tokenP |> To{Int}(x -> parse(Int, x))
+    symbolparser = symbolC("abc")
+    parser = intparser | symbolparser
+
+    # Act
+    (_rest, result) = parser(input)
+
+    # Assert
+    @test result == "abc"
+end
 end # tokenP
 
 @testset "Ignore" begin

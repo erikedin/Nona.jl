@@ -141,22 +141,21 @@ isparseok(::Any) = true
 function HammingGuessState(s::String)
     distanceP = tokenP |> To{Int}(x -> parse(Int, x))
     wordP = tokenP |> To{Word}(x -> Word(x))
-    guessParserC = distanceP >> wordP >> ignoreC(eofP)
+    guessParserC = distanceP >> wordP
+    stateParserC = manyC(guessParserC) >> ignoreC(eofP)
 
     io = IOBuffer(s)
 
     state = HammingGuessState()
-
-    while !eof(io)
-        line = readline(io)
-        input = ParserInput(line)
-        (_rest, result) = guessParserC(input)
-        if isparseok(result)
-            (distance, word) = result
+    statedata = read(io, String)
+    input = ParserInput(statedata)
+    (_rest, distancewordpairs) = stateParserC(input)
+    if isparseok(result)
+        foreach(distancewordpairs) do (distance, word)
             newguess!(state, distance, word)
-        else
-            throw(ErrorException("HammingGuessState: Line '$(line)' is invalid"))
         end
+    else
+        throw(ErrorException("HammingGuessState: Line '$(line)' is invalid"))
     end
 
     state

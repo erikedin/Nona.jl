@@ -132,8 +132,14 @@ struct To{T}
 end
 (to::To{T})(x...) where {T} = to.f(x...)
 
-_transform(result::Tuple{ParserInput, BadParse}, _f::To{T}) where {T} = result
-_transform((rest, value)::Tuple{ParserInput, S}, f::To{T}) where {S, T} = (rest, f(value))
+_transform(result::Tuple{ParserInput, BadParse}, _f::To{T}, ::ParserInput) where {T} = result
+function _transform((rest, value)::Tuple{ParserInput, S}, f::To{T}, originalinput::ParserInput) where {S, T}
+    try
+        (rest, f(value))
+    catch
+        (originalinput, BadParse())
+    end
+end
 
 struct transformC{S, T} <: Parser{T}
     p::Parser{S}
@@ -141,7 +147,7 @@ struct transformC{S, T} <: Parser{T}
 end
 
 function (parser::transformC{S, T})(input::ParserInput) where {S, T}
-    _transform(parser.p(input), parser.f)
+    _transform(parser.p(input), parser.f, input)
 end
 
 Base.:|>(p::Parser{S}, f::To{T}) where {S, T} = transformC(p, f)
