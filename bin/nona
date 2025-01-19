@@ -29,17 +29,37 @@ using Pkg
 Pkg.activate(joinpath(@__DIR__, ".."))
 Pkg.instantiate()
 
-# The dictionarypath.txt config file contains the path to the dictionary.
-# It is not the dictionary itself.
-dictionaryconfigpath = expanduser("~/.config/Nona/dictionarypath.txt")
+function configpath(filename)
+    dirpath = expanduser("~/.config/Nona")
+    joinpath(dirpath, filename)
+end
+
+function requiredconfig(filename)
+    path = configpath(filename)
+    open(path, "r") do io
+        strip(read(io, String))
+    end
+end
+
+function optionalconfig(filename, defaultvalue)
+    path = configpath(filename)
+    try
+        open(path, "r") do io
+            String(strip(read(io, String)))
+        end
+    catch
+        defaultvalue
+    end
+end
 
 # Read the dictionary path from the config file.
-dictionarypath = open(dictionaryconfigpath, "r") do io
-    strip(read(io, String))
-end
+dictionarypath = requiredconfig("dictionarypath.txt")
+
+# Read the default game to start with.
+defaultgamename = optionalconfig("defaultgame.txt", "Niancat")
 
 using Nona.NonaREPLs
 
 dictionary = FileDictionary(String(dictionarypath))
 
-NonaREPLs.run(dictionary)
+NonaREPLs.run(dictionary, defaultgamename)
