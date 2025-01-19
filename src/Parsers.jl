@@ -86,19 +86,25 @@ struct satisfyC{T} <: Parser{T}
     satisfyC(parser::Parser{T}, predicate::Function) where {T} = new{T}(parser, predicate)
     satisfyC(predicate::Function) = new{Char}(anyP, predicate)
 end
-function (parser::satisfyC{T})(input::ParserInput) where {T}
-    (rest, x) = parser.p(input)
-    if parser.predicate(x)
-        (rest, x)
+
+_satisfy(::satisfyC{T}, rest::ParserInput, input::ParserInput, ::BadParse) where {T} = (input, BadParse())
+function _satisfy(parser::satisfyC{T}, rest::ParserInput, input::ParserInput, value::T) where {T}
+    if parser.predicate(value)
+        (rest, value)
     else
         (input, BadParse())
     end
 end
 
+function (parser::satisfyC{T})(input::ParserInput) where {T}
+    (rest, x) = parser.p(input)
+    _satisfy(parser, rest, input, x)
+end
+
 charC(c::Char) = satisfyC(x -> x == c)
 notC(c::Char) = satisfyC(x -> x != c)
 
-const spaceP = satisfyC(x -> x == ' ')
+const spaceP = satisfyC(x -> isspace(x))
 
 
 # The previous parser failed, returning a BadParse. Try the next parser in the list.
@@ -206,7 +212,7 @@ function (parser::manyC{T})(input::ParserInput) :: Tuple{ParserInput, Vector{T}}
     (rest, collect(value))
 end
 
-const tokenCharP = satisfyC(x -> x != ' ')
+const tokenCharP = satisfyC(x -> !isspace(x))
 const tokenCharsP = manyC(tokenCharP) >> ignoreC(manyC(spaceP))
 const tokenP = tokenCharsP |> To{String}(join)
 

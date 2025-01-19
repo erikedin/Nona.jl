@@ -151,6 +151,17 @@ end
     @test result == ' '
 end
 
+@testset "Space; Input is a newline; Result is a newline" begin
+    # Arrange
+    input = ParserInput("\n")
+
+    # Act
+    (_rest, result) = spaceP(input)
+
+    # Assert
+    @test result == '\n'
+end
+
 @testset "Space; Input is a; Result is BadParse" begin
     # Arrange
     input = ParserInput("a")
@@ -549,6 +560,20 @@ end
 @testset "Token swallows trailing spaces; Input is 'abc '; Token is abc" begin
     # Arrange
     input = ParserInput("abc ")
+    parser = tokenP
+
+    # Act
+    (rest, result) = parser(input)
+    (_eofrest, eofresult) = eofP(rest)
+
+    # Assert
+    @test result == "abc"
+    @test eofresult === nothing
+end
+
+@testset "Token swallows trailing newlines; Input is 'abc\n'; Token is abc" begin
+    # Arrange
+    input = ParserInput("abc\n")
     parser = tokenP
 
     # Act
