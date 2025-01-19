@@ -59,6 +59,13 @@ function savestate(state::T) where {T}
     end
 end
 
+# savestate gets the state of the game and saves it to disk.
+# This is specialized by GameWithAccessories, because it needs to save
+# the accessory state, too.
+function savestate(game::Game)
+    savestate(gamestate(game))
+end
+
 #
 # Interface to the games.
 # Games are expected to implement these functions.
@@ -66,6 +73,8 @@ end
 
 # gamestate is an accessor that returns the game state for a given game object
 gamestate(g::Game) = error("Implement gamestate($(typeof(g)))")
+# Also for accessories.
+gamestate(a::Accessory{<:Game}) = error("Implement gamestate($(typeof(a)))")
 
 # statename returns the name of a state.
 statename(t::Type{T}) where {T} = error("Implement statename($(t))")

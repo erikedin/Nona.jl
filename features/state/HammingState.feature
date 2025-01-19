@@ -50,7 +50,15 @@ Feature: Store the state of a Hamming game
          When the state is read from disk
          Then the text PUSSGURKA is not visible
 
-    # TODO: The guesses are stored as well
+    @wip
+    Scenario: Guesses are also stored as state
+        Given a Hamming game with a guess accessory and puzzle PUSSGURKA
+          And Alice guesses ORDPUSSEL
+          And with the games state saved to disk
+         When a Hamming game with a guess accessory is continued
+          And Alice requests all guesses
+         Then there is a guess ORDPUSSEL
+
     # TODO: State is stored per dictionary. Change the dictionary in any way -> new state.
     # TODO: If the environment variable XDG_STATE_HOME is not set, it defaults to $HOME/.local/state
     #       We need to inspect the path without actually writing the state. Or make a chroot or something.

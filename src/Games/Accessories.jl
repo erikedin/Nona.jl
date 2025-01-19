@@ -27,7 +27,7 @@ export GameWithAccessories
 
 using Nona.Games
 import Nona.Games: gameaction!, gamename, gametype
-import Nona.Games.States: gamestate
+import Nona.Games.States: gamestate, savestate
 
 #
 # GameWithAccessories
@@ -45,5 +45,12 @@ gamename(game::GameWithAccessories{G}) where {G} = gamename(game.game)
 gametype(game::GameWithAccessories{G}) where {G} = gametype(game.game)
 
 gamestate(g::GameWithAccessories) = gamestate(g.game)
+
+# The generic implementation of this method saves only the game state.
+# This implementation is specialized to save the state of all accessories, too.
+function savestate(g::GameWithAccessories)
+    savestate(gamestate(g.game))
+    savestate(gamestate(g.accessory))
+end
 
 end

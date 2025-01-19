@@ -89,3 +89,6 @@ Feature: Keeping track of the current guesses in Hamming
           And Alice guesses AXXXXX
           And Alice requests all guesses
          Then the guess AXXXXX comes before XBXXXX
+
+    # TODO: This accessory assumes single player so far.
+    #       It should support multiple players.

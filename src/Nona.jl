@@ -22,8 +22,8 @@
 
 module Nona
 
-include("Games/Games.jl")
 include("Parsers.jl")
+include("Games/Games.jl")
 include("REPLCommands.jl")
 include("GameParsers.jl")
 include("NonaREPLs.jl")

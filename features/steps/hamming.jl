@@ -71,11 +71,6 @@ end
     context[:defaultplayer] = alice
 end
 
-@given("with the games state saved to disk") do context
-    game = context[:game]
-    savestate(gamestate(game))
-end
-
 @given("a Hamming accessory for guesses") do context
     # publisher is the mock publisher where events can be queried by the tests.
     publisher = context[:publisher]
@@ -88,6 +83,28 @@ end
 
     game = context[:game]
     context[:game] = GameWithAccessories(game, accessory)
+end
+
+@given("a Hamming game with a guess accessory and puzzle {String}") do context, puzzle
+    io = IOBuffer()
+    context[:io] = io
+    dictionary = context[:dictionary]
+
+    publisher = MockHammingPublisher()
+    accessory = HammingGuess(publisher)
+    delegationpublisher = DelegationPublisher(publisher, accessory)
+    hamminggame = HammingGame(delegationpublisher, dictionary, HammingGameState(Word(puzzle)))
+    game = GameWithAccessories(hamminggame, accessory)
+
+    context[:publisher] = publisher
+    context[:delegationpublisher] = delegationpublisher
+    context[:game] = game
+
+    # The default player is Alice, unless otherwise stated.
+    # Other players are stored in the :players map.
+    alice = NickPlayer("Alice")
+    context[:players] = Dict{String, Player}(["Alice" => alice])
+    context[:defaultplayer] = alice
 end
 
 @given("a Hamming game started with an existing state") do context
@@ -139,6 +156,21 @@ end
     games = [generategame() for i = 1:n]
 
     context[:games] = games
+end
+
+@when("a Hamming game with a guess accessory is continued") do context
+    publisher = context[:publisher]
+    dictionary = context[:dictionary]
+
+    state = loadstate(Hamming.HammingGameState)
+    accessorystate = loadstate(HammingAccessories.HammingGuessState)
+
+    accessory = HammingGuess(publisher, accessorystate)
+    delegationpublisher = DelegationPublisher(publisher, accessory)
+    hamminggame = HammingGame(delegationpublisher, dictionary, state)
+    game = GameWithAccessories(game, accessory)
+
+    context[:game] = game
 end
 
 @when("Alice requests all guesses") do context
@@ -250,4 +282,13 @@ end
     @expect indexk !== nothing
     @expect indexl !== nothing
     @expect indexk < indexl
+end
+
+@then("there is a guess {String}") do context, word
+    publisher = context[:publisher]
+
+    response = getonlyresponse(HammingAccessories.Guesses, publisher)
+    # response.guesses is a list of DistanceGuess structs. Each struct has a words field.
+    # We're checking if there exists any DistanceGuess where word is presents in the words field.
+    @expect any(distanceguess -> Word(word) in distanceguess.words, response.guesses)
 end

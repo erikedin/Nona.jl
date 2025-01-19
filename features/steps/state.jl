@@ -31,6 +31,11 @@ using Nona.Games.States
     ENV["XDG_STATE_HOME"] = statehome
 end
 
+@given("with the games state saved to disk") do context
+    game = context[:game]
+    savestate(game)
+end
+
 @when("the state is read from disk") do context
     game = context[:game]
     gamestatetype = typeof(gamestate(game))

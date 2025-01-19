@@ -26,7 +26,9 @@ module HammingAccessories
 using Nona.Games
 using Nona.Games.Hamming
 using Nona.Games.Hamming: Incorrect
+using Nona.Parsers
 import Nona.Games: gameaction!, publish!
+import Nona.Games.States: statename, gamestate
 
 export
     HammingGuess,
@@ -43,18 +45,18 @@ end
 
 sortguesses(dg::DistanceGuess) = DistanceGuess(dg.distance, sort(dg.words))
 
-struct AllGuesses
+struct HammingGuessState
     guesses::Dict{Int, DistanceGuess}
 
-    AllGuesses() = new(Dict{Int, Vector{Word}}())
+    HammingGuessState() = new(Dict{Int, Vector{Word}}())
 end
 
-function newguess!(g::AllGuesses, incorrect::Incorrect)
+function newguess!(g::HammingGuessState, incorrect::Incorrect)
     distanceguess = get!(g.guesses, incorrect.hammingdistance, DistanceGuess(incorrect.hammingdistance))
     push!(distanceguess.words, incorrect.guess.word)
 end
 
-function guesses(g::AllGuesses) :: Vector{DistanceGuess}
+function guesses(g::HammingGuessState) :: Vector{DistanceGuess}
     distanceguesses = collect(values(g.guesses))
 
     # Sort all words in alphabetical order in each DistanceGuess.
@@ -67,13 +69,13 @@ function guesses(g::AllGuesses) :: Vector{DistanceGuess}
     sort(alphabeticalguesses; lt = guesscomparison)
 end
 
-hasguesses(g::AllGuesses) = !isempty(g.guesses)
+hasguesses(g::HammingGuessState) = !isempty(g.guesses)
 
 struct HammingGuess <: Accessory{HammingGame}
     publisher::Publisher{HammingGame}
-    guesses::AllGuesses
+    guesses::HammingGuessState
 
-    HammingGuess(publisher::Publisher{HammingGame}) = new(publisher, AllGuesses())
+    HammingGuess(publisher::Publisher{HammingGame}) = new(publisher, HammingGuessState())
 end
 
 struct ShowGuesses <: AccessoryCommand end
@@ -97,5 +99,39 @@ end
 
 publish!(best::HammingGuess, incorrect::Incorrect) = newguess!(best.guesses, incorrect)
 publish!(::HammingGuess, ::Response) = nothing
+
+#
+# Methods for saving the state of the accessory to disk.
+#
+
+statename(::Type{HammingGuessState}) = "HammingGuess"
+gamestate(accessory::HammingGuess) = accessory.guesses
+
+# For now, the state is stored as one guess per line, on the form
+# 5 ABCDEF
+# 5 GHIJKL
+# 4 MNOPQR
+# meaning that the guess ABCDEF is distance 5.
+
+function Base.convert(::Type{String}, state::HammingGuessState)
+    io = IOBuffer()
+    serializedistanceguess = dg -> ["$(dg.distance) $(w)\n" for w in dg.words]
+
+    for dg in values(state.guesses)
+        ss = serializedistanceguess(dg)
+        foreach(ss) do s
+            write(io, s)
+        end
+    end
+
+    read(io, String)
+end
+
+# The state is received from disk as a string.
+# This parses the serialized state into a HammingGuessState.
+function HammingGuessState(s::String)
+    distanceP = tokenP() |> To{Int}(x -> parse(Int, x))
+    wordP = tokenP()
+end
 
 end # module HammingAccessories
