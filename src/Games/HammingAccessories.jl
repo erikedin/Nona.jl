@@ -150,7 +150,7 @@ function HammingGuessState(s::String)
     statedata = read(io, String)
     input = ParserInput(statedata)
     (_rest, distancewordpairs) = stateParserC(input)
-    if isparseok(result)
+    if isparseok(distancewordpairs)
         foreach(distancewordpairs) do (distance, word)
             newguess!(state, distance, word)
         end

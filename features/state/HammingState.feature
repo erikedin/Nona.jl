@@ -50,7 +50,6 @@ Feature: Store the state of a Hamming game
          When the state is read from disk
          Then the text PUSSGURKA is not visible
 
-    @wip
     Scenario: Guesses are also stored as state
         Given a Hamming game with a guess accessory and puzzle PUSSGURKA
           And Alice guesses ORDPUSSEL
