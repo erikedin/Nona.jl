@@ -25,11 +25,6 @@ using Behavior
 using Base.Filesystem
 using Nona.Games.States
 
-# TODO: Remove this, because it is now run for every scenario.
-@given("a temporary directory for the state") do context
-    context[:statepath] = mktempdir(; prefix="nonadev_jl_")
-end
-
 @given("a state directory which does not exist") do context
     statepath = mktempdir(; prefix="nonadev_jl_")
     statehome = joinpath(statepath, "doesnotexist")
@@ -39,14 +34,11 @@ end
 @when("the state is read from disk") do context
     game = context[:game]
     gamestatetype = typeof(gamestate(game))
-    statepath = context[:statepath]
 
-    # This method isn't exported because it's an implement detail,
+    # This method isn't exported because it's an implementation detail,
     # but the exported functions decode the state data, and we want
     # to read the actual string stored on disk.
-    statetext = withenv("XDG_STATE_HOME" => statepath) do
-        States.readstatedata(gamestatetype)
-    end
+    statetext = States.readstatedata(gamestatetype)
 
     context[:statetext] = statetext
 end

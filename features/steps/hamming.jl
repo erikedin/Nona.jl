@@ -71,12 +71,8 @@ end
 end
 
 @given("with the games state saved to disk") do context
-    statepath = context[:statepath]
     game = context[:game]
-
-    state = withenv("XDG_STATE_HOME" => statepath) do
-        savestate(gamestate(game))
-    end
+    savestate(gamestate(game))
 end
 
 @given("a Hamming accessory for guesses") do context
@@ -96,11 +92,8 @@ end
 @given("a Hamming game started with an existing state") do context
     publisher = context[:publisher]
     dictionary = context[:dictionary]
-    statepath = context[:statepath]
 
-    state = withenv("XDG_STATE_HOME" => statepath) do
-        loadstate(Hamming.HammingGameState)
-    end
+    state = loadstate(Hamming.HammingGameState)
 
     game = HammingGame(publisher, dictionary, state)
 

@@ -26,9 +26,8 @@ Feature: Store the state of a Hamming game
     I want the game to save the state
     So that I may continue playing the Hamming game
 
-    Background: State is stored in a temporary directory for testing
-        Given a temporary directory for the state
-          And a dictionary
+    Background: A dictionary
+        Given a dictionary
             | DATORSPEL |
             | DATORSPEX |
             | LEDARPOST |
