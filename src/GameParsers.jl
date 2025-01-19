@@ -39,10 +39,11 @@ const newGameP = symbolC("nytt") |> To{NewGameAction}(x -> NewGameAction())
 
 # TODO Do not hard code these game types.
 const games = Dict{String, Type{<:Game}}("Hamming" => HammingGame, "Niancat" => NiancatGame)
-const gametypeP = symbolC("Hamming") | symbolC("Niancat")
+const gamesymbolP = symbolC("Hamming") | symbolC("Niancat")
+const gametypeP = gamesymbolP |> To{Game}(gamename -> games[gamename])
 
-const newGameTypeP = (ignoreC(symbolC("nytt")) >> ignoreC(spacesP) >> gametypeP) |> To{NewGameTypeAction}(gamename -> NewGameTypeAction(games[gamename]))
-const switchGameP = (ignoreC(symbolC("spel")) >> ignoreC(spacesP) >> gametypeP) |> To{SwitchGameAction}(gamename -> SwitchGameAction(games[gamename]))
+const newGameTypeP = (ignoreC(symbolC("nytt")) >> ignoreC(spacesP) >> gametypeP) |> To{NewGameTypeAction}(gametype -> NewGameTypeAction(gametype))
+const switchGameP = (ignoreC(symbolC("spel")) >> ignoreC(spacesP) >> gametypeP) |> To{SwitchGameAction}(gametype -> SwitchGameAction(gametype))
 
 const guessTokenP = (notC(commandChar) >> tokenP) |> To{String}(join)
 const guessP = guessTokenP |> To{Guess}()

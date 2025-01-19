@@ -221,10 +221,10 @@ mutable struct NonaREPL
     """
         NonaREPL(dictionary::Dictionary; io::IO = stdout)
 
-    Create the default game, currently NiancatGame.
+    Create a new game of the given game type.
     """
-    function NonaREPL(dictionary::Dictionary; io::IO = stdout)
-        game = createnewgame(NiancatGame, dictionary, io)
+    function NonaREPL(gametype::Type{<:Game}, dictionary::Dictionary; io::IO = stdout)
+        game = createnewgame(gametype, dictionary, io)
 
         new(io, dictionary, game)
     end
@@ -394,7 +394,7 @@ end
 Create a new NonaREPL game with a randomly generated puzzle.
 """
 function newgame(dictionary::Dictionary; io::IO = stdout)
-    nona = NonaREPL(dictionary; io=io)
+    nona = NonaREPL(NiancatGame, dictionary; io=io)
     start(nona)
     nona
 end

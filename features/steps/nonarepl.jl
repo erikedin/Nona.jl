@@ -102,7 +102,7 @@ end
     context[:io] = io
     dictionary = context[:dictionary]
 
-    nona = NonaREPL(dictionary; io=io)
+    nona = NonaREPL(NiancatGame, dictionary; io=io)
     start(nona)
 
     context[:game] = nona
