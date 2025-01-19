@@ -50,6 +50,10 @@ end
 
 function savestate(state::T) where {T}
     statepath = makestatepath(T)
+
+    # Ensure that the state directory exists.
+    mkpath(dirname(statepath))
+
     open(statepath, "w") do io
         write(io, convert(String, state))
     end

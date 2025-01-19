@@ -25,8 +25,15 @@ using Behavior
 using Base.Filesystem
 using Nona.Games.States
 
+# TODO: Remove this, because it is now run for every scenario.
 @given("a temporary directory for the state") do context
     context[:statepath] = mktempdir(; prefix="nonadev_jl_")
+end
+
+@given("a state directory which does not exist") do context
+    statepath = mktempdir(; prefix="nonadev_jl_")
+    statehome = joinpath(statepath, "doesnotexist")
+    ENV["XDG_STATE_HOME"] = statehome
 end
 
 @when("the state is read from disk") do context

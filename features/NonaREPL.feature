@@ -164,3 +164,14 @@ Feature: NonaREPL is a terminal based front-end for the games
           And the player inputs "!spel Niancat"
           And the player inputs "!spel Hamming"
          Then the game state is unchanged
+
+    Scenario: The state directory is created if it does not exist
+        This works by ensuring that the state directory does not exist, then
+        check that the state is really recorded.
+
+        Given a state directory which does not exist
+          And a NonaREPL game Hamming with puzzle PUSSGURKA
+         When the game state is recorded
+          And the player inputs "!spel Niancat"
+          And the player inputs "!spel Hamming"
+         Then the game state is unchanged
