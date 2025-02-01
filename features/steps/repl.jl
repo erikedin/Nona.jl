@@ -64,7 +64,7 @@ end
     dictionary = context[:dictionary]
 
     io = IOBuffer()
-    game = NonaREPLs.newgame(dictionary; io=io)
+    game = NonaREPLs.newgame(NiancatGame, dictionary; io=io)
 
     context[:game] = game
     context[:io] = io
