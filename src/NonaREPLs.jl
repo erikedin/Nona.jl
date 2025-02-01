@@ -138,7 +138,7 @@ function publish!(p::HammingConsolePublisher, response::HammingAccessories.Guess
     for guess in response.guesses
         println(p.io, "$(guess.distance)")
         guesses = ["  $(word)"
-                    for word in guess.words]
+                    for word in guessesatdistance(guess)]
         for word in guesses
             println(p.io, word)
         end
