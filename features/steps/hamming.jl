@@ -254,7 +254,7 @@ end
     expectedwords = [Word(w[1]) for w in context.datatable]
 
     response = getonlyresponse(HammingAccessories.Guesses, publisher)
-    nguesses = [guesses.words for guesses in response.guesses if guesses.distance == n]
+    nguesses = [guessesatdistance(guesses) for guesses in response.guesses if guesses.distance == n]
     @expect length(nguesses) == 1
     actualwords = nguesses[1]
     @expect sort(actualwords) == sort(expectedwords)
@@ -275,7 +275,7 @@ end
     response = getonlyresponse(HammingAccessories.Guesses, publisher)
 
     distanceguess = only(response.guesses)
-    words = distanceguess.words
+    words = guessesatdistance(distanceguess)
     indexk = findfirst(x -> x == Word(word1), words)
     indexl = findfirst(x -> x == Word(word2), words)
 
@@ -288,7 +288,25 @@ end
     publisher = context[:publisher]
 
     response = getonlyresponse(HammingAccessories.Guesses, publisher)
-    # response.guesses is a list of DistanceGuess structs. Each struct has a words field.
+    # response.guesses is a list of DistanceGuess structs. Each DistanceGuess struct has
+    # an accessor method guesses that returns all guesses at that distance.
     # We're checking if there exists any DistanceGuess where word is presents in the words field.
-    @expect any(distanceguess -> Word(word) in distanceguess.words, response.guesses)
+    @expect any(distanceguess -> Word(word) in guessesatdistance(distanceguess), response.guesses)
+end
+
+@then("the guess {String} is shown only once") do context, word
+    publisher = context[:publisher]
+
+    response = getonlyresponse(HammingAccessories.Guesses, publisher)
+    # response.guesses is a list of DistanceGuess structs. Each struct has a words field.
+    # We're checking if the word exists more than once in any words set.
+    # That is done by checking the first and last occurrence of that word. If
+    # the first occurrence is the same as the last, there is only one.
+    existsonlyonce = dg -> begin
+        firstindex = findfirst(x -> x == Word(word), guessesatdistance(dg))
+        lastindex = findlast(x -> x == Word(word), guessesatdistance(dg))
+        firstindex == lastindex
+    end
+
+    @expect all(existsonlyonce, response.guesses)
 end

@@ -34,17 +34,18 @@ export
     HammingGuess,
     HammingGuessState,
     ShowGuesses,
+    guessesatdistance,
     NoGuesses
 
 struct DistanceGuess
     distance::Int
-    words::Vector{Word}
+    words::Set{Word}
 
-    DistanceGuess(n::Int) = new(n, Word[])
-    DistanceGuess(n::Int, words::Vector{Word}) = new(n, words)
+    DistanceGuess(n::Int) = new(n, Set{Word}())
+    DistanceGuess(n::Int, words::Set{Word}) = new(n, words)
 end
 
-sortguesses(dg::DistanceGuess) = DistanceGuess(dg.distance, sort(dg.words))
+guessesatdistance(dg::DistanceGuess) = sort(collect(dg.words))
 
 struct HammingGuessState
     guesses::Dict{Int, DistanceGuess}
@@ -64,14 +65,11 @@ end
 function guesses(g::HammingGuessState) :: Vector{DistanceGuess}
     distanceguesses = collect(values(g.guesses))
 
-    # Sort all words in alphabetical order in each DistanceGuess.
-    alphabeticalguesses = [sortguesses(dg) for dg in distanceguesses]
-
     # Sort all DistanceGuesses in distance order, descending.
     # This ensures that the best guesses are at the bottom, where they
     # are most easily read.
     guesscomparison = (x, y) -> x.distance > y.distance
-    sort(alphabeticalguesses; lt = guesscomparison)
+    sort(distanceguesses; lt = guesscomparison)
 end
 
 hasguesses(g::HammingGuessState) = !isempty(g.guesses)
